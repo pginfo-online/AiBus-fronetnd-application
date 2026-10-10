@@ -1,0 +1,485 @@
+/* ================================
+   Booking Success Page (Booking Confirmed)
+================================ */
+
+.booking-success-page {
+  min-height: calc(100vh - 72px);
+  background: #f8fafc;
+  padding: 28px 20px 56px;
+}
+
+.booking-success-container {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+/* Success Header Area */
+.success-header-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.success-check-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
+}
+
+.check-svg {
+  width: 28px;
+  height: 28px;
+}
+
+.success-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+}
+
+.success-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 16px;
+  font-weight: 500;
+}
+
+/* Booking ID Pill Box */
+.booking-id-pill-box {
+  background: #e6f4ea;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  padding: 8px 18px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.id-label {
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.id-val {
+  color: #0f172a;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.copy-id-btn {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer;
+  color: #4b5563;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+  transition: color 0.15s ease;
+}
+
+.copy-id-btn:hover {
+  color: #0f172a;
+}
+
+.copy-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.copied-text {
+  font-size: 12px;
+  color: #16a34a;
+  font-weight: 700;
+}
+
+/* Single Main White Confirmation Card */
+.main-success-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 28px 32px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+}
+
+.card-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-heading {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 16px;
+  letter-spacing: -0.2px;
+}
+
+.grid-info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.info-row.align-center {
+  align-items: center;
+}
+
+.info-label {
+  font-size: 13.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.info-value.price-highlight {
+  font-size: 26px;
+  font-weight: 900;
+  color: #e53935;
+  letter-spacing: -0.4px;
+}
+
+.payment-status-badge {
+  background: #dcfce7;
+  color: #15803d;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-block;
+  width: fit-content;
+}
+
+.meta-date-inline {
+  font-weight: 500;
+  color: #64748b;
+  font-size: 13px;
+  margin-left: 2px;
+}
+
+.card-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 22px 0;
+}
+
+/* Passenger Rows List */
+.passenger-rows-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.passenger-item-row {
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 10px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.passenger-item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.passenger-num-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.passenger-seat-badge {
+  font-size: 12.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.passenger-item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.passenger-name-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: right;
+}
+
+.passenger-meta-val {
+  font-size: 12.5px;
+  color: #64748b;
+  font-weight: 500;
+  text-align: right;
+}
+
+.contact-mobile-block {
+  margin-top: 14px;
+}
+
+/* Action Buttons Row */
+.action-buttons-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.primary-view-details-btn {
+  width: 240px;
+  height: 48px;
+  background: #e53935 !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 8px;
+  color: #ffffff !important;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(229, 57, 53, 0.25);
+}
+
+.primary-view-details-btn:hover {
+  background: #d32f2f !important;
+  box-shadow: 0 6px 18px rgba(229, 57, 53, 0.35);
+}
+
+.primary-view-details-btn:active {
+  transform: translateY(1px);
+}
+
+.secondary-home-btn {
+  width: 240px;
+  height: 48px;
+  background: #ffffff !important;
+  border: 1px solid #d9dee7 !important;
+  outline: none !important;
+  border-radius: 8px;
+  color: #0f172a !important;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.secondary-home-btn:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Safe Travels Footer Subtext */
+.safe-travels-footer-text {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 20px;
+}
+
+/* Not Found Card */
+.not-found-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  max-width: 500px;
+  margin: 40px auto 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .main-success-card {
+    padding: 20px 18px;
+  }
+
+  .info-row {
+    grid-template-columns: 130px 1fr;
+    gap: 12px;
+  }
+
+  .primary-view-details-btn,
+  .secondary-home-btn {
+    width: 200px;
+  }
+}
+
+@media (max-width: 600px) {
+  .booking-success-page {
+    padding: 16px 12px 36px;
+  }
+
+  .success-title {
+    font-size: 24px;
+  }
+
+  .info-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .info-value {
+    margin-bottom: 6px;
+  }
+
+  .action-buttons-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .primary-view-details-btn,
+  .secondary-home-btn,
+  .print-ticket-btn {
+    width: 100%;
+  }
+}
+
+/* Guest Success Card Styles */
+.guest-success-card {
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.06);
+}
+
+.guest-success-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed #bfdbfe;
+  margin-bottom: 16px;
+}
+
+.guest-icon-badge {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.guest-badge-text h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+
+.guest-badge-text p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #3b82f6;
+  line-height: 1.4;
+}
+
+.guest-sync-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.prompt-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #1e40af;
+}
+
+.prompt-lock-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.guest-login-now-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  flex-shrink: 0;
+}
+
+.guest-login-now-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.print-ticket-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #334155;
+  border: 1.5px solid #cbd5e1;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.print-ticket-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+@media (max-width: 768px) {
+  .guest-sync-prompt {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .guest-login-now-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+

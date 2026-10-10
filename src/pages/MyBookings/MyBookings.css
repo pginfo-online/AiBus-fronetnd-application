@@ -1,0 +1,474 @@
+/* ================================
+   My Bookings Page
+================================ */
+
+.my-bookings-page {
+  min-height: 100vh;
+  background: #f7f8fa;
+  padding: 40px 20px 80px;
+}
+
+.my-bookings-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Back Button */
+.back-button {
+  border: none;
+  background: transparent;
+  padding: 8px 0;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s ease;
+}
+
+.back-button:hover {
+  color: #e53935;
+}
+
+/* Page Heading Row */
+.my-bookings-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.my-bookings-header-row h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.5px;
+}
+
+.user-indicator-badge {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+/* ========================================================
+   GUEST USER BOOKINGS & LOCK BANNER
+   ======================================================== */
+.guest-login-lock-banner {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1.5px solid #93c5fd;
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+}
+
+.lock-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.lock-icon-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid #bfdbfe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.1);
+}
+
+.lock-banner-content h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+
+.lock-banner-content p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #2563eb;
+  line-height: 1.4;
+  max-width: 520px;
+}
+
+.primary-login-unlock-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  flex-shrink: 0;
+}
+
+.primary-login-unlock-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+
+/* ========================================================
+   COMPACT & SIMPLE LOGIN PROMPT
+   ======================================================== */
+.empty-bookings-simple {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 36px 24px;
+  text-align: center;
+  max-width: 440px;
+  margin: 40px auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.simple-login-msg {
+  margin: 0 0 16px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.simple-login-btn {
+  background: #e53935;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.2);
+}
+
+.simple-login-btn:hover {
+  background: #d9322f;
+  transform: translateY(-1px);
+}
+
+/* ========================================================
+   EMPTY STATE
+   ======================================================== */
+.empty-bookings {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 60px 24px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.empty-icon-wrap {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-bookings h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.empty-bookings p {
+  margin: 0 0 24px;
+  color: #6b7280;
+  font-size: 14px;
+  max-width: 420px;
+  line-height: 1.5;
+}
+
+.search-buses-button {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  background: #e53935;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.25);
+}
+
+.search-buses-button:hover {
+  background: #d9322f;
+  transform: translateY(-1px);
+}
+
+/* ========================================================
+   BOOKINGS LIST & CARDS
+   ======================================================== */
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.booking-card {
+  background: #ffffff;
+  border: 1px solid #eaedf0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.booking-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.booking-card.guest-card {
+  border: 1.5px solid #bfdbfe;
+  background: #fafcff;
+}
+
+.booking-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.operator-guest-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.operator-guest-tag h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.guest-local-pill {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.booking-card-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.booking-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.booking-status.cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Route Section */
+.booking-route {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.booking-route > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.booking-route strong {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.booking-route span {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.route-arrow {
+  font-size: 18px;
+  color: #94a3b8;
+  font-weight: bold;
+}
+
+/* Details Grid */
+.booking-details {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  padding-top: 16px;
+}
+
+.booking-details > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.booking-details span {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.booking-details strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Actions Row */
+.booking-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.view-details-button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  background: #e53935;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.2);
+}
+
+.view-details-button:hover {
+  background: #d9322f;
+  transform: translateY(-1px);
+}
+
+.login-for-ticket-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.login-for-ticket-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.cancel-booking-button {
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 9px 16px;
+  background: #ffffff;
+  color: #dc2626;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cancel-booking-button:hover {
+  background: #fee2e2;
+}
+
+/* ========================================================
+   RESPONSIVE DESIGN (MOBILE & TABLET)
+   ======================================================== */
+@media (max-width: 768px) {
+  .my-bookings-page {
+    padding: 24px 16px 60px;
+  }
+
+  .my-bookings-header-row h1 {
+    font-size: 24px;
+  }
+
+  .guest-login-lock-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .primary-login-unlock-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .booking-card {
+    padding: 18px 16px;
+  }
+
+  .booking-details {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .booking-card-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .view-details-button,
+  .login-for-ticket-btn,
+  .cancel-booking-button {
+    width: 100%;
+    text-align: center;
+  }
+}

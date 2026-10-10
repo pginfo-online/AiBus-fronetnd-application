@@ -1,0 +1,530 @@
+/* =======================================================
+   LUXURY BUS CARD COMPONENT
+   ======================================================= */
+
+.modern-bus-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 22px 26px;
+  box-shadow: 0 4px 18px -4px rgba(15, 23, 42, 0.06);
+  margin-bottom: 18px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-bus-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #2563eb 0%, #06b6d4 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.modern-bus-card:hover {
+  transform: translateY(-3px);
+  border-color: #93c5fd;
+  box-shadow: 0 16px 32px -8px rgba(37, 99, 235, 0.12), 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.modern-bus-card:hover::before {
+  opacity: 1;
+}
+
+.bus-card-inner-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  position: relative;
+}
+
+/* =======================================================
+   LEFT: OPERATOR BRANDING
+   ======================================================= */
+.bus-brand-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.operator-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.operator-avatar-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: #38bdf8;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.operator-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.operator-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.operator-heading {
+  margin: 0;
+  font-size: 16.5px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.verified-check {
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.bus-type-subtitle {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rating-and-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modern-rating-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.star-fill-icon {
+  color: #f59e0b;
+  fill: #f59e0b;
+}
+
+.reviews-text {
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* =======================================================
+   MIDDLE: TIMELINE & AMENITIES
+   ======================================================= */
+.bus-timeline-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.timeline-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.time-node {
+  display: flex;
+  flex-direction: column;
+  min-width: 90px;
+}
+
+.departure-node {
+  align-items: flex-start;
+}
+
+.arrival-node {
+  align-items: flex-end;
+}
+
+.time-digit {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.city-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  margin-top: 4px;
+}
+
+.city-pill .pin-icon {
+  color: #2563eb;
+}
+
+/* Duration Route Track */
+.duration-route-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  max-width: 180px;
+  padding: 0 8px;
+}
+
+.duration-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 3px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.2px;
+}
+
+.route-visual-line {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.route-visual-line .track-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, #93c5fd 0%, #cbd5e1 50%, #93c5fd 100%);
+  border-radius: 2px;
+}
+
+.route-visual-line .route-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
+}
+
+.route-type-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #10b981;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.amenities-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Amenities Strip */
+.amenities-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.view-details-trigger-btn {
+  background: rgba(37, 99, 235, 0.07);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  color: #2563eb;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.view-details-trigger-btn:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.35);
+}
+
+.modern-amenity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 4px 9px;
+  border-radius: 7px;
+  transition: all 0.15s ease;
+}
+
+.modern-amenity-chip:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.amenity-chip-icon {
+  color: #2563eb;
+}
+
+/* =======================================================
+   RIGHT: PRICE & CTA ACTION
+   ======================================================= */
+.bus-action-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  width: 170px;
+  flex-shrink: 0;
+}
+
+.seats-urgency-box {
+  display: flex;
+  align-items: center;
+}
+
+.seat-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.2px;
+}
+
+.seat-badge.plenty-seats {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.seat-badge.low-seats {
+  background: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
+  animation: pulseLowSeats 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseLowSeats {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+.price-fare-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.starting-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.price-hero-value {
+  display: flex;
+  align-items: baseline;
+  line-height: 1;
+}
+
+.currency-sym {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-right: 2px;
+}
+
+.fare-num {
+  font-size: 26px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tax-inclusive-text {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.modern-select-seats-cta {
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb 0%, #0284c7 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px -2px rgba(37, 99, 235, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-select-seats-cta::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: skewX(-20deg);
+  transition: 0.6s ease;
+}
+
+.modern-select-seats-cta:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #0369a1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -2px rgba(37, 99, 235, 0.5);
+}
+
+.modern-select-seats-cta:hover .cta-arrow-icon {
+  transform: translateX(4px);
+}
+
+.modern-select-seats-cta:hover::after {
+  left: 160%;
+}
+
+.cta-arrow-icon {
+  transition: transform 0.2s ease;
+}
+
+/* =======================================================
+   RESPONSIVE DESIGN
+   ======================================================= */
+@media (max-width: 1024px) {
+  .bus-card-inner-grid {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+  }
+
+  .bus-brand-info {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .bus-timeline-section {
+    width: 100%;
+  }
+
+  .bus-action-section {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .modern-select-seats-cta {
+    width: auto;
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .modern-bus-card {
+    padding: 18px 16px;
+    border-radius: 16px;
+  }
+
+  .timeline-grid {
+    gap: 8px;
+  }
+
+  .time-digit {
+    font-size: 18px;
+  }
+
+  .duration-route-track {
+    max-width: 120px;
+  }
+
+  .duration-bubble {
+    font-size: 10.5px;
+    padding: 2px 7px;
+  }
+
+  .amenities-strip {
+    display: none;
+  }
+}

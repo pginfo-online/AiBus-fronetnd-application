@@ -1,0 +1,415 @@
+/* =======================================================
+   SEARCH BOX COMPONENT
+   ======================================================= */
+
+.search-box {
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+/* =======================================================
+   VARIANT 1: HORIZONTAL SEARCH BAR (SearchResults page)
+   ======================================================= */
+
+.search-box-horizontal {
+  padding: 22px 28px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow:
+    0 24px 48px -12px rgba(15, 23, 42, 0.14),
+    0 4px 16px -2px rgba(15, 23, 42, 0.05),
+    0 0 0 1px rgba(226, 232, 240, 0.95);
+  transition: box-shadow 0.25s ease;
+}
+
+.search-box-horizontal:hover {
+  box-shadow:
+    0 28px 56px -12px rgba(15, 23, 42, 0.18),
+    0 6px 20px -2px rgba(15, 23, 42, 0.06),
+    0 0 0 1px rgba(203, 213, 225, 0.9);
+}
+
+.search-box-horizontal .search-box-inputs {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.search-box-horizontal .locations-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex: 2;
+  min-width: 0;
+}
+
+.search-box-horizontal .swap-btn-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  flex-shrink: 0;
+}
+
+/* =======================================================
+   VARIANT 2: TRANSPARENT GLASS HERO SEARCH CARD (Home Hero)
+   ======================================================= */
+
+.search-box-vertical {
+  padding: 22px 22px 24px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.35),
+    0 6px 20px -4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.search-box-vertical:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow:
+    0 28px 56px -12px rgba(0, 0, 0, 0.45),
+    0 8px 24px -4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+/* Card Header */
+.search-card-header {
+  margin-bottom: 14px;
+}
+
+.search-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: rgba(56, 189, 248, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: 0.2px;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.badge-pulse-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+  animation: badgePulse 2s infinite ease-in-out;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.7;
+  }
+}
+
+.search-card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Form Labels on Transparent Card */
+.search-box-vertical .location-input label,
+.search-box-vertical .date-input-group label {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Vertical Inputs Container */
+.search-box-vertical .search-box-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.search-box-vertical .locations-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-box-vertical .swap-btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: -14px 0;
+  z-index: 10;
+}
+
+.search-box-vertical .swap-button {
+  margin-bottom: 0;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  background: #ffffff;
+  border: 1.5px solid #93c5fd;
+  color: #2563eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.search-box-vertical .swap-button:hover {
+  background: #eff6ff;
+  border-color: #38bdf8;
+  color: #1d4ed8;
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4);
+}
+
+/* High Contrast Inputs inside Transparent Card */
+.search-box-vertical .location-input input {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #0f172a;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+}
+
+.search-box-vertical .location-input input:focus {
+  background: #ffffff;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3.5px rgba(56, 189, 248, 0.35);
+}
+
+.search-box-vertical .date-input-wrapper {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+}
+
+.search-box-vertical .date-input-wrapper:focus,
+.search-box-vertical .date-input-wrapper.active-focus {
+  background: #ffffff;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3.5px rgba(56, 189, 248, 0.35);
+}
+
+.search-box-vertical .custom-date-text {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.search-box-vertical .date-shortcut-btn {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #1e293b;
+  font-weight: 700;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+.search-box-vertical .date-shortcut-btn:hover {
+  background: #f8fafc;
+  border-color: #93c5fd;
+  color: #2563eb;
+}
+
+.search-box-vertical .date-shortcut-btn.active {
+  background: #eff6ff;
+  border-color: #38bdf8;
+  color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+}
+
+.search-box-vertical .search-button {
+  width: 100%;
+  height: 48px;
+  font-size: 15px;
+  margin-top: 2px;
+  border-radius: 12px;
+}
+
+/* =======================================================
+   COMMON BUTTONS & CONTROLS
+   ======================================================= */
+
+/* Floating Animated Swap Button */
+.swap-button {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border: 1.5px solid #dbeafe;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.14);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.swap-button svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.3s ease;
+}
+
+.swap-button:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  transform: rotate(180deg) scale(1.1);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+}
+
+.swap-button:active {
+  transform: rotate(180deg) scale(0.95);
+}
+
+/* High-Converting Modern Search Button */
+.search-button {
+  height: 50px;
+  padding: 0 32px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb 0%, #0284c7 100%);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 22px -4px rgba(37, 99, 235, 0.45), 0 2px 6px rgba(2, 132, 199, 0.2);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.search-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: skewX(-20deg);
+  transition: 0.6s ease;
+}
+
+.search-button .search-icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s ease;
+}
+
+.search-button:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #0369a1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(37, 99, 235, 0.55);
+}
+
+.search-button:hover .search-icon {
+  transform: scale(1.15);
+}
+
+.search-button:hover::after {
+  left: 160%;
+}
+
+.search-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.4);
+}
+
+/* Polished Alert/Error Pill */
+.search-error {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e3a8a;
+  background: #eff6ff;
+  border-radius: 10px;
+  border: 1.5px solid #93c5fd;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: errorShake 0.35s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes errorShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-4px);
+  }
+  40%, 80% {
+    transform: translateX(4px);
+  }
+}
+
+/* =======================================================
+   RESPONSIVE DESIGN FOR HORIZONTAL VARIANT
+   ======================================================= */
+@media (max-width: 1150px) {
+  .search-box-horizontal .search-box-inputs {
+    flex-wrap: wrap;
+  }
+
+  .search-box-horizontal .locations-wrapper {
+    flex: 1 1 100%;
+  }
+
+  .search-box-horizontal .search-button {
+    width: 100%;
+    margin-top: 6px;
+    height: 48px;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-box-horizontal {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .search-box-horizontal .locations-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .search-box-horizontal .swap-btn-container {
+    align-self: center;
+    margin: -10px 0;
+    z-index: 5;
+  }
+
+  .search-box-vertical {
+    padding: 18px 16px 20px;
+    border-radius: 18px;
+  }
+}

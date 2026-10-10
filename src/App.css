@@ -1,0 +1,245 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #ffffff;
+  color: #171717;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Header */
+
+.header {
+  height: 72px;
+  border-bottom: 1px solid #eeeeee;
+  background: #ffffff;
+}
+
+.header-inner {
+  width: min(1100px, calc(100% - 40px));
+  height: 100%;
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+.logo span {
+  color: #e53935;
+}
+
+.login-button {
+  border: 1px solid #e53935;
+  background: #ffffff;
+  color: #e53935;
+
+  padding: 9px 20px;
+  border-radius: 7px;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.login-button:hover {
+  background: #fff5f5;
+}
+
+/* Hero */
+
+.hero {
+  padding: 90px 20px 70px;
+  background: #fafafa;
+}
+
+.hero-content {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.hero h1 {
+  margin: 0;
+
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -1.8px;
+  font-weight: 750;
+}
+
+.hero p {
+  margin: 16px 0 0;
+
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* Search */
+
+.search-card {
+  margin-top: 42px;
+  padding: 20px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  display: grid;
+  grid-template-columns: 1fr 36px 1fr 1fr auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.search-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-field label {
+  color: #6b7280;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.search-field input {
+  width: 100%;
+  height: 48px;
+
+  padding: 0 13px;
+
+  border: 1px solid #dfe3e8;
+  border-radius: 7px;
+
+  outline: none;
+  color: #171717;
+  background: #ffffff;
+}
+
+.search-field input:focus {
+  border-color: #e53935;
+}
+
+.search-field input::placeholder {
+  color: #9ca3af;
+}
+
+.swap-button {
+  width: 36px;
+  height: 36px;
+
+  margin-bottom: 6px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: #e53935;
+
+  font-size: 18px;
+}
+
+.search-button {
+  height: 48px;
+
+  padding: 0 24px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #e53935;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.search-button:hover {
+  background: #d9322f;
+}
+
+
+
+/* Responsive */
+
+@media (max-width: 850px) {
+  .search-card {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .swap-button {
+    display: none;
+  }
+
+  .search-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-inner {
+    width: calc(100% - 24px);
+  }
+
+  .hero {
+    padding: 60px 12px 45px;
+  }
+
+  .hero h1 {
+    font-size: 36px;
+  }
+
+  .hero p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .search-card {
+    margin-top: 30px;
+    padding: 16px;
+
+    grid-template-columns: 1fr;
+  }
+
+  .search-field input {
+    height: 46px;
+  }
+
+  .search-button {
+    height: 46px;
+  }
+
+  .popular {
+    padding: 35px 12px;
+  }
+
+  .routes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .routes button {
+    width: 100%;
+    font-size: 13px;
+  }
+}

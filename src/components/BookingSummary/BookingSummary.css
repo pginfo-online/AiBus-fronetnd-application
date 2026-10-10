@@ -1,0 +1,334 @@
+/* Modern Luxury Booking Summary Card Styles */
+
+.modern-selection-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
+  position: sticky;
+  top: 90px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.modern-selection-card:hover {
+  box-shadow: 0 12px 32px -6px rgba(15, 23, 42, 0.1);
+  border-color: #cbd5e1;
+}
+
+.selection-card-accent-strip {
+  height: 4px;
+  background: linear-gradient(90deg, #ef4444 0%, #3b82f6 50%, #10b981 100%);
+}
+
+.modern-selection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.selection-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.selection-header-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.seat-count-bubble {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.clear-all-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.clear-all-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Card Body */
+.selection-card-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.selected-seats-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.panel-field-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.seat-chips-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.modern-seat-chip {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.chip-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chip-armchair-icon {
+  color: #ef4444;
+}
+
+.chip-seat-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.chip-price-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #10b981;
+  background: #ecfdf5;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* Empty State */
+.no-seats-empty-state {
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.empty-state-icon {
+  color: #94a3b8;
+}
+
+.empty-state-text {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.summary-divider-line {
+  height: 1px;
+  background: #f1f5f9;
+}
+
+/* Fare Breakdown Table */
+.fare-breakdown-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+}
+
+.breakdown-lbl {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.breakdown-val {
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.free-badge {
+  color: #059669;
+  background: #ecfdf5;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11.5px;
+}
+
+/* Total Hero Row */
+.total-highlight-row {
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1.5px solid #f1f5f9;
+  align-items: flex-end;
+}
+
+.total-title-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.total-hero-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.total-tax-note {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.total-hero-price {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.total-currency {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ef4444;
+}
+
+.total-num {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ef4444;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+/* Proceed CTA */
+.modern-proceed-cta {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.enabled-cta {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 20px -2px rgba(239, 68, 68, 0.45);
+}
+
+.enabled-cta:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -2px rgba(239, 68, 68, 0.6);
+}
+
+.enabled-cta:hover .cta-arrow {
+  transform: translateX(4px);
+}
+
+.cta-arrow {
+  transition: transform 0.2s ease;
+}
+
+.disabled-cta {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+  border: 1px solid #e2e8f0;
+}
+
+/* Lock Notice */
+.lock-notice-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1e40af;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  line-height: 1.35;
+}
+
+.clock-blue-icon {
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+/* Tip Box */
+.location-pricing-tip-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.tip-bulb-icon {
+  color: #d97706;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tip-text {
+  margin: 0;
+  font-size: 11.5px;
+  color: #92400e;
+  line-height: 1.4;
+  font-weight: 500;
+}

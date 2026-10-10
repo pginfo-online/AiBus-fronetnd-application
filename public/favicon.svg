@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#dc2626" />
+    </linearGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect width="64" height="64" rx="14" fill="url(#bg)" />
+
+  <!-- Bus Body -->
+  <rect x="14" y="12" width="36" height="34" rx="6" fill="#ffffff" />
+
+  <!-- Destination Board / Top Sign -->
+  <rect x="23" y="14" width="18" height="2" rx="1" fill="#ef4444" />
+
+  <!-- Windshield -->
+  <rect x="18" y="18" width="28" height="12" rx="3" fill="#1e293b" />
+  <!-- Subtle windshield reflection -->
+  <polygon points="20,19 28,19 24,28 19,28" fill="#ffffff" opacity="0.18" />
+
+  <!-- Headlights -->
+  <circle cx="21" cy="37" r="2.8" fill="#fbbf24" />
+  <circle cx="43" cy="37" r="2.8" fill="#fbbf24" />
+
+  <!-- Center Grille -->
+  <rect x="27" y="36" width="10" height="2" rx="1" fill="#94a3b8" />
+
+  <!-- Side Mirrors -->
+  <rect x="11.5" y="21" width="2.5" height="5" rx="1.25" fill="#ffffff" />
+  <rect x="50" y="21" width="2.5" height="5" rx="1.25" fill="#ffffff" />
+
+  <!-- Wheels / Tires -->
+  <rect x="18" y="46" width="6" height="5" rx="2" fill="#0f172a" />
+  <rect x="40" y="46" width="6" height="5" rx="2" fill="#0f172a" />
+</svg>

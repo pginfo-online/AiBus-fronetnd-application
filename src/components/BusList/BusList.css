@@ -1,0 +1,32 @@
+.bus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  margin-top: 24px;
+}
+
+.bus-list-empty {
+  margin-top: 24px;
+  padding: 48px 24px;
+
+  text-align: center;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.bus-list-empty h2 {
+  margin: 0;
+
+  font-size: 20px;
+  color: #171717;
+}
+
+.bus-list-empty p {
+  margin: 8px 0 0;
+
+  font-size: 14px;
+  color: #6b7280;
+}

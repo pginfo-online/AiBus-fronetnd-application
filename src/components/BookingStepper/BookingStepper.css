@@ -1,0 +1,230 @@
+/* ========================================================
+   LUXURY MODERN BOOKING STEPPER (Glassmorphic Theme)
+   ======================================================== */
+
+.luxury-stepper-wrapper {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  padding: 16px 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+.luxury-stepper-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+}
+
+/* Individual Node */
+.luxury-step-node {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  z-index: 2;
+  cursor: default;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luxury-step-badge-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.luxury-step-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.luxury-step-icon {
+  color: inherit;
+  transition: transform 0.2s ease;
+}
+
+/* Pulse Halo for Active Step */
+.luxury-pulse-halo {
+  position: absolute;
+  inset: -5px;
+  border-radius: 18px;
+  border: 2px solid rgba(37, 99, 235, 0.35);
+  animation: luxuryPulse 2.2s infinite cubic-bezier(0.24, 0, 0.38, 1);
+}
+
+@keyframes luxuryPulse {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.16);
+    opacity: 0.15;
+  }
+  100% {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+}
+
+/* Active Step Styling */
+.luxury-step-node.is-active .luxury-step-circle {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #4338ca 100%);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.45);
+  transform: translateY(-1px);
+}
+
+.luxury-step-node.is-active .luxury-step-icon {
+  transform: scale(1.08);
+}
+
+/* Completed Step Styling */
+.luxury-step-node.is-completed .luxury-step-circle {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #a7f3d0;
+  color: #059669;
+  box-shadow: 0 4px 12px -2px rgba(16, 185, 129, 0.2);
+}
+
+.luxury-check-icon {
+  color: #059669;
+}
+
+/* Label & Subtitle */
+.luxury-step-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.luxury-step-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.luxury-step-num-pill {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.luxury-step-node.is-active .luxury-step-num-pill {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.luxury-step-node.is-completed .luxury-step-num-pill {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.luxury-step-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+}
+
+.luxury-step-subtitle {
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.luxury-step-node.is-active .luxury-step-title {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.luxury-step-node.is-active .luxury-step-subtitle {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.luxury-step-node.is-completed .luxury-step-title {
+  color: #1e293b;
+}
+
+/* Connector Lines */
+.luxury-connector-line {
+  flex: 1;
+  height: 3px;
+  background: #e2e8f0;
+  margin: 0 16px;
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-connector-glow {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+  transition: width 0.4s ease;
+}
+
+.luxury-connector-line.is-filled {
+  background: #10b981;
+}
+
+.luxury-connector-line.is-filled .luxury-connector-glow {
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .luxury-stepper-wrapper {
+    padding: 14px 18px;
+  }
+
+  .luxury-step-subtitle {
+    display: none;
+  }
+
+  .luxury-step-title {
+    font-size: 13px;
+  }
+
+  .luxury-step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 720px) {
+  .luxury-step-meta {
+    display: none;
+  }
+
+  .luxury-connector-line {
+    margin: 0 8px;
+  }
+}

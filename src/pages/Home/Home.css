@@ -1,0 +1,273 @@
+/* =========================================
+   HOME PAGE
+========================================= */
+
+.home-page {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* =========================================
+   FULL SCREEN HERO
+========================================= */
+
+.hero-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #0b0f19;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* =========================================
+   FULL SCREEN HERO VIDEO BACKGROUND
+========================================= */
+
+.hero-video-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.95;
+  transition: opacity 0.8s ease-in-out;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.hero-video-bg.loaded {
+  opacity: 1;
+}
+
+/* =========================================
+   CLEAN CINEMATIC OVERLAY (SEE-THROUGH)
+========================================= */
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10, 14, 26, 0.65) 0%,
+      rgba(10, 14, 26, 0.4) 40%,
+      rgba(10, 14, 26, 0.3) 65%,
+      rgba(10, 14, 26, 0.65) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(10, 14, 26, 0.45) 0%,
+      transparent 45%
+    );
+}
+
+/* =========================================
+   HERO CONTAINER (2-SIDE LAYOUT: LEFT SEARCH, RIGHT TOP TEXT)
+========================================= */
+
+.hero-container {
+  position: relative;
+  z-index: 2;
+  width: min(1280px, calc(100% - 64px));
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  padding-top: clamp(92px, 12vh, 120px);
+  padding-bottom: clamp(40px, 6vh, 70px);
+  box-sizing: border-box;
+}
+
+/* =========================================
+   LEFT: SEARCH AREA (LOWER ON LEFT SIDE)
+========================================= */
+
+.hero-search-wrapper {
+  width: 440px;
+  max-width: 100%;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  margin-top: clamp(35px, 5.5vh, 65px);
+}
+
+/* =========================================
+   RIGHT TOP: TEXT SECTION (PINNED AT TOP RIGHT)
+========================================= */
+
+.hero-content-top-right {
+  width: 100%;
+  max-width: 480px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: flex-start;
+  margin-top: 0;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.hero-eyebrow span:first-child {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.eyebrow-line {
+  width: 28px;
+  height: 2.5px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #38bdf8, #2563eb);
+}
+
+/* =========================================
+   HERO TITLE (SMALL & REFINED)
+========================================= */
+
+.hero-title {
+  margin: 0;
+  font-size: clamp(26px, 2.8vw, 36px);
+  line-height: 1.15;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: #ffffff;
+  text-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
+}
+
+.hero-title span {
+  background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 50%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(56, 189, 248, 0.35));
+}
+
+/* =========================================
+   SUBTITLE (COMPACT)
+========================================= */
+
+.hero-subtitle {
+  margin: 8px 0 0;
+  max-width: 440px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* =========================================
+   HERO HIGHLIGHT PILLS
+========================================= */
+
+.hero-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.hero-highlight-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #f8fafc;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.hero-highlight-pill:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(56, 189, 248, 0.45);
+  transform: translateY(-1px);
+}
+
+.pill-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 960px) {
+  .hero-container {
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
+    padding-top: 105px;
+    padding-bottom: 36px;
+    gap: 28px;
+  }
+
+  .hero-content-top-right {
+    max-width: 100%;
+    align-items: center;
+    text-align: center;
+    margin-top: 0;
+  }
+
+  .hero-eyebrow {
+    justify-content: center;
+  }
+
+  .hero-highlights {
+    justify-content: center;
+  }
+
+  .hero-search-wrapper {
+    max-width: 460px;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-container {
+    padding-top: 85px;
+    padding-bottom: 24px;
+    width: calc(100% - 24px);
+  }
+
+  .hero-title {
+    font-size: 26px;
+  }
+
+  .hero-subtitle {
+    font-size: 12.5px;
+  }
+
+  .hero-highlight-pill {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}

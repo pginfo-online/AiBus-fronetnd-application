@@ -1,0 +1,298 @@
+.modern-filter-panel {
+  width: 280px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
+  height: fit-content;
+  position: sticky;
+  top: 84px;
+}
+
+.filter-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 16px;
+}
+
+.filter-header-title-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-sparkle-icon {
+  color: #2563eb;
+}
+
+.filter-header-title-box h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+}
+
+.active-filter-badge {
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 10px;
+  line-height: 1.4;
+}
+
+.modern-clear-all-btn {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.modern-clear-all-btn:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.modern-filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.modern-filter-section.border-none {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Card Grid for Bus Type & Seat Type */
+.filter-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.filter-pill-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+}
+
+.filter-card-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.card-icon {
+  color: #64748b;
+  transition: color 0.15s ease;
+}
+
+.count-pill {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  background: #ffffff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.15s ease;
+}
+
+.filter-pill-card:hover {
+  background: #ffffff;
+  border-color: #93c5fd;
+  color: #1e3a8a;
+  transform: translateY(-1px);
+}
+
+.filter-pill-card.active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+.filter-pill-card.active .filter-card-left {
+  color: #1d4ed8;
+}
+
+.filter-pill-card.active .card-icon {
+  color: #2563eb;
+}
+
+.filter-pill-card.active .count-pill {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+/* Departure Time Slots List */
+.dep-time-slots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dep-time-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+  width: 100%;
+}
+
+.time-btn-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-icon {
+  color: #64748b;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.time-text-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.time-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.dep-time-btn:hover {
+  background: #ffffff;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+.dep-time-btn.active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+.dep-time-btn.active .time-title {
+  color: #1d4ed8;
+}
+
+.dep-time-btn.active .time-icon {
+  color: #2563eb;
+}
+
+.dep-time-btn.active .count-pill {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+/* Price Range Slider */
+.price-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.current-max-price-badge {
+  font-size: 14px;
+  font-weight: 800;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 3px 10px;
+  border-radius: 8px;
+  border: 1px solid #bfdbfe;
+}
+
+.modern-price-slider-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.modern-blue-range {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 6px;
+  outline: none;
+  accent-color: #2563eb;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.modern-blue-range:hover {
+  background: #cbd5e1;
+}
+
+.price-range-min-max {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+@media (max-width: 900px) {
+  .modern-filter-panel {
+    width: 100%;
+    position: static;
+  }
+}

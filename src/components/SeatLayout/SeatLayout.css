@@ -1,0 +1,418 @@
+/* Modern Luxury Bus Seat Layout Styles */
+
+.modern-seat-layout-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-top-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.layout-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.layout-main-heading {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.layout-sub-heading {
+  margin: 0;
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.layout-coach-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 9999px;
+}
+
+.sparkle-gold {
+  color: #f59e0b;
+}
+
+/* Gender Warning */
+.gender-warning-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dismiss-warning-btn {
+  background: transparent;
+  border: none;
+  color: #3b82f6;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+/* Visual Chassis Container */
+.bus-visual-chassis-container {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 24px;
+}
+
+.decks-side-by-side-row {
+  display: flex;
+  gap: 36px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.bus-deck-column {
+  flex: 1;
+  max-width: 380px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deck-badge-header {
+  margin-bottom: 14px;
+}
+
+.deck-title-pill {
+  display: inline-block;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
+}
+
+/* Bus Body Frame Contour */
+.bus-body-frame {
+  width: 100%;
+  background: #f8fafc;
+  border: 2px solid #cbd5e1;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  padding: 16px 20px;
+  position: relative;
+  box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.08), inset 0 2px 6px rgba(255, 255, 255, 0.8);
+}
+
+/* Driver Area & Windshield */
+.bus-chassis-driver-area {
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.windshield-glass {
+  height: 24px;
+  background: linear-gradient(180deg, #93c5fd 0%, #bfdbfe 50%, #e0f2fe 100%);
+  border: 2px solid #60a5fa;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.windshield-reflection {
+  position: absolute;
+  top: 0;
+  left: 25%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transform: skewX(-30deg);
+}
+
+.driver-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px 4px;
+  border-bottom: 1.5px dashed #cbd5e1;
+}
+
+.entry-door-sign {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #10b981;
+  letter-spacing: 0.06em;
+  background: #ecfdf5;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #a7f3d0;
+}
+
+.entry-arrow {
+  color: #10b981;
+}
+
+.driver-seat-box {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #475569;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.steering-wheel-icon {
+  color: #1e293b;
+}
+
+/* Interior Grid */
+.bus-interior-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.bus-interior-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.berth-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aisle-gap {
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.aisle-guide-line {
+  width: 1px;
+  height: 24px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #cbd5e1,
+    #cbd5e1 3px,
+    transparent 3px,
+    transparent 6px
+  );
+}
+
+/* Modern Luxury Seat Elements */
+.seat-element {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  position: relative;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.seat-headrest-bar {
+  width: 60%;
+  height: 3px;
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 2px;
+  margin-bottom: 2px;
+  transition: background 0.2s ease;
+}
+
+/* Proportions: Seater vs Sleeper */
+.seat-element.seater-berth,
+.seat-element.semi_sleeper-berth {
+  width: 44px;
+  height: 44px;
+}
+
+.seat-element.sleeper-berth {
+  width: 64px;
+  height: 42px;
+}
+
+.seat-code-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1;
+}
+
+/* Hover on Available */
+.seat-element.available:hover {
+  border-color: #ef4444;
+  background: #fff5f5;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -2px rgba(239, 68, 68, 0.35);
+}
+
+.seat-element.available:hover .seat-code-label {
+  color: #ef4444;
+}
+
+.seat-element.available:hover .seat-headrest-bar {
+  background: #ef4444;
+}
+
+/* SELECTED STATE */
+.seat-element.selected {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-color: #b91c1c;
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25), 0 8px 18px -2px rgba(239, 68, 68, 0.5);
+  z-index: 3;
+}
+
+.seat-element.selected .seat-code-label {
+  color: #ffffff;
+}
+
+.seat-element.selected .seat-headrest-bar {
+  background: #ffffff;
+}
+
+/* BOOKED MALE */
+.seat-element.booked-male {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.seat-element.booked-male .seat-code-label {
+  color: #0284c7;
+}
+
+.seat-element.booked-male .seat-headrest-bar {
+  background: #38bdf8;
+}
+
+/* BOOKED FEMALE */
+.seat-element.booked-female {
+  background: #fce7f3;
+  border-color: #f472b6;
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
+.seat-element.booked-female .seat-code-label {
+  color: #db2777;
+}
+
+.seat-element.booked-female .seat-headrest-bar {
+  background: #f472b6;
+}
+
+/* BLOCKED */
+.seat-element.blocked {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.seat-element.blocked .seat-code-label {
+  color: #94a3b8;
+  font-size: 15px;
+}
+
+.seat-element.blocked .seat-headrest-bar {
+  background: #cbd5e1;
+}
+
+/* Rear Chassis Footer */
+.bus-chassis-rear-area {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1.5px dashed #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.rear-bumper-line {
+  width: 40px;
+  height: 3px;
+  background: #94a3b8;
+  border-radius: 2px;
+}
+
+.rear-exit-text {
+  font-size: 9px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .decks-side-by-side-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .modern-seat-layout-card {
+    padding: 18px 16px;
+  }
+}

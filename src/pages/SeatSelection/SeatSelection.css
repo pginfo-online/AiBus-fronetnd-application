@@ -1,0 +1,240 @@
+/* Modern Seat Selection Page Styles */
+
+.seat-selection-page {
+  min-height: calc(100vh - 70px);
+  padding: 24px 20px 60px;
+  background: radial-gradient(circle at 50% 0%, #f1f5f9 0%, #f8fafc 100%);
+}
+
+.seat-selection-container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.page-top-action-bar {
+  margin-bottom: 16px;
+}
+
+.modern-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #475569;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modern-back-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  transform: translateX(-2px);
+  border-color: #cbd5e1;
+}
+
+/* Loading Card */
+.modern-loading-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 60px 20px;
+  text-align: center;
+  box-shadow: 0 4px 24px -4px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.coach-loader-pulse {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #eff6ff;
+  border: 2px solid #bfdbfe;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.loader-orbit-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px dashed #3b82f6;
+  animation: spin 8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loader-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.loader-sub {
+  margin: 0;
+  font-size: 13.5px;
+  color: #64748b;
+}
+
+/* Not Found Card */
+.modern-not-found-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 50px 30px;
+  text-align: center;
+  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 500px;
+  margin: 40px auto;
+}
+
+.not-found-icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fee2e2;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.modern-not-found-card h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.modern-not-found-card p {
+  margin: 0 0 20px;
+  font-size: 13.5px;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.not-found-retry-btn {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.not-found-retry-btn:hover {
+  background: #1e293b;
+}
+
+/* 2-Column Grid Layout */
+.seat-selection-grid {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.seat-map-column {
+  flex: 1;
+  min-width: 0;
+}
+
+.selection-card-column {
+  width: 360px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 90px;
+}
+
+/* Mobile Sticky Bottom Floating Action Bar */
+.mobile-seat-sticky-bar {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .seat-selection-grid {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .selection-card-column {
+    width: 100%;
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .seat-selection-page {
+    padding: 16px 12px 100px;
+  }
+
+  .mobile-seat-sticky-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 14px 20px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .mobile-sticky-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .mobile-seat-count-label {
+    font-size: 11.5px;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+
+  .mobile-seat-total-price {
+    font-size: 19px;
+    color: #ffffff;
+    font-weight: 800;
+  }
+
+  .mobile-sticky-continue-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    border: none;
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+}

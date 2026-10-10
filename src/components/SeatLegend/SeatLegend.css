@@ -1,0 +1,105 @@
+/* Modern Seat Legend Styles */
+
+.modern-seat-legend-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px 18px;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.legend-items-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.modern-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-mini-seat {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.mini-headrest {
+  width: 10px;
+  height: 2px;
+  background: #cbd5e1;
+  border-radius: 1px;
+}
+
+.legend-mini-seat.available {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.legend-mini-seat.selected {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-color: #b91c1c;
+}
+
+.legend-mini-seat.selected .mini-headrest {
+  background: #ffffff;
+}
+
+.legend-mini-seat.booked-male {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+}
+
+.legend-mini-seat.booked-male .mini-headrest {
+  background: #38bdf8;
+}
+
+.legend-mini-seat.booked-female {
+  background: #fce7f3;
+  border-color: #f472b6;
+}
+
+.legend-mini-seat.booked-female .mini-headrest {
+  background: #f472b6;
+}
+
+.legend-mini-seat.blocked {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.legend-mini-seat.blocked .mini-headrest {
+  background: #cbd5e1;
+}
+
+.legend-label-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.legend-item-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .legend-items-grid {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+}
