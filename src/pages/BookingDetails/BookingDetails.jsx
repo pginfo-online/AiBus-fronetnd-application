@@ -65,6 +65,50 @@ function BookingDetails() {
     });
   };
 
+  const handleDownloadTicket = () => {
+    // Trigger browser print dialog which can save as PDF
+    const originalTitle = document.title;
+    const bRef = booking?.bookingReference || booking?.bookingId || 'Ticket';
+    document.title = `AiBus_Ticket_${bRef}`;
+    window.print();
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
+  };
+
+  const handleShareTicket = async () => {
+    const bRef = booking?.bookingReference || booking?.bookingId || '';
+    const pnr = booking?.pnr || '';
+    const from = booking?.bus?.from || '';
+    const to = booking?.bus?.to || '';
+    const date = booking?.bus?.date || '';
+    const shareText = `🚌 AiBus Ticket\nBooking ID: ${bRef}\nPNR: ${pnr}\nRoute: ${from} → ${to}\nDate: ${date}\n\nTrack your ticket on AiBus App`;
+    const shareUrl = window.location.href;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `AiBus Ticket – ${bRef}`,
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.warn('Share failed, falling back to clipboard:', err);
+          await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+          alert('Ticket details copied to clipboard!');
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+        alert('Ticket details copied to clipboard!');
+      } catch {
+        alert('Could not share ticket. Please copy the page URL manually.');
+      }
+    }
+  };
+
   const handlePrintTicket = () => {
     window.print();
   };
@@ -245,10 +289,28 @@ function BookingDetails() {
             <button
               type="button"
               className="action-pill-btn print-btn"
-              onClick={handlePrintTicket}
-              title="Print or Save as PDF"
+              onClick={handleDownloadTicket}
+              title="Download as PDF"
             >
-              🖨️ Print Ticket
+              ⬇️ Download PDF
+            </button>
+
+            <button
+              type="button"
+              className="action-pill-btn share-btn"
+              onClick={handleShareTicket}
+              title="Share Ticket"
+            >
+              📤 Share Ticket
+            </button>
+
+            <button
+              type="button"
+              className="action-pill-btn print-btn"
+              onClick={handlePrintTicket}
+              title="Print Ticket"
+            >
+              🖨️ Print
             </button>
 
             {!isCancelled && (
@@ -286,6 +348,38 @@ function BookingDetails() {
               </span>
             </div>
           </div>
+
+          {/* CANCELLATION & REFUND BANNER */}
+          {isCancelled && (
+            <div className="ticket-cancellation-banner">
+              <div className="cancellation-banner-header">
+                <span className="cancellation-icon">⚠️</span>
+                <div>
+                  <h3 className="cancellation-title">This Ticket Has Been Cancelled</h3>
+                  <p className="cancellation-subtitle">
+                    Refund Status: <strong className="refund-status-highlight">{booking.refundStatus || "REFUND INITIATED"}</strong>
+                  </p>
+                </div>
+              </div>
+              <div className="cancellation-financial-breakdown">
+                <div className="fin-item">
+                  <span className="fin-label">Total Fare Paid:</span>
+                  <strong className="fin-val">₹{totalAmount}</strong>
+                </div>
+                <div className="fin-item">
+                  <span className="fin-label">Cancellation Charges:</span>
+                  <strong className="fin-val penalty">₹{booking.cancellationCharges || 0}</strong>
+                </div>
+                <div className="fin-item">
+                  <span className="fin-label">Refund Amount:</span>
+                  <strong className="fin-val refund">₹{booking.refundAmount || totalAmount}</strong>
+                </div>
+              </div>
+              <p className="cancellation-payout-note">
+                ℹ️ The refund amount is credited directly to your original payment method within 3-5 business days.
+              </p>
+            </div>
+          )}
 
           {/* REFERENCE NUMBERS BAR */}
           <div className="ticket-identifiers-bar">

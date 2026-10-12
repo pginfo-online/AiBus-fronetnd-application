@@ -398,6 +398,22 @@ function TravellerDetails() {
   };
 
   const handleContinue = async () => {
+    // 0. Ensure user is authenticated before booking
+    if (!authService.isAuthenticated()) {
+      sessionStorage.setItem(
+        "aibus_pending_traveller_details",
+        JSON.stringify({
+          travellers,
+          contactMobile,
+          contactEmail,
+          sendWhatsApp,
+        })
+      );
+      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      navigate(`/login?returnTo=${returnUrl}`);
+      return;
+    }
+
     // Validate passengers
     for (let i = 0; i < travellers.length; i++) {
       const p = travellers[i];

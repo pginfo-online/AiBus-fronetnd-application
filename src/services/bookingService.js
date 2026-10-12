@@ -97,6 +97,13 @@ function mapBackendBooking(b) {
     bookingDate: b.createdAt || new Date().toISOString(),
     isGuest: b.isGuest || false,
     cancellationPolicy: b.cancellationPolicy || [],
+    cancellations: b.cancellations || [],
+    refunds: b.refunds || [],
+    payments: b.payments || [],
+    refundAmount: Number(b.cancellations?.[0]?.refundAmount ?? b.refunds?.[0]?.amount ?? 0),
+    refundStatus: b.refunds?.[0]?.status ?? (b.status === "CANCELLED" ? "REFUND_PENDING" : null),
+    cancellationCharges: Number(b.cancellations?.[0]?.chargeAmt ?? 0),
+    cancelledAt: b.cancelledAt || b.cancellations?.[0]?.createdAt || null,
   };
 }
 
@@ -369,18 +376,12 @@ export const bookingService = {
   // 4️⃣ User Bookings List
   // ----------------------------------------------------
   getMyBookings: async () => {
-    try {
-      const response = await api.get("/api/v1/bookings/my-bookings");
-      const list = response.data?.data || [];
-      if (Array.isArray(list) && list.length > 0) {
-        return list.map(mapBackendBooking);
-      }
-    } catch {
-      // Fallback
+    const response = await api.get("/api/v1/bookings/my-bookings");
+    const list = response.data?.data || [];
+    if (Array.isArray(list)) {
+      return list.map(mapBackendBooking);
     }
-
-    const guestList = bookingService.getGuestBookings();
-    return guestList;
+    return [];
   },
 
   getUserBookings: async (userId) => {

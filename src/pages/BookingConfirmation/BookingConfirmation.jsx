@@ -338,6 +338,12 @@ function BookingConfirmation() {
       .toUpperCase() || "AI";
 
   const handleConfirmBooking = async () => {
+    if (!loggedInUser || !authService.isAuthenticated()) {
+      const returnUrl = encodeURIComponent(location.pathname + location.search);
+      navigate(`/login?returnTo=${returnUrl}`);
+      return;
+    }
+
     const userMobile = loggedInUser?.mobile || loggedInUser?.phone || contactMobile;
     const holdId = holdIdParam || location.state?.holdId;
 
@@ -356,7 +362,7 @@ function BookingConfirmation() {
         (to && !isNaN(Number(to)) ? to : 4562)
       );
 
-      const isGuest = !loggedInUser;
+      const isGuest = false;
       const newBooking = await bookingService.createBooking({
         bus: {
           ...selectedBus,
