@@ -87,7 +87,7 @@ function BookingConfirmation() {
   const seatsParam = searchParams.get("seats");
   const travellersDataParam = searchParams.get("travellersData");
   const contactMobile =
-    searchParams.get("contactMobile") || searchParams.get("mobile") || "8999253954";
+    searchParams.get("contactMobile") || searchParams.get("mobile") || "9496192710";
   const contactEmail = searchParams.get("contactEmail") || "booking@aibus.in";
   const from = searchParams.get("from");
   const to = searchParams.get("to");

@@ -185,9 +185,14 @@ export const bookingService = {
       console.log("[HoldSeats Live Response]", holdData);
       return holdData;
     } catch (err) {
-      const errorMsg = err.response?.data?.error?.message || err.response?.data?.message || err.message;
+      const errData = err.response?.data;
+      const errorMsg =
+        (typeof errData?.error === "string" ? errData.error : errData?.error?.message) ||
+        errData?.message ||
+        err.message ||
+        "Failed to hold seats with GDS provider";
       console.error("[HoldSeats Error]", errorMsg);
-      throw new Error(errorMsg || "Failed to hold seats with GDS provider");
+      throw new Error(errorMsg);
     }
   },
 

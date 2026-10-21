@@ -22,24 +22,34 @@ function ScrollToTop() {
   return null;
 }
 
+function NavigationLayout({ children }) {
+  return (
+    <>
+      <Header />
+      {children}
+      <Footer />
+    </>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/search" element={<SearchResults />} />
-        <Route path="/seat-selection" element={<SeatSelection />} />
-        <Route path="/traveller-details" element={<TravellerDetails />} />
-        <Route path="/booking-confirmation" element={<BookingConfirmation />} />
-        <Route path="/payment-result" element={<PaymentResult />} />
-        <Route path="/booking-success" element={<BookingSuccess />} />
-        <Route path="/my-bookings" element={<MyBookings />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/booking-details" element={<BookingDetails />} />
-      </Routes>
-      <Footer />
+      <NavigationLayout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<SearchResults />} />
+          <Route path="/seat-selection" element={<SeatSelection />} />
+          <Route path="/traveller-details" element={<TravellerDetails />} />
+          <Route path="/booking-confirmation" element={<BookingConfirmation />} />
+          <Route path="/payment-result" element={<PaymentResult />} />
+          <Route path="/booking-success" element={<BookingSuccess />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/booking-details" element={<BookingDetails />} />
+        </Routes>
+      </NavigationLayout>
     </BrowserRouter>
   );
 }

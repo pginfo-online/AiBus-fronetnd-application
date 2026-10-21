@@ -1,485 +1,1465 @@
-/* ================================
-   Booking Success Page (Booking Confirmed)
-================================ */
+/* ========================================================
+   Booking Success Page (Luxury Digital Boarding Pass)
+   Ultra-modern, premium travel e-ticket confirmation experience
+======================================================== */
 
 .booking-success-page {
-  min-height: calc(100vh - 72px);
-  background: #f8fafc;
-  padding: 28px 20px 56px;
+  min-height: calc(100vh - 70px);
+  background: radial-gradient(circle at 50% -10%, #e0f2fe 0%, #f8fafc 45%, #f1f5f9 100%);
+  padding: 32px 20px 64px;
+  color: #0f172a;
+  position: relative;
 }
 
 .booking-success-container {
-  max-width: 920px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
-/* Success Header Area */
-.success-header-area {
+.stepper-section-wrap {
+  margin-bottom: 28px;
+}
+
+/* ========================================================
+   Celebration Hero Header
+======================================================== */
+
+.celebration-hero-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
+  position: relative;
 }
 
-.success-check-circle {
-  width: 56px;
-  height: 56px;
+.celebration-badge-outer {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.celebration-badge-inner {
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: #16a34a;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
+  box-shadow: 0 10px 25px -4px rgba(16, 185, 129, 0.45);
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.check-svg {
-  width: 28px;
-  height: 28px;
+.celebration-badge-outer:hover .celebration-badge-inner {
+  transform: scale(1.08);
 }
 
-.success-title {
-  font-size: 30px;
-  font-weight: 800;
+.hero-check-icon {
+  width: 34px;
+  height: 34px;
+}
+
+.celebration-halo-pulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.2);
+  animation: haloPulse 2.4s ease-out infinite;
+  z-index: 1;
+}
+
+@keyframes haloPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+.celebration-sparkle {
+  position: absolute;
+  color: #10b981;
+  z-index: 3;
+  animation: sparkleFloat 3s ease-in-out infinite alternate;
+}
+
+.celebration-sparkle-1 {
+  top: -4px;
+  right: -8px;
+}
+
+.celebration-sparkle-2 {
+  bottom: 0px;
+  left: -8px;
+  animation-delay: 1.5s;
+}
+
+@keyframes sparkleFloat {
+  0% {
+    transform: translateY(0) scale(0.9);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-4px) scale(1.15);
+    opacity: 1;
+  }
+}
+
+.celebration-pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 100px;
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+}
+
+.tag-shield-icon {
+  color: #059669;
+}
+
+.celebration-main-title {
+  font-size: 32px;
+  font-weight: 900;
   color: #0f172a;
-  margin: 0 0 6px;
-  letter-spacing: -0.4px;
+  margin: 0 0 8px;
+  letter-spacing: -0.6px;
   line-height: 1.2;
 }
 
-.success-subtitle {
-  font-size: 14px;
+.celebration-subtext {
+  font-size: 15px;
   color: #64748b;
-  margin: 0 0 16px;
-  font-weight: 500;
+  margin: 0 0 20px;
+  max-width: 600px;
+  line-height: 1.55;
+  font-weight: 450;
 }
 
-/* Booking ID Pill Box */
-.booking-id-pill-box {
-  background: #e6f4ea;
-  border: 1px solid #a7f3d0;
-  color: #065f46;
-  padding: 8px 18px;
-  border-radius: 8px;
+.celebration-subtext strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* Booking Reference Capsule */
+.booking-reference-capsule {
   display: inline-flex;
   align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid #cbd5e1;
+  padding: 8px 14px 8px 18px;
+  border-radius: 100px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.capsule-id-group {
+  display: flex;
+  align-items: center;
   gap: 8px;
-  font-size: 14px;
 }
 
-.id-label {
-  color: #4b5563;
-  font-weight: 500;
-}
-
-.id-val {
-  color: #0f172a;
-  font-weight: 800;
+.capsule-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
   letter-spacing: 0.5px;
 }
 
-.copy-id-btn {
-  background: transparent !important;
-  border: none !important;
-  outline: none !important;
-  cursor: pointer;
-  color: #4b5563;
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  margin-left: 4px;
-  transition: color 0.15s ease;
-}
-
-.copy-id-btn:hover {
-  color: #0f172a;
-}
-
-.copy-icon {
-  width: 16px;
-  height: 16px;
-}
-
-.copied-text {
-  font-size: 12px;
-  color: #16a34a;
-  font-weight: 700;
-}
-
-/* Single Main White Confirmation Card */
-.main-success-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 28px 32px;
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
-}
-
-.card-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.section-heading {
-  font-size: 17px;
+.capsule-value {
+  font-size: 14px;
   font-weight: 800;
   color: #0f172a;
-  margin: 0 0 16px;
-  letter-spacing: -0.2px;
+  letter-spacing: 0.4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-.grid-info-rows {
+.capsule-actions-group {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.info-row {
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  align-items: baseline;
-  gap: 16px;
-}
-
-.info-row.align-center {
   align-items: center;
+  gap: 8px;
 }
 
-.info-label {
-  font-size: 13.5px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.info-value {
-  font-size: 14px;
-  color: #0f172a;
-  font-weight: 700;
-}
-
-.info-value.price-highlight {
-  font-size: 26px;
-  font-weight: 900;
-  color: #e53935;
-  letter-spacing: -0.4px;
-}
-
-.payment-status-badge {
-  background: #dcfce7;
-  color: #15803d;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  display: inline-block;
-  width: fit-content;
-}
-
-.meta-date-inline {
-  font-weight: 500;
-  color: #64748b;
-  font-size: 13px;
-  margin-left: 2px;
-}
-
-.card-divider {
-  height: 1px;
+.capsule-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: #f1f5f9;
-  margin: 22px 0;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* Passenger Rows List */
-.passenger-rows-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 16px;
+.capsule-action-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
-.passenger-item-row {
-  background: #f8fafc;
-  border: 1px solid #edf2f7;
-  border-radius: 10px;
-  padding: 12px 18px;
+.capsule-action-btn.is-copied {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #15803d;
+}
+
+.btn-icon {
+  flex-shrink: 0;
+}
+
+/* ========================================================
+   THE CENTERPIECE: Luxury Boarding Pass Ticket Card
+======================================================== */
+
+.luxury-boarding-pass {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(15, 23, 42, 0.03);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+/* Top Banner Header */
+.pass-header-banner {
+  background: linear-gradient(135deg, #090e17 0%, #1e3a8a 55%, #2563eb 100%);
+  color: #ffffff;
+  padding: 24px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
+  position: relative;
 }
 
-.passenger-item-left {
+.pass-header-left {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 16px;
 }
 
-.passenger-num-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.passenger-seat-badge {
-  font-size: 12.5px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.passenger-item-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-}
-
-.passenger-name-val {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
-  text-align: right;
-}
-
-.passenger-meta-val {
-  font-size: 12.5px;
-  color: #64748b;
-  font-weight: 500;
-  text-align: right;
-}
-
-.contact-mobile-block {
-  margin-top: 14px;
-}
-
-/* Action Buttons Row */
-.action-buttons-row {
+.operator-logo-emblem {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  margin-top: 28px;
+  flex-shrink: 0;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-.primary-view-details-btn {
-  width: 240px;
-  height: 48px;
-  background: #e53935 !important;
-  border: none !important;
-  outline: none !important;
-  border-radius: 8px;
-  color: #ffffff !important;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 14px rgba(229, 57, 53, 0.25);
+.emblem-bus-icon {
+  color: #ffffff;
 }
 
-.primary-view-details-btn:hover {
-  background: #d32f2f !important;
-  box-shadow: 0 6px 18px rgba(229, 57, 53, 0.35);
-}
-
-.primary-view-details-btn:active {
-  transform: translateY(1px);
-}
-
-.secondary-home-btn {
-  width: 240px;
-  height: 48px;
-  background: #ffffff !important;
-  border: 1px solid #d9dee7 !important;
-  outline: none !important;
-  border-radius: 8px;
-  color: #0f172a !important;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.secondary-home-btn:hover {
-  background: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-}
-
-/* Safe Travels Footer Subtext */
-.safe-travels-footer-text {
-  text-align: center;
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 500;
-  margin-top: 20px;
-}
-
-/* Not Found Card */
-.not-found-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 32px;
-  text-align: center;
-  max-width: 500px;
-  margin: 40px auto 0;
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .main-success-card {
-    padding: 20px 18px;
-  }
-
-  .info-row {
-    grid-template-columns: 130px 1fr;
-    gap: 12px;
-  }
-
-  .primary-view-details-btn,
-  .secondary-home-btn {
-    width: 200px;
-  }
-}
-
-@media (max-width: 600px) {
-  .booking-success-page {
-    padding: 16px 12px 36px;
-  }
-
-  .success-title {
-    font-size: 24px;
-  }
-
-  .info-row {
-    grid-template-columns: 1fr;
-    gap: 2px;
-  }
-
-  .info-value {
-    margin-bottom: 6px;
-  }
-
-  .action-buttons-row {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .primary-view-details-btn,
-  .secondary-home-btn,
-  .print-ticket-btn {
-    width: 100%;
-  }
-}
-
-/* Guest Success Card Styles */
-.guest-success-card {
-  background: #eff6ff;
-  border: 1.5px solid #bfdbfe;
-  border-radius: 16px;
-  padding: 20px 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.06);
-}
-
-.guest-success-top {
+.operator-meta-info {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px dashed #bfdbfe;
-  margin-bottom: 16px;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.guest-icon-badge {
-  font-size: 32px;
+.operator-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.operator-name-text {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.verified-coach-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 185, 129, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #a7f3d0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.operator-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.coach-type-badge {
+  background: rgba(255, 255, 255, 0.18);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.coach-rating-badge {
+  background: rgba(234, 179, 8, 0.25);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  color: #fef08a;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.coach-gps-badge {
+  background: rgba(56, 189, 248, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #bae6fd;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pass-header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.pass-qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.boarding-qr-wrapper {
+  background: #ffffff;
+  padding: 5px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-scan-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #93c5fd;
+  text-transform: uppercase;
+}
+
+.pass-pnr-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.pnr-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.pnr-val-badge {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Route Journey Section */
+.pass-journey-strip {
+  padding: 36px 32px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 28px;
+  background: #ffffff;
+}
+
+.journey-station-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.journey-station-block.destination-block {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.station-city-badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #2563eb;
+  text-transform: uppercase;
+  background: #eff6ff;
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+}
+
+.station-city-badge.dest-badge {
+  color: #059669;
+  background: #ecfdf5;
+}
+
+.station-time-text {
+  font-size: 34px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.8px;
+  line-height: 1;
+}
+
+.station-city-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-top: 2px;
+}
+
+.station-date-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.station-pickup-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: #334155;
+  font-weight: 600;
+  margin-top: 6px;
+  max-width: 260px;
+}
+
+.pickup-pin-icon {
+  color: #2563eb;
   flex-shrink: 0;
 }
 
-.guest-badge-text h3 {
-  margin: 0 0 4px;
+.dest-chip .pickup-pin-icon {
+  color: #059669;
+}
+
+.pickup-loc-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.station-reporting-note {
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+/* Center Journey Track */
+.journey-transit-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 180px;
+}
+
+.transit-duration-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.transit-track-line {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: #cbd5e1;
+  margin: 6px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.transit-node-start,
+.transit-node-end {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2563eb;
+}
+
+.transit-node-start {
+  left: 0;
+}
+
+.transit-node-end {
+  right: 0;
+  background: #059669;
+}
+
+.transit-animated-bus {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #2563eb;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+  z-index: 2;
+  animation: busSlide 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes busSlide {
+  0% {
+    transform: translateX(-35px);
+  }
+  100% {
+    transform: translateX(35px);
+  }
+}
+
+.transit-type-tag {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* ========================================================
+   Authentic Perforated Ticket Tear Line
+======================================================== */
+
+.pass-perforation-divider {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  margin: 0;
+}
+
+.pass-perforation-divider.pass-perforation-sub {
+  height: 18px;
+}
+
+.perforation-dashed-line {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  height: 0;
+  border-top: 2px dashed #e2e8f0;
+  z-index: 1;
+}
+
+.notch {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f8fafc;
+  box-shadow: inset 0 0 4px rgba(15, 23, 42, 0.12);
+  z-index: 2;
+}
+
+.notch-left {
+  left: -12px;
+}
+
+.notch-right {
+  right: -12px;
+}
+
+.perforation-seal-chip {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 3px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.5px;
+}
+
+.seal-icon {
+  color: #2563eb;
+}
+
+/* ========================================================
+   Passenger & Berth Seat Section
+======================================================== */
+
+.pass-passenger-section {
+  padding: 28px 32px;
+  background: #ffffff;
+}
+
+.section-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sec-icon {
+  color: #2563eb;
+}
+
+.section-heading-text {
   font-size: 16px;
   font-weight: 800;
-  color: #1e3a8a;
-}
-
-.guest-badge-text p {
+  color: #0f172a;
   margin: 0;
-  font-size: 13.5px;
-  color: #3b82f6;
-  line-height: 1.4;
+  letter-spacing: -0.2px;
 }
 
-.guest-sync-prompt {
+.seats-counter-badge {
+  font-size: 13px;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.seats-counter-badge strong {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.passengers-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.passenger-berth-card {
+  background: #f8fafc;
+  border: 1.5px solid #edf2f7;
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s ease;
+}
+
+.passenger-berth-card:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+.berth-seat-tag {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.berth-seat-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #93c5fd;
+  text-transform: uppercase;
+}
+
+.berth-seat-num {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.berth-passenger-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-grow: 1;
+}
+
+.passenger-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.passenger-primary-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  text-transform: capitalize;
+}
+
+.primary-passenger-tag {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.passenger-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.meta-dot {
+  color: #cbd5e1;
+}
+
+.berth-type-text {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Contact Strip */
+.pass-contact-strip {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
-.prompt-text {
+.contact-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 13px;
-  color: #1e40af;
 }
 
-.prompt-lock-icon {
-  font-size: 18px;
+.contact-icon {
+  color: #2563eb;
   flex-shrink: 0;
 }
 
-.guest-login-now-btn {
+.contact-details {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.contact-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.contact-value {
+  font-size: 13.5px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.contact-verified-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pill-check {
+  color: #059669;
+}
+
+/* ========================================================
+   Payment Details & Receipt Stub
+======================================================== */
+
+.pass-payment-stub {
+  padding: 24px 32px;
+  background: #fafafa;
+}
+
+.payment-stub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  align-items: center;
+}
+
+.stub-metric-box {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.metric-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.total-fare-highlight .metric-val-price {
+  font-size: 28px;
+  font-weight: 900;
+  color: #e53935;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.status-metric-box {
+  align-items: flex-start;
+}
+
+.payment-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+}
+
+.payment-status-badge.is-confirmed {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.payment-status-badge.is-failed {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.payment-mode-subtext {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* ========================================================
+   Post-Booking Journey Utility Cards (3-Card Grid)
+======================================================== */
+
+.journey-utilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.utility-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s ease;
+}
+
+.utility-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.06);
+  border-color: #cbd5e1;
+}
+
+.utility-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.utility-icon-box.blue-accent {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.utility-icon-box.emerald-accent {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.utility-icon-box.purple-accent {
+  background: #faf5ff;
+  color: #7c3aed;
+}
+
+.utility-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-grow: 1;
+}
+
+.utility-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.utility-desc {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.utility-active-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563eb;
+  margin-top: 6px;
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2563eb;
+  animation: dotPulse 1.8s infinite;
+}
+
+@keyframes dotPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(37, 99, 235, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+
+.utility-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #059669;
+  text-decoration: none;
+  margin-top: 6px;
+  transition: color 0.15s ease;
+}
+
+.utility-action-link:hover {
+  color: #047857;
+  text-decoration: underline;
+}
+
+.utility-helpline-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #64748b;
+  margin-top: 6px;
+}
+
+.utility-helpline-chip strong {
+  color: #7c3aed;
+  font-weight: 800;
+}
+
+/* ========================================================
+   Action Buttons Container
+======================================================== */
+
+.action-buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.luxury-action-btn {
+  height: 50px;
+  padding: 0 26px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  border: none;
+}
+
+.primary-print-btn {
+  background: linear-gradient(135deg, #e53935 0%, #c62828 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px -2px rgba(229, 57, 53, 0.35);
+}
+
+.primary-print-btn:hover {
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%) !important;
+  box-shadow: 0 8px 24px -2px rgba(229, 57, 53, 0.45);
+  transform: translateY(-2px);
+}
+
+.secondary-details-btn {
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.secondary-details-btn:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  transform: translateY(-2px);
+}
+
+.tertiary-home-btn {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+.tertiary-home-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+  transform: translateY(-2px);
+}
+
+.luxury-action-btn:active {
+  transform: translateY(1px);
+}
+
+.btn-icon-svg {
+  flex-shrink: 0;
+}
+
+/* ========================================================
+   Trust Badges & Safe Travels Footer
+======================================================== */
+
+.safe-travels-trust-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.trust-pillars-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.trust-pillar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pillar-icon {
+  color: #059669;
+}
+
+.pillar-divider {
+  color: #cbd5e1;
+}
+
+.safe-travels-brand-tag {
+  font-size: 13.5px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.safe-travels-brand-tag strong {
+  color: #2563eb;
+}
+
+/* ========================================================
+   Loading & Not Found States
+======================================================== */
+
+.luxury-loading-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 60px 24px;
+  text-align: center;
+  max-width: 480px;
+  margin: 40px auto;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.luxury-loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3.5px solid #e2e8f0;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.luxury-loading-card h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px;
+}
+
+.luxury-loading-card p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.luxury-not-found-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 48px 24px;
+  text-align: center;
+  max-width: 480px;
+  margin: 40px auto;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.warn-svg {
+  color: #f59e0b;
+  margin-bottom: 16px;
+}
+
+.luxury-not-found-card h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px;
+}
+
+.luxury-not-found-card p {
+  font-size: 14.5px;
+  color: #64748b;
+  margin: 0 0 24px;
+}
+
+.luxury-back-home-btn {
   background: #2563eb;
   color: #ffffff;
   border: none;
   border-radius: 10px;
-  padding: 10px 20px;
-  font-size: 13.5px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-  flex-shrink: 0;
-}
-
-.guest-login-now-btn:hover {
-  background: #1d4ed8;
-  transform: translateY(-1px);
-}
-
-.print-ticket-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: 10px;
-  background: #f8fafc;
-  color: #334155;
-  border: 1.5px solid #cbd5e1;
+  padding: 12px 28px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease;
 }
 
-.print-ticket-btn:hover {
-  background: #f1f5f9;
-  border-color: #94a3b8;
-  color: #0f172a;
+.luxury-back-home-btn:hover {
+  background: #1d4ed8;
 }
 
-@media (max-width: 768px) {
-  .guest-sync-prompt {
+/* ========================================================
+   Responsive Breakpoints
+======================================================== */
+
+@media (max-width: 860px) {
+  .pass-header-banner {
     flex-direction: column;
     align-items: flex-start;
+    padding: 20px;
+    gap: 18px;
   }
 
-  .guest-login-now-btn {
+  .pass-header-right {
     width: 100%;
-    text-align: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 16px;
+  }
+
+  .pass-journey-strip {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 24px 20px;
+  }
+
+  .journey-station-block.destination-block {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .journey-transit-center {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    min-width: unset;
+  }
+
+  .transit-track-line {
+    display: none;
+  }
+
+  .pass-passenger-section {
+    padding: 20px;
+  }
+
+  .pass-payment-stub {
+    padding: 20px;
   }
 }
 
+@media (max-width: 640px) {
+  .booking-success-page {
+    padding: 20px 12px 48px;
+  }
 
+  .celebration-main-title {
+    font-size: 26px;
+  }
+
+  .celebration-subtext {
+    font-size: 13.5px;
+  }
+
+  .booking-reference-capsule {
+    border-radius: 16px;
+    padding: 12px 16px;
+    width: 100%;
+  }
+
+  .capsule-id-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .capsule-actions-group {
+    width: 100%;
+    justify-content: stretch;
+    margin-top: 6px;
+  }
+
+  .capsule-action-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .action-buttons-container {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .luxury-action-btn {
+    width: 100%;
+  }
+
+  .station-time-text {
+    font-size: 28px;
+  }
+
+  .station-pickup-chip {
+    max-width: 100%;
+  }
+}
+
+/* ========================================================
+   Print Styles (@media print)
+   Generates a clean, crisp official A4 paper boarding pass
+======================================================== */
+
+@media print {
+  /* Hide site navigation, footer, utility cards, buttons, etc. */
+  .header,
+  header,
+  footer,
+  .footer,
+  .stepper-section-wrap,
+  .action-buttons-container,
+  .journey-utilities-grid,
+  .celebration-badge-outer,
+  .capsule-actions-group,
+  .transit-animated-bus {
+    display: none !important;
+  }
+
+  body,
+  .booking-success-page {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .booking-success-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .celebration-hero-wrap {
+    margin-bottom: 16px !important;
+  }
+
+  .luxury-boarding-pass {
+    border: 1.5px solid #000000 !important;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    page-break-inside: avoid;
+  }
+
+  .pass-header-banner {
+    background: #1e293b !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .notch {
+    display: none !important;
+  }
+}

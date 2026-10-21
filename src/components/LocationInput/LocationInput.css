@@ -118,18 +118,56 @@
 .suggestion-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  flex: 1;
 }
 
 .suggestion-pin {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   color: #94a3b8;
   transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.suggestion-text-box {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.suggestion-city-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.1px;
+  transition: color 0.15s ease;
+}
+
+.suggestion-state-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  letter-spacing: -0.1px;
+  transition: color 0.15s ease;
+}
+
+.suggestion-comma {
+  color: #94a3b8;
+  margin-right: 2px;
+  font-weight: 400;
 }
 
 .city-suggestions button.suggestion-item:hover:not(:disabled) {
   background: #eff6ff;
+}
+
+.city-suggestions button.suggestion-item:hover:not(:disabled) .suggestion-city-name {
+  color: #1d4ed8;
+}
+
+.city-suggestions button.suggestion-item:hover:not(:disabled) .suggestion-state-name {
   color: #2563eb;
 }
 

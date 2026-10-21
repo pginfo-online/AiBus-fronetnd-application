@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://localhost:3009").replace(/\/$/, "");
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "https://aibus.shop").replace(/\/$/, "");
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -64,9 +64,13 @@ api.interceptors.response.use(
       }
     }
 
+    const errData = error.response?.data;
     const message =
-      error.response?.data?.message ||
-      error.response?.data?.error ||
+      (typeof errData?.error === "string"
+        ? errData.error
+        : errData?.error?.message) ||
+      errData?.message ||
+      (typeof errData === "string" ? errData : null) ||
       error.message ||
       "An unexpected network error occurred. Please try again.";
     return Promise.reject(new Error(message));

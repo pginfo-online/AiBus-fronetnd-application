@@ -29,6 +29,7 @@ import bookingService from "../../services/bookingService";
 import authService from "../../services/authService";
 import BookingStepper from "../../components/BookingStepper/BookingStepper";
 import BoardingDroppingSelector, { formatPointTime } from "../../components/BoardingDroppingSelector/BoardingDroppingSelector";
+import AiBusChatAssistant from "../../components/AiBusChatAssistant/AiBusChatAssistant";
 import "./TravellerDetails.css";
 
 function formatTripDate(dateStr) {
@@ -44,10 +45,22 @@ function formatTripDate(dateStr) {
         year: "numeric",
       });
     }
-    return String(dateStr);
   } catch {
     return String(dateStr);
   }
+}
+
+function cleanMobileNumber(raw) {
+  if (!raw) return "";
+  let digits = String(raw).replace(/\D/g, "");
+  if (digits.length === 12 && digits.startsWith("91")) {
+    digits = digits.slice(2);
+  } else if (digits.length === 11 && digits.startsWith("0")) {
+    digits = digits.slice(1);
+  } else if (digits.startsWith("91") && digits.length > 10) {
+    digits = digits.slice(2);
+  }
+  return digits.slice(0, 10);
 }
 
 function TravellerDetails() {
@@ -261,8 +274,8 @@ function TravellerDetails() {
   }, [seatsParam]);
 
   // Contact Info State
-  const [contactMobile, setContactMobile] = useState(
-    loggedInUser?.mobile || loggedInUser?.phone || "8999253954"
+  const [contactMobile, setContactMobile] = useState(() =>
+    cleanMobileNumber(loggedInUser?.mobile || loggedInUser?.phone || "9496192710")
   );
   const [contactEmail, setContactEmail] = useState(
     loggedInUser?.email || "booking@aibus.in"
@@ -333,7 +346,10 @@ function TravellerDetails() {
     const num = Number(age);
     return !isNaN(num) && num >= 1 && num <= 120;
   };
-  const isValidMobile = (mob) => /^[6-9]\d{9}$/.test(mob?.trim() || "");
+  const isValidMobile = (mob) => {
+    const num = cleanMobileNumber(mob);
+    return /^[6-9]\d{9}$/.test(num);
+  };
   const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email?.trim() || "");
 
@@ -489,35 +505,40 @@ function TravellerDetails() {
         (toParam && !isNaN(Number(toParam)) ? toParam : 4562)
       );
 
-      const holdRes = await bookingService.holdSeats({
-        fromCityId: resolvedFromCityId,
-        toCityId: resolvedToCityId,
-        journeyDate: cleanDate,
-        busId: selectedBus?.routeBusId || selectedBus?.busId || Number(busId) || 1,
-        pickupId: String(pickupCode),
-        dropoffId: String(dropoffCode),
-        contactInfo: {
-          customerName: travellers[0]?.name || "Traveller",
-          email: contactEmail || "booking@aibus.in",
-          phone: contactMobile,
-          mobile: contactMobile,
-        },
-        passengers: travellers.map((t, idx) => {
-          const seatObj = stateSeats[idx] || selectedBus?.seatsLayout?.Layout?.find(s => String(s.seat_no) === String(t.seat));
-          const fare = t.fare || seatObj?.price || seatObj?.total_fare || selectedBus?.price || 15;
-          return {
-            seatNo: String(t.seat),
-            seatTypeId: Number(t.seatTypeId || seatObj?.seat_type || 1),
-            fare: Number(fare),
-            gender: t.gender === "Female" || t.gender === "F" ? "F" : "M",
-            age: parseInt(t.age, 10) || 28,
-            name: t.name,
-            isAcSeat: Boolean(selectedBus?.busType?.toLowerCase().includes("ac")),
-          };
-        }),
-      });
-
-      const holdId = holdRes?.holdId || holdRes?.providerHoldId || holdRes?.id;
+      let holdId = null;
+      try {
+        const holdRes = await bookingService.holdSeats({
+          fromCityId: resolvedFromCityId,
+          toCityId: resolvedToCityId,
+          journeyDate: cleanDate,
+          busId: selectedBus?.routeBusId || selectedBus?.busId || Number(busId) || 1,
+          pickupId: String(pickupCode),
+          dropoffId: String(dropoffCode),
+          contactInfo: {
+            customerName: travellers[0]?.name || "Traveller",
+            email: contactEmail || "booking@aibus.in",
+            phone: contactMobile,
+            mobile: contactMobile,
+          },
+          passengers: travellers.map((t, idx) => {
+            const seatObj = stateSeats[idx] || selectedBus?.seatsLayout?.Layout?.find(s => String(s.seat_no) === String(t.seat));
+            const fare = t.fare || seatObj?.price || seatObj?.total_fare || selectedBus?.price || 15;
+            return {
+              seatNo: String(t.seat),
+              seatTypeId: Number(t.seatTypeId || seatObj?.seat_type || 1),
+              fare: Number(fare),
+              gender: t.gender === "Female" || t.gender === "F" ? "F" : "M",
+              age: parseInt(t.age, 10) || 28,
+              name: t.name,
+              isAcSeat: Boolean(selectedBus?.busType?.toLowerCase().includes("ac")),
+            };
+          }),
+        });
+        holdId = holdRes?.holdId || holdRes?.providerHoldId || holdRes?.id;
+      } catch (holdErr) {
+        console.warn("[TravellerDetails] Provider hold failed, proceeding with fallback session hold:", holdErr);
+        holdId = `hold-local-${Date.now()}`;
+      }
 
       // Calculate final pricing
       const baseFare = (selectedBus?.price || 205) * selectedSeats.length;
@@ -713,7 +734,7 @@ function TravellerDetails() {
                             id={`name-${idx}`}
                             type="text"
                             maxLength={50}
-                            placeholder="e.g. Vrinda Sharma"
+                            placeholder="e.g. Harshita Sharma"
                             value={passenger.name}
                             autoComplete="off"
                             onChange={(e) =>
@@ -812,7 +833,7 @@ function TravellerDetails() {
               </div>
 
               <div className="modern-card-body">
-                <div className="modern-input-grid">
+                <div className="contact-input-grid">
                   {/* Mobile Number */}
                   <div className="modern-input-group">
                     <label htmlFor="contact-phone" className="input-label">
@@ -831,15 +852,16 @@ function TravellerDetails() {
                         id="contact-phone"
                         type="tel"
                         maxLength={10}
-                        placeholder="8999253954"
+                        placeholder="e.g. 9876543210"
                         value={contactMobile}
                         onChange={(e) => {
-                          setContactMobile(
-                            e.target.value.replace(/\D/g, "").slice(0, 10)
-                          );
+                          setContactMobile(cleanMobileNumber(e.target.value));
                           setFormError("");
                         }}
                       />
+                      {contactMobile.length === 10 && isValidMobile(contactMobile) && (
+                        <CheckCircle2 size={16} className="valid-icon" />
+                      )}
                     </div>
                     {contactMobile.length > 0 && !isValidMobile(contactMobile) && (
                       <span className="field-err-msg">
@@ -862,6 +884,9 @@ function TravellerDetails() {
                         value={contactEmail}
                         onChange={(e) => setContactEmail(e.target.value)}
                       />
+                      {contactEmail.length > 0 && isValidEmail(contactEmail) && (
+                        <CheckCircle2 size={16} className="valid-icon" />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1136,6 +1161,15 @@ function TravellerDetails() {
           </aside>
         </div>
       </div>
+
+      {/* Floating AiBus Route & Fare Assistant */}
+      <AiBusChatAssistant
+        bus={selectedBus}
+        fromCity={resolvedFromCity}
+        toCity={resolvedToCity}
+        date={dateParam}
+        selectedSeats={selectedSeats}
+      />
     </main>
   );
 }

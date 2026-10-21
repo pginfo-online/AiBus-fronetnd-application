@@ -144,13 +144,31 @@ export const busService = {
       });
       const list = response.data?.data || response.data || [];
       if (Array.isArray(list) && list.length > 0) {
-        return list.map((c) => ({
-          CityId: String(c.CityId || c.id || c.providerCityId),
-          City: c.City || c.name,
-          State: c.State || "",
-          id: String(c.CityId || c.id || c.providerCityId),
-          name: c.City || c.name,
-        }));
+        return list.map((c) => {
+          let rawCity = String(c.City || c.name || "").trim();
+          let rawState = String(c.State || c.state || "").trim();
+
+          // Separate glued CamelCase words e.g. "MadrasTamilNadu" -> "Madras Tamil Nadu"
+          rawCity = rawCity.replace(/([a-z])([A-Z])/g, "$1 $2");
+          if (rawState) {
+            rawState = rawState.replace(/([a-z])([A-Z])/g, "$1 $2");
+            if (rawCity.toLowerCase().endsWith(rawState.toLowerCase())) {
+              rawCity = rawCity
+                .slice(0, rawCity.length - rawState.length)
+                .trim()
+                .replace(/,\s*$/, "");
+            }
+          }
+
+          return {
+            CityId: String(c.CityId || c.id || c.providerCityId),
+            City: rawCity,
+            State: rawState,
+            id: String(c.CityId || c.id || c.providerCityId),
+            name: rawCity,
+            state: rawState,
+          };
+        });
       }
     } catch (err) {
       console.error("Failed to load cities from live GDS:", err.message);

@@ -5,8 +5,6 @@
   border: 1px solid #e2e8f0;
   border-radius: 20px;
   box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
-  position: sticky;
-  top: 90px;
   overflow: hidden;
   transition: all 0.25s ease;
 }
@@ -105,9 +103,11 @@
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 6px 10px;
+  padding: 5px 8px 5px 10px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
@@ -118,7 +118,7 @@
 }
 
 .chip-armchair-icon {
-  color: #ef4444;
+  color: #d84e55;
 }
 
 .chip-seat-name {
@@ -134,6 +134,81 @@
   background: #ecfdf5;
   padding: 1px 6px;
   border-radius: 4px;
+}
+
+.chip-remove-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.chip-remove-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* Inline Points Picker Section */
+.summary-points-picker-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.summary-picker-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.picker-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.picker-title-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.picker-time-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.summary-points-dropdown {
+  width: 100%;
+  padding: 8px 10px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0f172a;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.summary-points-dropdown:focus {
+  border-color: #d84e55;
+  box-shadow: 0 0 0 2px rgba(216, 78, 85, 0.15);
 }
 
 /* Empty State */

@@ -53,7 +53,7 @@
 }
 
 /* =======================================================
-   VARIANT 2: TRANSPARENT GLASS HERO SEARCH CARD (Home Hero)
+   VARIANT 2: TRANSPARENT GLASS HERO SEARCH CARD
    ======================================================= */
 
 .search-box-vertical {
@@ -68,16 +68,6 @@
     0 6px 20px -4px rgba(0, 0, 0, 0.15),
     inset 0 1px 1px rgba(255, 255, 255, 0.25);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.search-box-vertical:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(56, 189, 248, 0.45);
-  box-shadow:
-    0 28px 56px -12px rgba(0, 0, 0, 0.45),
-    0 8px 24px -4px rgba(0, 0, 0, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.35);
-  transform: translateY(-2px);
 }
 
 /* Card Header */
@@ -111,10 +101,13 @@
 }
 
 @keyframes badgePulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.4);
     opacity: 0.7;
@@ -131,17 +124,14 @@
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-/* Form Labels on Transparent Card */
 .search-box-vertical .location-input label,
 .search-box-vertical .date-input-group label {
   color: rgba(255, 255, 255, 0.95);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.8px;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Vertical Inputs Container */
 .search-box-vertical .search-box-inputs {
   display: flex;
   flex-direction: column;
@@ -171,67 +161,13 @@
   background: #ffffff;
   border: 1.5px solid #93c5fd;
   color: #2563eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(37, 99, 235, 0.3);
 }
 
-.search-box-vertical .swap-button:hover {
-  background: #eff6ff;
-  border-color: #38bdf8;
-  color: #1d4ed8;
-  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4);
-}
-
-/* High Contrast Inputs inside Transparent Card */
-.search-box-vertical .location-input input {
-  background: #ffffff;
-  border: 1.5px solid #cbd5e1;
-  color: #0f172a;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
-}
-
-.search-box-vertical .location-input input:focus {
-  background: #ffffff;
-  border-color: #38bdf8;
-  box-shadow: 0 0 0 3.5px rgba(56, 189, 248, 0.35);
-}
-
+.search-box-vertical .location-input input,
 .search-box-vertical .date-input-wrapper {
   background: #ffffff;
   border: 1.5px solid #cbd5e1;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
-}
-
-.search-box-vertical .date-input-wrapper:focus,
-.search-box-vertical .date-input-wrapper.active-focus {
-  background: #ffffff;
-  border-color: #38bdf8;
-  box-shadow: 0 0 0 3.5px rgba(56, 189, 248, 0.35);
-}
-
-.search-box-vertical .custom-date-text {
   color: #0f172a;
-  font-weight: 700;
-}
-
-.search-box-vertical .date-shortcut-btn {
-  background: #ffffff;
-  border: 1.5px solid #cbd5e1;
-  color: #1e293b;
-  font-weight: 700;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
-}
-
-.search-box-vertical .date-shortcut-btn:hover {
-  background: #f8fafc;
-  border-color: #93c5fd;
-  color: #2563eb;
-}
-
-.search-box-vertical .date-shortcut-btn.active {
-  background: #eff6ff;
-  border-color: #38bdf8;
-  color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
 }
 
 .search-box-vertical .search-button {
@@ -243,10 +179,245 @@
 }
 
 /* =======================================================
+   VARIANT 3: FLOATING HERO SEARCH CARD (AiBus Homepage)
+   ======================================================= */
+.hero-search-card {
+  width: 100%;
+  max-width: 1200px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px 28px 26px;
+  box-shadow: 0 20px 48px -10px rgba(24, 30, 42, 0.09), 0 4px 16px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+  position: relative;
+  z-index: 30;
+}
+
+.trip-type-tabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.trip-type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.trip-type-pill:hover {
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+.trip-type-pill.active {
+  background: #C85A32;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(200, 90, 50, 0.28);
+}
+
+.hero-search-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  position: relative;
+}
+
+.hero-input-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-input-field.from-field,
+.hero-input-field.to-field {
+  flex: 1.15;
+}
+
+.hero-input-field.date-field {
+  flex: 1.05;
+}
+
+.hero-input-field.passenger-field {
+  flex: 0.95;
+  position: relative;
+}
+
+.passenger-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.passenger-trigger-btn {
+  width: 100%;
+  height: 50px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.passenger-trigger-btn:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.passenger-icon {
+  color: #C85A32;
+  flex-shrink: 0;
+}
+
+.passenger-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.passenger-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  animation: dropdownFadeIn 0.18s ease;
+}
+
+.passenger-dropdown-title {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  padding: 0 4px;
+}
+
+.passenger-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.passenger-opt-btn {
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.passenger-opt-btn:hover {
+  background: #f1f5f9;
+  color: #C85A32;
+}
+
+.passenger-opt-btn.selected {
+  background: #fff4ed;
+  color: #C85A32;
+  font-weight: 700;
+}
+
+.hero-swap-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.hero-swap-btn:hover {
+  border-color: #C85A32;
+  color: #C85A32;
+  transform: rotate(180deg) scale(1.08);
+}
+
+.hero-search-submit-btn {
+  height: 50px;
+  padding: 0 28px;
+  background: #C85A32;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 18px rgba(200, 90, 50, 0.3);
+  font-family: inherit;
+}
+
+.hero-search-submit-btn:hover {
+  background: #B34C26;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(200, 90, 50, 0.4);
+}
+
+.hero-search-error {
+  margin: 14px 0 0;
+  padding: 10px 16px;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+/* =======================================================
    COMMON BUTTONS & CONTROLS
    ======================================================= */
 
-/* Floating Animated Swap Button */
 .swap-button {
   width: 40px;
   height: 40px;
@@ -277,11 +448,6 @@
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
 }
 
-.swap-button:active {
-  transform: rotate(180deg) scale(0.95);
-}
-
-/* High-Converting Modern Search Button */
 .search-button {
   height: 50px;
   padding: 0 32px;
@@ -305,22 +471,9 @@
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.search-button::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transform: skewX(-20deg);
-  transition: 0.6s ease;
-}
-
 .search-button .search-icon {
   width: 18px;
   height: 18px;
-  transition: transform 0.2s ease;
 }
 
 .search-button:hover {
@@ -329,20 +482,6 @@
   box-shadow: 0 12px 28px -4px rgba(37, 99, 235, 0.55);
 }
 
-.search-button:hover .search-icon {
-  transform: scale(1.15);
-}
-
-.search-button:hover::after {
-  left: 160%;
-}
-
-.search-button:active {
-  transform: translateY(1px);
-  box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.4);
-}
-
-/* Polished Alert/Error Pill */
 .search-error {
   margin: 12px 0 0;
   padding: 10px 14px;
@@ -355,26 +494,31 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  animation: errorShake 0.35s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-@keyframes errorShake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  20%, 60% {
-    transform: translateX(-4px);
-  }
-  40%, 80% {
-    transform: translateX(4px);
-  }
 }
 
 /* =======================================================
-   RESPONSIVE DESIGN FOR HORIZONTAL VARIANT
+   RESPONSIVE DESIGN
    ======================================================= */
-@media (max-width: 1150px) {
+@media (max-width: 1100px) {
+  .hero-search-row {
+    flex-wrap: wrap;
+  }
+
+  .hero-input-field.from-field,
+  .hero-input-field.to-field {
+    flex: 1 1 calc(50% - 30px);
+  }
+
+  .hero-input-field.date-field,
+  .hero-input-field.passenger-field {
+    flex: 1 1 45%;
+  }
+
+  .hero-search-submit-btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+
   .search-box-horizontal .search-box-inputs {
     flex-wrap: wrap;
   }
@@ -391,6 +535,23 @@
 }
 
 @media (max-width: 640px) {
+  .hero-search-card {
+    padding: 18px 16px 20px;
+    border-radius: 18px;
+  }
+
+  .hero-input-field.from-field,
+  .hero-input-field.to-field,
+  .hero-input-field.date-field,
+  .hero-input-field.passenger-field {
+    flex: 1 1 100%;
+  }
+
+  .hero-swap-btn {
+    align-self: center;
+    margin: -4px 0;
+  }
+
   .search-box-horizontal {
     padding: 18px;
     border-radius: 16px;
@@ -406,10 +567,5 @@
     align-self: center;
     margin: -10px 0;
     z-index: 5;
-  }
-
-  .search-box-vertical {
-    padding: 18px 16px 20px;
-    border-radius: 18px;
   }
 }

@@ -1,6 +1,25 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import "./LocationInput.css";
 
+function formatCityDisplay(cityName, stateName) {
+  let cleanCity = String(cityName || "").trim();
+  let cleanState = String(stateName || "").trim();
+
+  // Separate glued CamelCase words e.g. "MadrasTamilNadu" -> "Madras Tamil Nadu"
+  cleanCity = cleanCity.replace(/([a-z])([A-Z])/g, "$1 $2");
+  if (cleanState) {
+    cleanState = cleanState.replace(/([a-z])([A-Z])/g, "$1 $2");
+    if (cleanCity.toLowerCase().endsWith(cleanState.toLowerCase())) {
+      cleanCity = cleanCity
+        .slice(0, cleanCity.length - cleanState.length)
+        .trim()
+        .replace(/,\s*$/, "");
+    }
+  }
+
+  return { cleanCity, cleanState };
+}
+
 function LocationInput({ label, placeholder, value, onChange, disabledCityId = "", cities = [] }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const containerRef = useRef(null);
@@ -8,7 +27,8 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
 
   useEffect(() => {
     if (value?.name) {
-      setSearchTerm(value.name);
+      const { cleanCity } = formatCityDisplay(value.name, value.state);
+      setSearchTerm(cleanCity);
     }
   }, [value]);
 
@@ -34,9 +54,13 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
       ];
       const matchedPopular = [];
       for (const name of popularHubs) {
-        const found = cities.find((c) => c.name.toLowerCase() === name.toLowerCase());
-        if (found && !matchedPopular.some((m) => m.id === found.id && m.name === found.name)) {
-          matchedPopular.push(found);
+        const found = cities.find((c) => {
+          const { cleanCity } = formatCityDisplay(c.name, c.state);
+          return cleanCity.toLowerCase() === name.toLowerCase();
+        });
+        if (found && !matchedPopular.some((m) => m.id === found.id)) {
+          const { cleanCity, cleanState } = formatCityDisplay(found.name, found.state);
+          matchedPopular.push({ ...found, name: cleanCity, state: cleanState });
         }
       }
       return matchedPopular;
@@ -45,11 +69,17 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
     const starts = [];
     const contains = [];
     for (const city of cities) {
-      const cName = city.name.toLowerCase();
-      if (cName.startsWith(searchLower)) {
-        starts.push(city);
-      } else if (cName.includes(searchLower)) {
-        contains.push(city);
+      const { cleanCity, cleanState } = formatCityDisplay(city.name, city.state);
+      const cName = cleanCity.toLowerCase();
+      const sName = cleanState.toLowerCase();
+      const full = `${cName} ${sName}`.trim();
+
+      const cityObj = { ...city, name: cleanCity, state: cleanState };
+
+      if (cName.startsWith(searchLower) || sName.startsWith(searchLower) || full.startsWith(searchLower)) {
+        starts.push(cityObj);
+      } else if (cName.includes(searchLower) || sName.includes(searchLower) || full.includes(searchLower)) {
+        contains.push(cityObj);
       }
       if (starts.length + contains.length >= 60) break;
     }
@@ -76,12 +106,17 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
     setSearchTerm(val);
     setShowSuggestions(true);
 
-    const exactMatch = cities.find(
-      (c) => c.name.toLowerCase() === val.toLowerCase().trim()
-    );
+    const valClean = val.toLowerCase().trim().replace(/,/g, " ");
+    const exactMatch = cities.find((c) => {
+      const { cleanCity, cleanState } = formatCityDisplay(c.name, c.state);
+      const cName = cleanCity.toLowerCase().trim();
+      const full = `${cName} ${cleanState.toLowerCase().trim()}`.trim();
+      return cName === valClean || full === valClean;
+    });
 
     if (exactMatch && !isCityDisabled(exactMatch)) {
-      onChange(exactMatch);
+      const { cleanCity, cleanState } = formatCityDisplay(exactMatch.name, exactMatch.state);
+      onChange({ ...exactMatch, name: cleanCity, state: cleanState });
     } else {
       onChange(null);
     }
@@ -89,8 +124,10 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
 
   const handleCitySelect = (city) => {
     if (isCityDisabled(city)) return;
-    setSearchTerm(city.name);
-    onChange(city);
+    const { cleanCity, cleanState } = formatCityDisplay(city.name, city.state);
+    const resolvedCity = { ...city, name: cleanCity, state: cleanState };
+    setSearchTerm(cleanCity);
+    onChange(resolvedCity);
     setShowSuggestions(false);
   };
 
@@ -123,6 +160,7 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
           <div className="city-suggestions">
             {filteredCities.map((city, idx) => {
               const disabled = isCityDisabled(city);
+              const { cleanCity, cleanState } = formatCityDisplay(city.name, city.state);
 
               return (
                 <button
@@ -144,8 +182,13 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
                       <circle cx="12" cy="10" r="3" />
                     </svg>
                     <div className="suggestion-text-box">
-                      <span className="suggestion-city-name">{city.name}</span>
-                      {city.state && <span className="suggestion-state-name">{city.state}</span>}
+                      <span className="suggestion-city-name">{cleanCity}</span>
+                      {cleanState && (
+                        <span className="suggestion-state-name">
+                          <span className="suggestion-comma">, </span>
+                          {cleanState}
+                        </span>
+                      )}
                     </div>
                   </div>
 

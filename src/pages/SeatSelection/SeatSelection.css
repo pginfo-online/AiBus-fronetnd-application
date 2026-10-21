@@ -1,56 +1,613 @@
-/* Modern Seat Selection Page Styles */
+/* ========================================================
+   MODERN SEAT SELECTION PAGE STYLES (Luxury Theme)
+   Harmonized with TravellerDetails and BookingConfirmation
+   ======================================================== */
 
-.seat-selection-page {
-  min-height: calc(100vh - 70px);
-  padding: 24px 20px 60px;
-  background: radial-gradient(circle at 50% 0%, #f1f5f9 0%, #f8fafc 100%);
+.modern-seat-page {
+  min-height: calc(100vh - 72px);
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 32px 24px 64px;
+  font-family: inherit;
+  color: #0f172a;
 }
 
-.seat-selection-container {
-  max-width: 1240px;
+.modern-seat-container {
+  max-width: 1200px;
   margin: 0 auto;
 }
 
-.page-top-action-bar {
-  margin-bottom: 16px;
-}
-
+/* Back Link Button */
 .modern-back-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  background: #ffffff;
+  background: transparent;
+  border: none;
   color: #475569;
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
 }
 
 .modern-back-btn:hover {
-  background-color: #f1f5f9;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.06);
+}
+
+/* Page Header */
+.modern-page-header {
+  margin-bottom: 24px;
+}
+
+.header-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.step-pill-tag {
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid #dbeafe;
+}
+
+.secure-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid #a7f3d0;
+}
+
+.modern-page-title {
+  font-size: 28px;
+  font-weight: 800;
   color: #0f172a;
-  transform: translateX(-2px);
-  border-color: #cbd5e1;
+  letter-spacing: -0.5px;
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+
+.modern-page-subtitle {
+  font-size: 14.5px;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* 2-Column Responsive Layout (Identical to TravellerDetails) */
+.modern-seat-layout {
+  display: grid;
+  grid-template-columns: 1fr 390px;
+  gap: 32px;
+  align-items: start;
+  margin-top: 16px;
+}
+
+.modern-seat-main-column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.coach-seat-map-wrapper {
+  width: 100%;
+}
+
+/* Amenities & Policy Info Card under Coach Layout */
+.seat-amenities-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 20px 24px;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+}
+
+.amenities-card-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.amenities-pill-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.amenity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.amenity-chip svg {
+  color: #2563eb;
+}
+
+.amenities-policy-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.policy-mini-item {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.policy-mini-item strong {
+  color: #0f172a;
+  display: block;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+/* ========================================================
+   RIGHT COLUMN: LUXURY TRIP SUMMARY SIDEBAR
+   (Identical to TravellerDetails & BookingConfirmation)
+   ======================================================== */
+.modern-summary-sidebar {
+  position: sticky;
+  top: 92px;
+}
+
+.modern-summary-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06);
+  padding: 18px 20px;
+  overflow: hidden;
+}
+
+.summary-top-banner {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 14px;
+}
+
+.banner-badge-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.bus-company-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.star-rating-pill {
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.summary-bus-title {
+  font-size: 12.5px;
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Route Timeline */
+.summary-route-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.route-node {
+  display: flex;
+  flex-direction: column;
+}
+
+.route-node.dep {
+  text-align: left;
+}
+
+.route-node.arr {
+  text-align: right;
+}
+
+.route-time {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.2px;
+}
+
+.route-city {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  margin-top: 2px;
+}
+
+.route-sub-loc {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.route-connector-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  padding: 0 8px;
+}
+
+.journey-duration-pill {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+
+.animated-connector-line {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.connector-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3b82f6;
+  flex-shrink: 0;
+}
+
+.connector-dot.end {
+  background: #10b981;
+}
+
+.connector-dashes {
+  flex: 1;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    #cbd5e1 0px,
+    #cbd5e1 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+/* Meta Grid: Date & Seats */
+.summary-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.meta-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.meta-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+  display: block;
+}
+
+.meta-value {
+  font-size: 12.5px;
+  color: #0f172a;
+  font-weight: 700;
+  margin-top: 2px;
+  display: block;
+}
+
+/* Selected Seats Strip */
+.selected-seats-strip {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.strip-title-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+}
+
+.strip-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.seat-clear-all-link {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  color: #ef4444;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.seat-clear-all-link:hover {
+  color: #dc2626;
+}
+
+.seat-pills-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.highlighted-seat-tag {
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.remove-seat-mini-btn {
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  padding: 0;
+}
+
+.remove-seat-mini-btn:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.no-seats-hint {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Quick Points Picker Block in Sidebar */
+.quick-points-picker-block {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quick-point-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.point-select-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.point-pin-icon.dep {
+  color: #2563eb;
+}
+
+.point-pin-icon.arr {
+  color: #7c3aed;
+}
+
+.point-select-dropdown {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12.5px;
+  color: #0f172a;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.point-select-dropdown:focus {
+  border-color: #2563eb;
+}
+
+/* Price Breakdown */
+.summary-price-breakdown {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 14px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.tax-free-tag {
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.price-row.total-row {
+  border-top: 1.5px dashed #e2e8f0;
+  padding-top: 10px;
+  margin-top: 4px;
+  align-items: center;
+}
+
+.total-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.total-subtext {
+  font-size: 11px;
+  color: #94a3b8;
+  display: block;
+}
+
+.total-amount-display {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ef4444;
+  letter-spacing: -0.5px;
+}
+
+/* Primary Checkout Button */
+.modern-primary-checkout-btn {
+  width: 100%;
+  height: 52px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 20px -4px rgba(239, 68, 68, 0.4);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modern-primary-checkout-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -4px rgba(239, 68, 68, 0.5);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.modern-primary-checkout-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.modern-primary-checkout-btn.is-disabled,
+.modern-primary-checkout-btn:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.seat-hold-guarantee {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.seat-hold-guarantee svg {
+  color: #2563eb;
 }
 
 /* Loading Card */
 .modern-loading-card {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
   border-radius: 20px;
-  padding: 60px 20px;
+  border: 1px solid #e2e8f0;
+  padding: 60px 24px;
   text-align: center;
-  box-shadow: 0 4px 24px -4px rgba(15, 23, 42, 0.06);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 40px;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.04);
+  margin-top: 24px;
 }
 
 .coach-loader-pulse {
@@ -64,7 +621,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
 }
 
 .loader-orbit-ring {
@@ -93,148 +650,21 @@
   color: #64748b;
 }
 
-/* Not Found Card */
-.modern-not-found-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 50px 30px;
-  text-align: center;
-  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 500px;
-  margin: 40px auto;
-}
-
-.not-found-icon-circle {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #fee2e2;
-  color: #ef4444;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-.modern-not-found-card h2 {
-  margin: 0 0 8px;
-  font-size: 20px;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.modern-not-found-card p {
-  margin: 0 0 20px;
-  font-size: 13.5px;
-  color: #64748b;
-  line-height: 1.45;
-}
-
-.not-found-retry-btn {
-  background: #0f172a;
-  color: #ffffff;
-  border: none;
-  font-size: 13.5px;
-  font-weight: 700;
-  padding: 10px 22px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.not-found-retry-btn:hover {
-  background: #1e293b;
-}
-
-/* 2-Column Grid Layout */
-.seat-selection-grid {
-  display: flex;
-  gap: 28px;
-  align-items: flex-start;
-}
-
-.seat-map-column {
-  flex: 1;
-  min-width: 0;
-}
-
-.selection-card-column {
-  width: 360px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 90px;
-}
-
-/* Mobile Sticky Bottom Floating Action Bar */
-.mobile-seat-sticky-bar {
-  display: none;
-}
-
-@media (max-width: 1024px) {
-  .seat-selection-grid {
-    flex-direction: column;
-    gap: 24px;
+/* Responsive */
+@media (max-width: 992px) {
+  .modern-seat-layout {
+    grid-template-columns: 1fr;
   }
-
-  .selection-card-column {
-    width: 100%;
+  .modern-summary-sidebar {
     position: static;
   }
 }
 
-@media (max-width: 768px) {
-  .seat-selection-page {
-    padding: 16px 12px 100px;
+@media (max-width: 640px) {
+  .modern-seat-page {
+    padding: 20px 16px 40px;
   }
-
-  .mobile-seat-sticky-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 14px 20px;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .mobile-sticky-left {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .mobile-seat-count-label {
-    font-size: 11.5px;
-    color: #94a3b8;
-    font-weight: 500;
-  }
-
-  .mobile-seat-total-price {
-    font-size: 19px;
-    color: #ffffff;
-    font-weight: 800;
-  }
-
-  .mobile-sticky-continue-btn {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    color: #ffffff;
-    border: none;
-    font-size: 13.5px;
-    font-weight: 800;
-    padding: 10px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  .amenities-policy-summary {
+    grid-template-columns: 1fr;
   }
 }

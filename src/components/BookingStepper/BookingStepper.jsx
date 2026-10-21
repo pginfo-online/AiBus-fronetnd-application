@@ -4,7 +4,7 @@ import "./BookingStepper.css";
 
 const stepIcons = [Armchair, UserCheck, CreditCard, ShieldCheck];
 
-function BookingStepper({ currentStep = 1 }) {
+function BookingStepper({ currentStep = 1, onStepClick }) {
   const steps = [
     { number: 1, label: "Select Seats", sub: "Choose your berth" },
     { number: 2, label: "Traveller Details", sub: "Passenger info" },
@@ -18,6 +18,7 @@ function BookingStepper({ currentStep = 1 }) {
         {steps.map((step, idx) => {
           const isActive = step.number === currentStep;
           const isCompleted = step.number < currentStep;
+          const isClickable = Boolean(onStepClick);
           const StepIcon = stepIcons[idx] || Armchair;
 
           return (
@@ -25,7 +26,18 @@ function BookingStepper({ currentStep = 1 }) {
               <div
                 className={`luxury-step-node ${isActive ? "is-active" : ""} ${
                   isCompleted ? "is-completed" : ""
-                }`}
+                } ${isClickable ? "is-clickable" : ""}`}
+                onClick={() => onStepClick && onStepClick(step.number)}
+                role={isClickable ? "button" : undefined}
+                tabIndex={isClickable ? 0 : undefined}
+                onKeyDown={(e) => {
+                  if (onStepClick && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    onStepClick(step.number);
+                  }
+                }}
+                aria-current={isActive ? "step" : undefined}
+                title={isClickable ? `Go to Step ${step.number}: ${step.label}` : undefined}
               >
                 <div className="luxury-step-badge-wrap">
                   <div className="luxury-step-circle">

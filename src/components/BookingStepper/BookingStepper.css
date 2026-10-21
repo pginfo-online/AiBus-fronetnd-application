@@ -31,6 +31,27 @@
   z-index: 2;
   cursor: default;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.luxury-step-node.is-clickable {
+  cursor: pointer;
+}
+
+.luxury-step-node.is-clickable:hover .luxury-step-circle {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.25);
+  border-color: #93c5fd;
+}
+
+.luxury-step-node.is-clickable:hover .luxury-step-title {
+  color: #2563eb;
+}
+
+.luxury-step-node:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 4px;
+  border-radius: 12px;
 }
 
 .luxury-step-badge-wrap {

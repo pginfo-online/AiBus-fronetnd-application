@@ -12,7 +12,19 @@ import {
 } from "lucide-react";
 import "./BookingSummary.css";
 
-function BookingSummary({ selectedSeats = [], price = 15, onClear, onContinue }) {
+function BookingSummary({
+  selectedSeats = [],
+  price = 15,
+  pickups = [],
+  dropoffs = [],
+  selectedPickup,
+  selectedDropoff,
+  onSelectPickup,
+  onSelectDropoff,
+  onClear,
+  onRemoveSeat,
+  onContinue,
+}) {
   const hasSeats = selectedSeats.length > 0;
 
   // Calculate actual total sum from selected seat objects (or default to count * price)
@@ -27,7 +39,7 @@ function BookingSummary({ selectedSeats = [], price = 15, onClear, onContinue })
 
   return (
     <div className="modern-selection-card">
-      {/* Top Accent Strip */}
+      {/* Top Accent Strip (redBus Red) */}
       <div className="selection-card-accent-strip" />
 
       {/* Card Header */}
@@ -58,12 +70,12 @@ function BookingSummary({ selectedSeats = [], price = 15, onClear, onContinue })
       <div className="selection-card-body">
         {/* Selected Seats Chips */}
         <div className="selected-seats-panel">
-          <span className="panel-field-lbl">Selected Berth(s)</span>
+          <span className="panel-field-lbl">Selected Seat(s)</span>
 
           {hasSeats ? (
             <div className="seat-chips-flow">
               {selectedSeats.map((seat, index) => {
-                const seatDisplay = typeof seat === "object" ? seat.display || seat.id : seat;
+                const seatDisplay = typeof seat === "object" ? seat.display || seat.seatNo || seat.id : seat;
                 const seatPrice = typeof seat === "object" ? seat.price || price : price;
 
                 return (
@@ -73,6 +85,16 @@ function BookingSummary({ selectedSeats = [], price = 15, onClear, onContinue })
                       <strong className="chip-seat-name">{seatDisplay}</strong>
                       <span className="chip-price-tag">₹{seatPrice}</span>
                     </div>
+                    {onRemoveSeat && (
+                      <button
+                        type="button"
+                        className="chip-remove-btn"
+                        onClick={() => onRemoveSeat(seat)}
+                        title={`Remove seat ${seatDisplay}`}
+                      >
+                        <X size={11} />
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -81,11 +103,70 @@ function BookingSummary({ selectedSeats = [], price = 15, onClear, onContinue })
             <div className="no-seats-empty-state">
               <Armchair size={24} className="empty-state-icon" />
               <p className="empty-state-text">
-                No seats selected yet. Click on any white seat on the bus layout to begin.
+                No seats selected yet. Click any green seat on the bus diagram to start booking.
               </p>
             </div>
           )}
         </div>
+
+        {/* Inline Boarding & Dropping Point Picker (like redBus) */}
+        {hasSeats && (pickups.length > 0 || dropoffs.length > 0) && (
+          <div className="summary-points-picker-section">
+            {pickups.length > 0 && (
+              <div className="summary-picker-group">
+                <div className="picker-header-row">
+                  <span className="picker-title-label">📍 Boarding Point</span>
+                  {selectedPickup?.PickupTime && (
+                    <span className="picker-time-tag">{selectedPickup.PickupTime}</span>
+                  )}
+                </div>
+                <select
+                  className="summary-points-dropdown"
+                  value={selectedPickup?.PickupId || selectedPickup?.id || ""}
+                  onChange={(e) => {
+                    const found = pickups.find(
+                      (p) => String(p.PickupId || p.id) === e.target.value
+                    );
+                    if (found && onSelectPickup) onSelectPickup(found);
+                  }}
+                >
+                  {pickups.map((p, idx) => (
+                    <option key={idx} value={p.PickupId || p.id}>
+                      {p.PickupTime || p.time ? `${p.PickupTime || p.time} - ` : ""}{p.PickupName || p.name || p.location}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {dropoffs.length > 0 && (
+              <div className="summary-picker-group">
+                <div className="picker-header-row">
+                  <span className="picker-title-label">📍 Dropping Point</span>
+                  {selectedDropoff?.DropoffTime && (
+                    <span className="picker-time-tag">{selectedDropoff.DropoffTime}</span>
+                  )}
+                </div>
+                <select
+                  className="summary-points-dropdown"
+                  value={selectedDropoff?.DropoffId || selectedDropoff?.id || ""}
+                  onChange={(e) => {
+                    const found = dropoffs.find(
+                      (d) => String(d.DropoffId || d.id) === e.target.value
+                    );
+                    if (found && onSelectDropoff) onSelectDropoff(found);
+                  }}
+                >
+                  {dropoffs.map((d, idx) => (
+                    <option key={idx} value={d.DropoffId || d.id}>
+                      {d.DropoffTime || d.time ? `${d.DropoffTime || d.time} - ` : ""}{d.DropoffName || d.name || d.location}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="summary-divider-line" />
 
@@ -115,14 +196,14 @@ function BookingSummary({ selectedSeats = [], price = 15, onClear, onContinue })
           </div>
         </div>
 
-        {/* Primary Proceed CTA Button */}
+        {/* Primary Proceed CTA Button (redBus Red) */}
         <button
           type="button"
           disabled={!hasSeats}
           className={`modern-proceed-cta ${hasSeats ? "enabled-cta" : "disabled-cta"}`}
           onClick={onContinue}
         >
-          <span>Proceed to Traveller Details</span>
+          <span>PROCEED TO BOOK</span>
           <ArrowRight size={17} className="cta-arrow" />
         </button>
 
@@ -133,14 +214,6 @@ function BookingSummary({ selectedSeats = [], price = 15, onClear, onContinue })
             <span>Seats will be temporarily held for 5 mins during checkout</span>
           </div>
         )}
-
-        {/* Location Pricing Tip Box */}
-        <div className="location-pricing-tip-box">
-          <Lightbulb size={16} className="tip-bulb-icon" />
-          <p className="tip-text">
-            Front rows (+₹100) & Rear rows (-₹60) have location-based dynamic pricing.
-          </p>
-        </div>
       </div>
     </div>
   );

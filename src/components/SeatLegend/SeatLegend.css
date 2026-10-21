@@ -1,20 +1,26 @@
-/* Modern Seat Legend Styles */
+/* Modern Seat Legend Styles (Matches Image 2) */
 
 .modern-seat-legend-card {
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 12px 18px;
+  border-radius: 12px;
+  padding: 10px 18px;
   width: 100%;
-  margin-top: 18px;
+  margin-top: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.modern-seat-legend-card.is-single-deck {
+  max-width: 420px;
+  margin: 16px auto 0;
 }
 
 .legend-items-grid {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 20px;
 }
 
 .modern-legend-item {
@@ -23,83 +29,91 @@
   gap: 8px;
 }
 
-.legend-mini-seat {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
+/* Vertical Mini Berth Shape */
+.legend-mini-berth {
+  width: 18px;
+  height: 24px;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  border: 1.5px solid #cbd5e1;
-  background: #ffffff;
+  position: relative;
   flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding-top: 2px;
 }
 
 .mini-headrest {
   width: 10px;
   height: 2px;
-  background: #cbd5e1;
   border-radius: 1px;
 }
 
-.legend-mini-seat.available {
+/* Available */
+.legend-mini-berth.available {
   background: #ffffff;
-  border-color: #cbd5e1;
+  border: 1.5px solid #16a34a;
+}
+.legend-mini-berth.available .mini-headrest {
+  background: #bbf7d0;
 }
 
-.legend-mini-seat.selected {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  border-color: #b91c1c;
+/* Selected */
+.legend-mini-berth.selected {
+  background: #dc2626;
+  border: 1.5px solid #b91c1c;
 }
-
-.legend-mini-seat.selected .mini-headrest {
+.legend-mini-berth.selected .mini-headrest {
   background: #ffffff;
 }
 
-.legend-mini-seat.booked-male {
+/* Booked Male */
+.legend-mini-berth.booked-male {
   background: #e0f2fe;
-  border-color: #7dd3fc;
+  border: 1.5px solid #7dd3fc;
 }
-
-.legend-mini-seat.booked-male .mini-headrest {
+.legend-mini-berth.booked-male .mini-headrest {
   background: #38bdf8;
 }
 
-.legend-mini-seat.booked-female {
+/* Booked Female */
+.legend-mini-berth.booked-female {
   background: #fce7f3;
-  border-color: #f472b6;
+  border: 1.5px solid #f472b6;
 }
-
-.legend-mini-seat.booked-female .mini-headrest {
+.legend-mini-berth.booked-female .mini-headrest {
   background: #f472b6;
 }
 
-.legend-mini-seat.blocked {
+/* Blocked */
+.legend-mini-berth.blocked {
   background: #f1f5f9;
-  border-color: #e2e8f0;
+  border: 1.5px solid #cbd5e1;
 }
-
-.legend-mini-seat.blocked .mini-headrest {
+.legend-mini-berth.blocked .mini-headrest {
   background: #cbd5e1;
 }
 
-.legend-label-col {
-  display: flex;
-  flex-direction: column;
+.mini-user-icon {
+  position: absolute;
+  top: 9px;
+}
+.mini-user-icon.male {
+  color: #0284c7;
+}
+.mini-user-icon.female {
+  color: #db2777;
 }
 
 .legend-item-title {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 12.5px;
+  font-weight: 600;
   color: #334155;
   white-space: nowrap;
 }
 
 @media (max-width: 640px) {
   .legend-items-grid {
-    justify-content: flex-start;
     gap: 12px;
+    justify-content: flex-start;
   }
 }
