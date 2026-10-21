@@ -16,8 +16,10 @@ npm ci
 cp .env.example .env
 ```
 
-Set `VITE_API_BASE_URL` in `.env` to the base URL of the AIBus API. Vite exposes
-variables prefixed with `VITE_` to browser code, so do not put secrets in them.
+Set `VITE_API_BASE_URL` in `.env` to the AIBus API URL, for example
+`https://aibus.shop/api/v1`. The frontend accepts either this URL or the
+backend's origin (`https://aibus.shop`). Vite exposes variables prefixed with
+`VITE_` to browser code, so do not put secrets in them.
 
 Start the development server:
 
@@ -33,5 +35,17 @@ npm run build
 npm run preview
 ```
 
-The production build is written to `dist/`. When deploying the app, configure
-the host to serve `index.html` as a fallback for client-side routes.
+The production build is written to `dist/`. The included `vercel.json` configures
+Vercel to serve the React app for client-side routes.
+
+## Deploying to Vercel
+
+Import this repository into Vercel and use the Vite defaults:
+
+- Build command: `npm run build`
+- Output directory: `dist`
+- Environment variable: `VITE_API_BASE_URL=https://aibus.shop/api/v1`
+
+Set the environment variable for each Vercel environment you use, then redeploy
+so it is included in the frontend build. The backend must allow requests from
+your deployed frontend domain via its CORS configuration.
