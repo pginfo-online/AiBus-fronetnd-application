@@ -13,6 +13,7 @@ import MyBookings from "./pages/MyBookings/MyBookings";
 import Login from "./pages/Login/Login";
 import BookingDetails from "./pages/BookingDetails/BookingDetails";
 import PaymentResult from "./pages/PaymentResult/PaymentResult";
+import CancellationPolicy from "./pages/CancellationPolicy/CancellationPolicy";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -48,6 +49,7 @@ function App() {
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/login" element={<Login />} />
           <Route path="/booking-details" element={<BookingDetails />} />
+          <Route path="/cancellation-policy" element={<CancellationPolicy />} />
         </Routes>
       </NavigationLayout>
     </BrowserRouter>

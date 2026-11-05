@@ -138,43 +138,111 @@ export const busService = {
    * Mantis GET /ota/CityList -> Backend GET /api/v1/cities
    */
   getCities: async (query = "") => {
+    // 32 Major Indian Hubs to guarantee top transit centers are never missing
+    const fallbackHubs = [
+      { id: "4292", CityId: "4292", name: "Bangalore", City: "Bangalore", state: "Karnataka", State: "Karnataka" },
+      { id: "4292", CityId: "4292", name: "Bengaluru", City: "Bengaluru", state: "Karnataka", State: "Karnataka" },
+      { id: "4562", CityId: "4562", name: "Chennai", City: "Chennai", state: "Tamil Nadu", State: "Tamil Nadu" },
+      { id: "4562", CityId: "4562", name: "Madras", City: "Madras", state: "Tamil Nadu", State: "Tamil Nadu" },
+      { id: "18", CityId: "18", name: "Mumbai", City: "Mumbai", state: "Maharashtra", State: "Maharashtra" },
+      { id: "6772", CityId: "6772", name: "Pune", City: "Pune", state: "Maharashtra", State: "Maharashtra" },
+      { id: "19", CityId: "19", name: "Pune", City: "Pune", state: "Maharashtra", State: "Maharashtra" },
+      { id: "23", CityId: "23", name: "Hyderabad", City: "Hyderabad", state: "Telangana", State: "Telangana" },
+      { id: "1", CityId: "1", name: "Delhi", City: "Delhi", state: "Delhi", State: "Delhi" },
+      { id: "14", CityId: "14", name: "Ahmedabad", City: "Ahmedabad", state: "Gujarat", State: "Gujarat" },
+      { id: "2", CityId: "2", name: "Jaipur", City: "Jaipur", state: "Rajasthan", State: "Rajasthan" },
+      { id: "22", CityId: "22", name: "Goa", City: "Goa", state: "Goa", State: "Goa" },
+      { id: "28", CityId: "28", name: "Coimbatore", City: "Coimbatore", state: "Tamil Nadu", State: "Tamil Nadu" },
+      { id: "29", CityId: "29", name: "Madurai", City: "Madurai", state: "Tamil Nadu", State: "Tamil Nadu" },
+      { id: "26", CityId: "26", name: "Kochi", City: "Kochi", state: "Kerala", State: "Kerala" },
+      { id: "27", CityId: "27", name: "Trivandrum", City: "Trivandrum", state: "Kerala", State: "Kerala" },
+      { id: "30", CityId: "30", name: "Mysuru", City: "Mysuru", state: "Karnataka", State: "Karnataka" },
+      { id: "24", CityId: "24", name: "Vijayawada", City: "Vijayawada", state: "Andhra Pradesh", State: "Andhra Pradesh" },
+      { id: "25", CityId: "25", name: "Visakhapatnam", City: "Visakhapatnam", state: "Andhra Pradesh", State: "Andhra Pradesh" },
+      { id: "20", CityId: "20", name: "Nagpur", City: "Nagpur", state: "Maharashtra", State: "Maharashtra" },
+      { id: "21", CityId: "21", name: "Nashik", City: "Nashik", state: "Maharashtra", State: "Maharashtra" },
+      { id: "15", CityId: "15", name: "Surat", City: "Surat", state: "Gujarat", State: "Gujarat" },
+      { id: "16", CityId: "16", name: "Vadodara", City: "Vadodara", state: "Gujarat", State: "Gujarat" },
+      { id: "5", CityId: "5", name: "Chandigarh", City: "Chandigarh", state: "Punjab", State: "Punjab" },
+      { id: "10", CityId: "10", name: "Lucknow", City: "Lucknow", state: "Uttar Pradesh", State: "Uttar Pradesh" },
+      { id: "11", CityId: "11", name: "Varanasi", City: "Varanasi", state: "Uttar Pradesh", State: "Uttar Pradesh" },
+      { id: "12", CityId: "12", name: "Kanpur", City: "Kanpur", state: "Uttar Pradesh", State: "Uttar Pradesh" },
+      { id: "3", CityId: "3", name: "Agra", City: "Agra", state: "Uttar Pradesh", State: "Uttar Pradesh" },
+      { id: "4", CityId: "4", name: "Dehradun", City: "Dehradun", state: "Uttarakhand", State: "Uttarakhand" },
+      { id: "8", CityId: "8", name: "Haridwar", City: "Haridwar", state: "Uttarakhand", State: "Uttarakhand" },
+      { id: "9", CityId: "9", name: "Rishikesh", City: "Rishikesh", state: "Uttarakhand", State: "Uttarakhand" },
+      { id: "6", CityId: "6", name: "Manali", City: "Manali", state: "Himachal Pradesh", State: "Himachal Pradesh" },
+      { id: "7", CityId: "7", name: "Shimla", City: "Shimla", state: "Himachal Pradesh", State: "Himachal Pradesh" },
+    ];
+
     try {
       const response = await api.get("/api/v1/cities", {
-        params: query ? { q: query } : {},
+        params: query ? { q: query, limit: 50 } : { popular: "true", limit: 100 },
       });
       const list = response.data?.data || response.data || [];
-      if (Array.isArray(list) && list.length > 0) {
-        return list.map((c) => {
-          let rawCity = String(c.City || c.name || "").trim();
-          let rawState = String(c.State || c.state || "").trim();
+      const remoteCities = Array.isArray(list)
+        ? list.map((c) => {
+            let rawCity = String(c.City || c.name || "").trim();
+            let rawState = String(c.State || c.state || "").trim();
 
-          // Separate glued CamelCase words e.g. "MadrasTamilNadu" -> "Madras Tamil Nadu"
-          rawCity = rawCity.replace(/([a-z])([A-Z])/g, "$1 $2");
-          if (rawState) {
-            rawState = rawState.replace(/([a-z])([A-Z])/g, "$1 $2");
-            if (rawCity.toLowerCase().endsWith(rawState.toLowerCase())) {
-              rawCity = rawCity
-                .slice(0, rawCity.length - rawState.length)
-                .trim()
-                .replace(/,\s*$/, "");
+            rawCity = rawCity.replace(/([a-z])([A-Z])/g, "$1 $2");
+            if (rawState) {
+              rawState = rawState.replace(/([a-z])([A-Z])/g, "$1 $2");
+              if (rawCity.toLowerCase().endsWith(rawState.toLowerCase())) {
+                rawCity = rawCity
+                  .slice(0, rawCity.length - rawState.length)
+                  .trim()
+                  .replace(/,\s*$/, "");
+              }
             }
-          }
 
-          return {
-            CityId: String(c.CityId || c.id || c.providerCityId),
-            City: rawCity,
-            State: rawState,
-            id: String(c.CityId || c.id || c.providerCityId),
-            name: rawCity,
-            state: rawState,
-          };
+            return {
+              CityId: String(c.CityId || c.id || c.providerCityId),
+              City: rawCity,
+              State: rawState,
+              id: String(c.CityId || c.id || c.providerCityId),
+              name: rawCity,
+              state: rawState,
+            };
+          })
+        : [];
+
+      if (query && query.trim()) {
+        const qLower = query.toLowerCase().trim();
+        const matchingHubs = fallbackHubs.filter(
+          (h) => h.name.toLowerCase().includes(qLower) || h.state.toLowerCase().includes(qLower)
+        );
+        const combined = [...matchingHubs, ...remoteCities];
+        const dedupe = new Map();
+        combined.forEach((c) => {
+          const key = `${c.id}-${c.name.toLowerCase()}`;
+          if (!dedupe.has(key)) {
+            dedupe.set(key, c);
+          }
         });
+        return Array.from(dedupe.values());
       }
+
+      // Initial load: ensure popular transit centers are combined and deduplicated
+      const combined = [...fallbackHubs, ...remoteCities];
+      const dedupe = new Map();
+      combined.forEach((c) => {
+        const key = `${c.id}-${c.name.toLowerCase()}`;
+        if (!dedupe.has(key)) {
+          dedupe.set(key, c);
+        }
+      });
+      return Array.from(dedupe.values());
     } catch (err) {
-      console.error("Failed to load cities from live GDS:", err.message);
-      return [];
+      console.warn("Could not fetch remote cities, using fallback hubs:", err.message);
+      if (query && query.trim()) {
+        const qLower = query.toLowerCase().trim();
+        return fallbackHubs.filter(
+          (h) => h.name.toLowerCase().includes(qLower) || h.state.toLowerCase().includes(qLower)
+        );
+      }
+      return fallbackHubs;
     }
-    return [];
   },
 
   /**

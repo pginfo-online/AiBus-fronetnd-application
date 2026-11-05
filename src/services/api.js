@@ -1,8 +1,20 @@
 import axios from "axios";
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "https://aibus.shop")
+const isLocalDev =
+  Boolean(import.meta.env.DEV) ||
+  (typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      window.location.hostname.endsWith(".local") ||
+      /^192\.168\.\d{1,3}\.\d{1,3}$/.test(window.location.hostname) ||
+      /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(window.location.hostname) ||
+      /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(window.location.hostname)));
+
+const rawBase = (import.meta.env.VITE_API_BASE_URL || "https://aibus.shop")
   .replace(/\/api\/v1\/?$/, "")
   .replace(/\/$/, "");
+
+const BASE_URL = isLocalDev ? "" : rawBase;
 
 const api = axios.create({
   baseURL: BASE_URL,

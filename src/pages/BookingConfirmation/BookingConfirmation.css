@@ -1014,6 +1014,194 @@
   color: #64748b;
 }
 
+/* UPI Tabs & QR Code View */
+.upi-mode-tabs-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.upi-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upi-tab-btn:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.upi-tab-btn.active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  color: #1d4ed8;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12);
+}
+
+.upi-tab-btn .tab-pill {
+  background: #10b981;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.upi-qr-card-view {
+  display: flex;
+  gap: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  .upi-qr-card-view {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.qr-box-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.qr-scan-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0f172a;
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.qr-details-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qr-amount-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.qr-amount-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.qr-amount-value {
+  font-size: 20px;
+  color: #0f172a;
+  font-weight: 900;
+}
+
+.qr-instructions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qr-instructions-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.bullet-ico {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.btn-launch-qr-pay {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #013c9a 0%, #1e40af 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(1, 60, 154, 0.2);
+  margin-top: 4px;
+}
+
+.btn-launch-qr-pay:hover {
+  background: linear-gradient(135deg, #022c70 0%, #172554 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(1, 60, 154, 0.3);
+}
+
+.btn-launch-qr-pay:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.upi-vpa-view {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.upi-verify-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.upi-verify-status.success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.upi-verify-status.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
 /* Card Inputs Grid */
 .card-inputs-grid {
   display: grid;

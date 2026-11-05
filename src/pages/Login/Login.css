@@ -71,12 +71,12 @@
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+  background: linear-gradient(135deg, #d95325, #c85a32);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 4px 12px rgba(200, 90, 50, 0.3);
 }
 
 .auth-brand-title {
@@ -159,14 +159,19 @@
 
 .auth-input-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .auth-input-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .auth-input-group label {
@@ -179,6 +184,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-width: 0;
 }
 
 .auth-input-container {
@@ -190,12 +196,16 @@
   background: #f8fafc;
   padding: 0 12px;
   transition: all 0.2s ease;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .auth-input-container:focus-within {
   background: #ffffff;
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  border-color: #C85A32;
+  box-shadow: 0 0 0 3px rgba(200, 90, 50, 0.15);
 }
 
 .auth-input-icon {
@@ -206,11 +216,15 @@
 
 .auth-input-container input {
   flex: 1;
+  width: 100%;
+  min-width: 0;
   border: none;
   background: transparent;
   outline: none;
   font-size: 14px;
   color: #0f172a;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .auth-input-container input::placeholder {
@@ -239,12 +253,118 @@
   margin-top: 2px;
 }
 
+/* Phone input with Indian +91 Country Code */
+.auth-phone-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.auth-country-prefix {
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  background: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.auth-phone-container {
+  flex: 1;
+}
+
+/* OTP Code Edit & Resend Row */
+.auth-otp-edit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #9a3412;
+}
+
+.auth-otp-phone-badge strong {
+  color: #c85a32;
+  letter-spacing: 0.5px;
+}
+
+.auth-change-phone-btn {
+  background: transparent;
+  border: none;
+  color: #c85a32;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 4px;
+  text-decoration: underline;
+  transition: opacity 0.15s ease;
+}
+
+.auth-change-phone-btn:hover {
+  opacity: 0.8;
+}
+
+.auth-otp-code-input {
+  letter-spacing: 6px;
+  font-size: 18px !important;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.auth-resend-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -4px 0 4px;
+  font-size: 13px;
+}
+
+.auth-resend-timer {
+  color: #64748b;
+}
+
+.auth-resend-timer strong {
+  color: #c85a32;
+}
+
+.auth-resend-btn {
+  background: transparent;
+  border: none;
+  color: #c85a32;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: opacity 0.15s ease;
+}
+
+.auth-resend-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.auth-resend-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Submit Button */
 .auth-submit-btn {
   height: 50px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, #d95325 0%, #c85a32 100%);
   color: #ffffff;
   font-size: 15px;
   font-weight: 600;
@@ -254,13 +374,13 @@
   justify-content: center;
   gap: 8px;
   margin-top: 8px;
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  box-shadow: 0 4px 14px rgba(200, 90, 50, 0.35);
   transition: all 0.2s ease;
 }
 
 .auth-submit-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.45);
+  background: linear-gradient(135deg, #c85a32 0%, #ad4320 100%);
+  box-shadow: 0 6px 18px rgba(200, 90, 50, 0.45);
   transform: translateY(-1px);
 }
 

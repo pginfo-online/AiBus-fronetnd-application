@@ -1,19 +1,23 @@
 .header {
   width: 100%;
-  height: 74px;
+  height: 78px;
   position: sticky;
   top: 0;
   z-index: 100;
-  transition: all 0.25s ease;
+  transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
   font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
 }
 
-/* Home page header background blends seamlessly with full-width dark hero */
+/* Home page header overlays the hero with 100% transparent background */
 .header-home {
-  background: rgba(8, 17, 13, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none;
 }
 
 .header-home .ogl-logo-text {
@@ -30,7 +34,7 @@
 }
 
 .header-home .ogl-nav-link.active::after {
-  background: #F8A07A;
+  display: none;
 }
 
 .header-home .ogl-search-btn {
@@ -54,8 +58,15 @@
 }
 
 .header-home.header-scrolled {
-  background: rgba(8, 17, 13, 0.96);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(9, 15, 12, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .header-page {

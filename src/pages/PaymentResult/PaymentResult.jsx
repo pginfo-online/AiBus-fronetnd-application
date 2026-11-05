@@ -35,6 +35,9 @@ function PaymentResult() {
     // 1. Resolve identifiers: URL params or persistent pending payment storage
     let bookingId = searchParams.get("bookingId");
     let merchantTxnId = searchParams.get("merchantTxnId") || searchParams.get("merchantOrderId");
+    let gatewayOrderId = searchParams.get("gatewayOrderId") || searchParams.get("razorpay_order_id") || searchParams.get("orderId");
+    let gatewayPaymentId = searchParams.get("gatewayPaymentId") || searchParams.get("razorpay_payment_id");
+    let gatewaySignature = searchParams.get("gatewaySignature") || searchParams.get("razorpay_signature");
 
     if (!bookingId || !merchantTxnId) {
       try {
@@ -63,7 +66,7 @@ function PaymentResult() {
       if (isCancelledRef.current) return;
 
       setStep(2);
-      setStatusNote("Verifying transaction status with PhonePe & banking partner...");
+      setStatusNote("Verifying transaction status with Razorpay & banking partner...");
 
       let verifiedSuccess = false;
       let finalStatus = "PENDING";
@@ -76,6 +79,9 @@ function PaymentResult() {
           const res = await paymentService.verifyPayment({
             bookingId,
             merchantTxnId,
+            gatewayOrderId,
+            gatewayPaymentId,
+            gatewaySignature,
           });
 
           finalStatus = res.status;
@@ -166,7 +172,7 @@ function PaymentResult() {
                   </div>
                   <div className="step-item-content">
                     <span className="step-name">Payment Gateway Handshake</span>
-                    <span className="step-desc">PhonePe transaction session initiated</span>
+                    <span className="step-desc">Razorpay transaction session initiated</span>
                   </div>
                 </div>
 

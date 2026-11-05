@@ -1007,6 +1007,26 @@
   flex-shrink: 0;
 }
 
+.trust-item.trust-item-clickable {
+  cursor: pointer;
+  padding: 4px 6px;
+  margin: -4px -6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.trust-item.trust-item-clickable:hover {
+  background: #f0fdf4;
+}
+
+.trust-policy-badge {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: underline;
+  margin-left: 4px;
+}
+
 /* ========================================================
    RESPONSIVE DESIGN (Tablets & Mobile)
    ======================================================== */

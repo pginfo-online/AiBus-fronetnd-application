@@ -22,6 +22,7 @@ import bookingService from "../../services/bookingService";
 import SeatLayout from "../../components/SeatLayout/SeatLayout";
 import BookingStepper from "../../components/BookingStepper/BookingStepper";
 import AiBusChatAssistant from "../../components/AiBusChatAssistant/AiBusChatAssistant";
+import CancellationPolicyModal from "../../components/CancellationPolicyModal/CancellationPolicyModal";
 import { formatPointTime } from "../../components/BoardingDroppingSelector/BoardingDroppingSelector";
 import "./SeatSelection.css";
 
@@ -50,6 +51,7 @@ function SeatSelection() {
   const [selectedDropoff, setSelectedDropoff] = useState(null);
   const [loading, setLoading] = useState(true);
   const [citiesList, setCitiesList] = useState([]);
+  const [showCancellationModal, setShowCancellationModal] = useState(false);
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -384,9 +386,26 @@ function SeatSelection() {
                   <strong>Luggage Allowance</strong>
                   Up to 20kg per passenger included in ticket fare. Excess luggage chargeable.
                 </div>
-                <div className="policy-mini-item">
-                  <strong>Cancellation Policy</strong>
-                  Refundable up to 6 hours before departure time. Free reschedule available.
+                <div
+                  className="policy-mini-item policy-clickable"
+                  onClick={() => setShowCancellationModal(true)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setShowCancellationModal(true);
+                    }
+                  }}
+                  title="Click to view full cancellation policy and refund slabs"
+                >
+                  <div className="policy-mini-header">
+                    <strong>Cancellation Policy</strong>
+                    <span className="policy-view-link">View Details →</span>
+                  </div>
+                  <span>
+                    Refundable up to 6 hours before departure time. Free reschedule available.
+                  </span>
                 </div>
               </div>
             </div>
@@ -609,6 +628,17 @@ function SeatSelection() {
           selectedSeats={selectedSeats}
         />
       </div>
+
+      {/* Cancellation Policy Modal Popup */}
+      <CancellationPolicyModal
+        isOpen={showCancellationModal}
+        onClose={() => setShowCancellationModal(false)}
+        bus={selectedBus}
+        fromCity={resolvedFromCity}
+        toCity={resolvedToCity}
+        journeyDate={formatTripDate(date)}
+        seatPrice={selectedSeats[0]?.price || selectedBus?.price}
+      />
     </main>
   );
 }

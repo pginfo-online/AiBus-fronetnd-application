@@ -150,8 +150,8 @@ function Footer() {
             <h4 className="ogl-col-title">Support</h4>
             <ul className="ogl-col-links">
               <li><Link to="/">FAQs</Link></li>
-              <li><Link to="/">Cancellation Policy</Link></li>
-              <li><Link to="/">Refund Policy</Link></li>
+              <li><Link to="/cancellation-policy">Cancellation Policy</Link></li>
+              <li><Link to="/cancellation-policy">Refund Policy</Link></li>
               <li><Link to="/">Terms & Conditions</Link></li>
               <li><Link to="/">Privacy Policy</Link></li>
             </ul>

@@ -117,6 +117,49 @@ export const authService = {
     }
   },
 
+  /**
+   * Request SMS OTP for a 10-digit mobile number
+   * @param {Object} params
+   * @param {string} params.phone
+   * @param {string} [params.appHash]
+   */
+  sendOtp: async ({ phone, appHash }) => {
+    const cleanPhone = String(phone || "").replace(/\D/g, "").slice(-10);
+    const response = await api.post("/api/v1/auth/otp/send", {
+      phone: cleanPhone,
+      ...(appHash ? { appHash } : {}),
+    });
+    return response.data?.data;
+  },
+
+  /**
+   * Verify SMS OTP and complete login / registration
+   * @param {Object} params
+   * @param {string} params.phone
+   * @param {string} params.otp
+   * @param {string} [params.firstName]
+   * @param {string} [params.lastName]
+   */
+  verifyOtp: async ({ phone, otp, firstName, lastName }) => {
+    const cleanPhone = String(phone || "").replace(/\D/g, "").slice(-10);
+    const response = await api.post("/api/v1/auth/otp/verify", {
+      phone: cleanPhone,
+      otp: String(otp || "").trim(),
+      ...(firstName ? { firstName: firstName.trim() } : {}),
+      ...(lastName ? { lastName: lastName.trim() } : {}),
+    });
+
+    const data = response.data?.data;
+    if (data?.tokens) {
+      localStorage.setItem(TOKEN_KEY, JSON.stringify(data.tokens));
+    }
+    if (data?.user) {
+      localStorage.setItem(LOGIN_KEY, JSON.stringify(data.user));
+      authService.notifyLoginStateChange();
+    }
+    return data;
+  },
+
   notifyLoginStateChange: () => {
     window.dispatchEvent(new Event("loginStatusChanged"));
   },

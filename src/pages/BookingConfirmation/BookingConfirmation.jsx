@@ -30,6 +30,7 @@ import busService from "../../services/busService";
 import bookingService from "../../services/bookingService";
 import authService from "../../services/authService";
 import paymentService from "../../services/paymentService";
+import { QRCodeSVG } from "../../utils/qrCode";
 import BookingStepper from "../../components/BookingStepper/BookingStepper";
 import "./BookingConfirmation.css";
 
@@ -107,6 +108,9 @@ function BookingConfirmation() {
   const [bookingError, setBookingError] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("upi");
   const [upiId, setUpiId] = useState("");
+  const [upiSubMode, setUpiSubMode] = useState("qr");
+  const [upiVerified, setUpiVerified] = useState(false);
+  const [upiVerifyMsg, setUpiVerifyMsg] = useState("");
   const [selectedBank, setSelectedBank] = useState("HDFC");
   const [insuranceOpted, setInsuranceOpted] = useState(true);
 
@@ -384,12 +388,13 @@ function BookingConfirmation() {
 
       const bId = newBooking.bookingId || newBooking.id;
 
-      // Initiate PhonePe Payment Intent
+      // Initiate Razorpay Payment Intent
       const redirectUrl = `${window.location.origin}/payment-result?bookingId=${bId}`;
       const intent = await paymentService.createPaymentIntent({
         bookingId: bId,
-        gateway: "PHONEPE",
+        gateway: "RAZORPAY",
         redirectUrl,
+        paymentMode: (paymentMethod || "upi").toUpperCase(),
       });
 
       if (intent?.merchantTxnId) {
@@ -398,18 +403,45 @@ function BookingConfirmation() {
           JSON.stringify({
             bookingId: bId,
             merchantTxnId: intent.merchantTxnId,
+            gatewayOrderId: intent.gatewayOrderId,
             amount: intent.amount || totalAmount,
             timestamp: Date.now(),
           })
         );
       }
 
-      if (intent?.paymentUrl) {
-        // Redirect to PhonePe payment gateway
-        window.location.href = intent.paymentUrl;
-      } else {
-        // Fallback to verification page directly
-        navigate(`/payment-result?bookingId=${bId}&merchantTxnId=${intent?.merchantTxnId || ""}`);
+      // Launch native Razorpay checkout sheet directly on website
+      try {
+        await paymentService.openRazorpayCheckout({
+          intent: { ...intent, bookingId: bId, bookingNumber: newBooking.bookingNumber, paymentMode: (paymentMethod || "upi").toUpperCase() },
+          traveller: {
+            name: contactInfo?.name || contactInfo?.fullName || passengersList[0]?.name || "",
+            email: contactInfo?.email || "",
+            phone: contactInfo?.phone || "",
+          },
+          onPaymentSuccess: (res) => {
+            navigate(
+              `/payment-result?status=SUCCESS&bookingId=${bId}&merchantTxnId=${intent.merchantTxnId}&gatewayPaymentId=${res.razorpay_payment_id || ""}&gatewayOrderId=${res.razorpay_order_id || intent.gatewayOrderId || ""}&gatewaySignature=${res.razorpay_signature || ""}`
+            );
+          },
+          onPaymentFailure: (failRes) => {
+            const desc = failRes.error?.description || "Payment failed or was declined by bank";
+            navigate(
+              `/payment-result?status=FAILED&bookingId=${bId}&merchantTxnId=${intent.merchantTxnId}&reason=${encodeURIComponent(desc)}`
+            );
+          },
+          onDismiss: () => {
+            setBookingError("Payment was cancelled. You can choose a payment mode and try again.");
+            setSubmitting(false);
+          },
+        });
+      } catch (checkoutErr) {
+        console.warn("Direct checkout launch failed, falling back to payment URL:", checkoutErr.message);
+        if (intent?.paymentUrl) {
+          window.location.href = intent.paymentUrl;
+        } else {
+          navigate(`/payment-result?bookingId=${bId}&merchantTxnId=${intent?.merchantTxnId || ""}`);
+        }
       }
     } catch (err) {
       console.error("Booking & Payment initiation failed:", err);
@@ -697,37 +729,118 @@ function BookingConfirmation() {
                     </div>
 
                     {paymentMethod === "upi" && (
-                      <div className="payment-sub-content">
-                        <div className="upi-apps-row">
-                          <span className="upi-app-badge">GPay</span>
-                          <span className="upi-app-badge">PhonePe</span>
-                          <span className="upi-app-badge">Paytm</span>
-                          <span className="upi-app-badge">BHIM</span>
-                          <span className="upi-app-badge">CRED</span>
-                        </div>
-                        <div className="upi-input-group">
-                          <input
-                            type="text"
-                            placeholder="Enter UPI ID (e.g. mobile@upi)"
-                            value={upiId}
-                            onChange={(e) => setUpiId(e.target.value)}
-                            className="upi-text-input"
-                            onClick={(e) => e.stopPropagation()}
-                          />
+                      <div className="payment-sub-content" onClick={(e) => e.stopPropagation()}>
+                        {/* Submode Switcher Tabs */}
+                        <div className="upi-mode-tabs-row">
                           <button
                             type="button"
-                            className="upi-verify-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (upiId) alert(`UPI ID ${upiId} verified!`);
-                            }}
+                            className={`upi-tab-btn ${upiSubMode === "qr" ? "active" : ""}`}
+                            onClick={() => setUpiSubMode("qr")}
                           >
-                            Verify
+                            <QrCode size={15} /> Scan UPI QR Code <span className="tab-pill">Instant</span>
+                          </button>
+                          <button
+                            type="button"
+                            className={`upi-tab-btn ${upiSubMode === "vpa" ? "active" : ""}`}
+                            onClick={() => setUpiSubMode("vpa")}
+                          >
+                            <Smartphone size={15} /> Enter UPI ID / VPA
                           </button>
                         </div>
-                        <span className="upi-subtext">
-                          Or click "Pay & Confirm" below to scan QR code on the payment gateway
-                        </span>
+
+                        {upiSubMode === "qr" ? (
+                          <div className="upi-qr-card-view">
+                            <div className="qr-box-wrapper">
+                              <QRCodeSVG
+                                value={`upi://pay?pa=aibus@icici&pn=AiBus%20Travels&am=${Number(totalAmount).toFixed(2)}&cu=INR&tn=Booking%20${encodeURIComponent(selectedSeats.join(","))}`}
+                                size={148}
+                              />
+                              <div className="qr-scan-badge">
+                                <Sparkles size={13} className="text-amber" /> Scan with any UPI App
+                              </div>
+                            </div>
+                            <div className="qr-details-side">
+                              <div className="qr-amount-row">
+                                <span className="qr-amount-label">Amount to Pay</span>
+                                <strong className="qr-amount-value">₹{totalAmount}</strong>
+                              </div>
+                              <div className="upi-apps-row">
+                                <span className="upi-app-badge">GPay</span>
+                                <span className="upi-app-badge">PhonePe</span>
+                                <span className="upi-app-badge">Paytm</span>
+                                <span className="upi-app-badge">BHIM</span>
+                                <span className="upi-app-badge">CRED</span>
+                              </div>
+                              <ul className="qr-instructions-list">
+                                <li>
+                                  <CheckCircle2 size={13} className="bullet-ico" /> 1. Scan this live QR with Google Pay, PhonePe, Paytm or BHIM
+                                </li>
+                                <li>
+                                  <CheckCircle2 size={13} className="bullet-ico" /> 2. Enter UPI PIN on your phone to authorize payment
+                                </li>
+                                <li>
+                                  <CheckCircle2 size={13} className="bullet-ico" /> 3. Instant auto-confirmation & WhatsApp e-ticket delivery
+                                </li>
+                              </ul>
+                              <button
+                                type="button"
+                                className="btn-launch-qr-pay"
+                                onClick={handleConfirmBooking}
+                                disabled={submitting}
+                              >
+                                <Lock size={14} /> {submitting ? "Opening Payment..." : `Launch Razorpay QR Sheet (₹${totalAmount})`}
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="upi-vpa-view">
+                            <div className="upi-apps-row">
+                              <span className="upi-app-badge">GPay</span>
+                              <span className="upi-app-badge">PhonePe</span>
+                              <span className="upi-app-badge">Paytm</span>
+                              <span className="upi-app-badge">BHIM</span>
+                              <span className="upi-app-badge">CRED</span>
+                            </div>
+                            <div className="upi-input-group">
+                              <input
+                                type="text"
+                                placeholder="Enter UPI ID (e.g. mobile@upi, name@okhdfcbank)"
+                                value={upiId}
+                                onChange={(e) => {
+                                  setUpiId(e.target.value);
+                                  setUpiVerified(false);
+                                  setUpiVerifyMsg("");
+                                }}
+                                className="upi-text-input"
+                              />
+                              <button
+                                type="button"
+                                className="upi-verify-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (upiId && upiId.includes("@")) {
+                                    setUpiVerified(true);
+                                    setUpiVerifyMsg(`UPI ID "${upiId}" verified!`);
+                                  } else {
+                                    setUpiVerified(false);
+                                    setUpiVerifyMsg("Please enter a valid UPI ID (e.g. yourname@okhdfcbank)");
+                                  }
+                                }}
+                              >
+                                {upiVerified ? "✓ Verified" : "Verify"}
+                              </button>
+                            </div>
+                            {upiVerifyMsg && (
+                              <div className={`upi-verify-status ${upiVerified ? "success" : "error"}`}>
+                                {upiVerified ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
+                                <span>{upiVerifyMsg}</span>
+                              </div>
+                            )}
+                            <span className="upi-subtext">
+                              Click "Pay & Confirm" below to authorize transaction on your UPI app or scan QR
+                            </span>
+                          </div>
+                        )}
                       </div>
                     )}
                   </label>

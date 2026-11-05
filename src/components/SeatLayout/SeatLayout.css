@@ -313,78 +313,127 @@
 /* ========================================================
    REDBUS TOP CONTROLS & FILTER BAR
    ======================================================== */
+/* ========================================================
+   REDBUS AUTHENTIC TOP CONTROL BAR & FILTERS
+   ======================================================== */
 .redbus-top-controls-bar {
   width: 100%;
-  max-width: 440px;
+  max-width: 660px;
   margin: 0 auto 16px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 10px 14px;
+  border-radius: 16px;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+  box-sizing: border-box;
+}
+
+.clean-seat-layout-section.is-single-deck .redbus-top-controls-bar {
+  max-width: 440px;
+}
+
+.redbus-filter-section {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-title-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
 }
 
 .redbus-filter-chips {
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.filter-title-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
-  margin-right: 2px;
+  flex-wrap: wrap;
 }
 
 .redbus-filter-pill {
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #cbd5e1;
   border-radius: 999px;
-  padding: 3px 10px;
-  font-size: 11px;
+  padding: 5px 12px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #475569;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.16s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+  user-select: none;
+}
+
+.redbus-filter-pill svg {
+  stroke: #64748b;
+  transition: stroke 0.16s ease;
 }
 
 .redbus-filter-pill:hover {
   background: #f1f5f9;
+  border-color: #94a3b8;
   color: #0f172a;
+}
+
+.redbus-filter-pill:hover svg {
+  stroke: #0f172a;
 }
 
 .redbus-filter-pill.active {
   background: #d84e55;
   border-color: #d84e55;
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(216, 78, 85, 0.3);
+  box-shadow: 0 2px 6px rgba(216, 78, 85, 0.35);
+}
+
+.redbus-filter-pill.active svg {
+  stroke: #ffffff;
+}
+
+.controls-bar-divider {
+  display: none;
 }
 
 .redbus-inline-legend {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
 }
 
 .legend-chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 10.5px;
+  gap: 5px;
+  font-size: 11px;
   font-weight: 600;
   color: #475569;
+  white-space: nowrap; /* CRITICAL: Never wrap Booked / (M) into two lines! */
+  flex-shrink: 0;
 }
 
 .legend-indicator {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 3px;
   display: inline-block;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .legend-indicator.available {
@@ -399,10 +448,39 @@
 
 .legend-indicator.booked-male {
   background: #cbd5e1;
+  border: 1px solid #94a3b8;
 }
 
 .legend-indicator.booked-female {
   background: #f472b6;
+  border: 1px solid #ec4899;
+}
+
+/* Wide screen double-deck coach optimization */
+@media (min-width: 720px) {
+  .clean-seat-layout-section:not(.is-single-deck) .redbus-top-controls-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 8px 18px;
+  }
+
+  .clean-seat-layout-section:not(.is-single-deck) .controls-bar-divider {
+    display: block;
+    width: 1px;
+    height: 22px;
+    background: #e2e8f0;
+    margin: 0 4px;
+    flex-shrink: 0;
+  }
+
+  .clean-seat-layout-section:not(.is-single-deck) .redbus-inline-legend {
+    padding-top: 0;
+    border-top: none;
+    gap: 14px;
+    justify-content: flex-end;
+  }
 }
 
 /* ========================================================
@@ -627,7 +705,15 @@
     width: 100%;
   }
   .redbus-top-controls-bar {
+    max-width: 100%;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .redbus-inline-legend {
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
   }
 }

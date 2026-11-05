@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { busService } from "../../services/busService";
 import "./LocationInput.css";
 
 function formatCityDisplay(cityName, stateName) {
@@ -24,6 +25,9 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
   const [showSuggestions, setShowSuggestions] = useState(false);
   const containerRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState(value?.name || "");
+  const [remoteCities, setRemoteCities] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const debounceRef = useRef(null);
 
   useEffect(() => {
     if (value?.name) {
@@ -34,10 +38,51 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
 
   const searchLower = searchTerm.toLowerCase().trim();
 
+  // Live debounced query against backend /api/v1/cities as user types
+  useEffect(() => {
+    if (searchLower.length < 2) {
+      setRemoteCities([]);
+      return;
+    }
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        setIsSearching(true);
+        const results = await busService.getCities(searchLower);
+        if (Array.isArray(results) && results.length > 0) {
+          setRemoteCities(results);
+        }
+      } catch (err) {
+        // Silently catch query errors during fast typing
+      } finally {
+        setIsSearching(false);
+      }
+    }, 200);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchLower]);
+
   const filteredCities = useMemo(() => {
-    if (!cities || cities.length === 0) return [];
+    // Combine preloaded cities with dynamically fetched remote cities
+    const candidateMap = new Map();
+    [...cities, ...remoteCities].forEach((c) => {
+      const key = `${c.id || c.CityId}-${(c.name || c.City || "").toLowerCase().trim()}`;
+      if (!candidateMap.has(key)) {
+        candidateMap.set(key, c);
+      }
+    });
+    const combined = Array.from(candidateMap.values());
+
+    if (!combined || combined.length === 0) return [];
+
     if (!searchLower) {
-      // Show major hubs first when field is empty
+      // Show major transit hubs first when field is empty
       const popularHubs = [
         "Bangalore",
         "Bengaluru",
@@ -51,10 +96,20 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
         "Ahmedabad",
         "Goa",
         "Coimbatore",
+        "Vijayawada",
+        "Visakhapatnam",
+        "Nagpur",
+        "Nashik",
+        "Surat",
+        "Vadodara",
+        "Chandigarh",
+        "Lucknow",
+        "Kochi",
+        "Mysuru",
       ];
       const matchedPopular = [];
       for (const name of popularHubs) {
-        const found = cities.find((c) => {
+        const found = combined.find((c) => {
           const { cleanCity } = formatCityDisplay(c.name, c.state);
           return cleanCity.toLowerCase() === name.toLowerCase();
         });
@@ -63,12 +118,12 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
           matchedPopular.push({ ...found, name: cleanCity, state: cleanState });
         }
       }
-      return matchedPopular;
+      return matchedPopular.length > 0 ? matchedPopular : combined.slice(0, 20);
     }
 
     const starts = [];
     const contains = [];
-    for (const city of cities) {
+    for (const city of combined) {
       const { cleanCity, cleanState } = formatCityDisplay(city.name, city.state);
       const cName = cleanCity.toLowerCase();
       const sName = cleanState.toLowerCase();
@@ -84,7 +139,7 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
       if (starts.length + contains.length >= 60) break;
     }
     return starts.concat(contains);
-  }, [cities, searchLower]);
+  }, [cities, remoteCities, searchLower]);
 
   const isCityDisabled = (city) => {
     if (!disabledCityId || !city) return false;
@@ -107,7 +162,7 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
     setShowSuggestions(true);
 
     const valClean = val.toLowerCase().trim().replace(/,/g, " ");
-    const exactMatch = cities.find((c) => {
+    const exactMatch = [...remoteCities, ...cities].find((c) => {
       const { cleanCity, cleanState } = formatCityDisplay(c.name, c.state);
       const cName = cleanCity.toLowerCase().trim();
       const full = `${cName} ${cleanState.toLowerCase().trim()}`.trim();
@@ -154,48 +209,59 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
           autoComplete="off"
           onChange={handleChange}
           onFocus={() => setShowSuggestions(true)}
+          onClick={() => setShowSuggestions(true)}
         />
 
-        {showSuggestions && filteredCities.length > 0 && (
+        {showSuggestions && (
           <div className="city-suggestions">
-            {filteredCities.map((city, idx) => {
-              const disabled = isCityDisabled(city);
-              const { cleanCity, cleanState } = formatCityDisplay(city.name, city.state);
+            {filteredCities.length > 0 ? (
+              filteredCities.map((city, idx) => {
+                const disabled = isCityDisabled(city);
+                const { cleanCity, cleanState } = formatCityDisplay(city.name, city.state);
 
-              return (
-                <button
-                  type="button"
-                  key={`${city.id}-${city.name}-${idx}`}
-                  disabled={disabled}
-                  className={`suggestion-item ${disabled ? "disabled-city" : ""}`}
-                  onClick={() => handleCitySelect(city)}
-                >
-                  <div className="suggestion-left">
-                    <svg
-                      className="suggestion-pin"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                      <circle cx="12" cy="10" r="3" />
-                    </svg>
-                    <div className="suggestion-text-box">
-                      <span className="suggestion-city-name">{cleanCity}</span>
-                      {cleanState && (
-                        <span className="suggestion-state-name">
-                          <span className="suggestion-comma">, </span>
-                          {cleanState}
-                        </span>
-                      )}
+                return (
+                  <button
+                    type="button"
+                    key={`${city.id}-${city.name}-${idx}`}
+                    disabled={disabled}
+                    className={`suggestion-item ${disabled ? "disabled-city" : ""}`}
+                    onClick={() => handleCitySelect(city)}
+                  >
+                    <div className="suggestion-left">
+                      <svg
+                        className="suggestion-pin"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      <div className="suggestion-text-box">
+                        <span className="suggestion-city-name">{cleanCity}</span>
+                        {cleanState && (
+                          <span className="suggestion-state-name">
+                            <span className="suggestion-comma">, </span>
+                            {cleanState}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  {disabled && <span className="disabled-tag">Selected</span>}
-                </button>
-              );
-            })}
+                    {disabled && <span className="disabled-tag">Selected</span>}
+                  </button>
+                );
+              })
+            ) : (
+              <div className="no-cities-notice">
+                {isSearching ? (
+                  <span>Searching cities...</span>
+                ) : (
+                  <span>No cities found matching &quot;{searchTerm}&quot;</span>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -203,4 +269,4 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
   );
 }
 
-export default LocationInput;
+export default LocationInput;

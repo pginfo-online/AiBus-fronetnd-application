@@ -30,6 +30,7 @@ import authService from "../../services/authService";
 import BookingStepper from "../../components/BookingStepper/BookingStepper";
 import BoardingDroppingSelector, { formatPointTime } from "../../components/BoardingDroppingSelector/BoardingDroppingSelector";
 import AiBusChatAssistant from "../../components/AiBusChatAssistant/AiBusChatAssistant";
+import CancellationPolicyModal from "../../components/CancellationPolicyModal/CancellationPolicyModal";
 import "./TravellerDetails.css";
 
 function formatTripDate(dateStr) {
@@ -83,6 +84,7 @@ function TravellerDetails() {
   const [loading, setLoading] = useState(true);
   const [resolvedFromCity, setResolvedFromCity] = useState(fromParam);
   const [resolvedToCity, setResolvedToCity] = useState(toParam);
+  const [showCancellationModal, setShowCancellationModal] = useState(false);
 
   const selectedSeats = seatsParam
     ? seatsParam.split(",").map((s) => s.trim()).filter(Boolean)
@@ -603,7 +605,27 @@ function TravellerDetails() {
             <p>Verifying seat availability and operator pricing with Mantis GDS</p>
           </div>
         </div>
-      </main>
+        {/* Cancellation Policy Modal Popup */}
+      <CancellationPolicyModal
+        isOpen={showCancellationModal}
+        onClose={() => setShowCancellationModal(false)}
+        bus={selectedBus}
+        fromCity={resolvedFromCity}
+        toCity={resolvedToCity}
+        journeyDate={formatTripDate(dateParam)}
+        seatPrice={selectedBus?.price}
+      />
+      {/* Cancellation Policy Modal Popup */}
+      <CancellationPolicyModal
+        isOpen={showCancellationModal}
+        onClose={() => setShowCancellationModal(false)}
+        bus={selectedBus}
+        fromCity={resolvedFromCity}
+        toCity={resolvedToCity}
+        journeyDate={formatTripDate(dateParam)}
+        seatPrice={selectedBus?.price}
+      />
+    </main>
     );
   }
 
@@ -1152,9 +1174,12 @@ function TravellerDetails() {
                   <ShieldCheck size={14} className="trust-icon" />
                   <span>256-Bit SSL Encrypted Instant Booking</span>
                 </div>
-                <div className="trust-item">
+                <div className="trust-item trust-item-clickable" onClick={() => setShowCancellationModal(true)} role="button" tabIndex={0} title="Click to view full cancellation policy and refund details">
                   <Clock size={14} className="trust-icon" />
-                  <span>Free Cancellation up to 4 hrs before departure</span>
+                  <span>
+                    Free Cancellation up to 4 hrs before departure{" "}
+                    <span className="trust-policy-badge">View Policy</span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -1169,6 +1194,16 @@ function TravellerDetails() {
         toCity={resolvedToCity}
         date={dateParam}
         selectedSeats={selectedSeats}
+      />
+          {/* Cancellation Policy Modal Popup */}
+      <CancellationPolicyModal
+        isOpen={showCancellationModal}
+        onClose={() => setShowCancellationModal(false)}
+        bus={selectedBus}
+        fromCity={resolvedFromCity}
+        toCity={resolvedToCity}
+        journeyDate={formatTripDate(dateParam)}
+        seatPrice={selectedBus?.price}
       />
     </main>
   );

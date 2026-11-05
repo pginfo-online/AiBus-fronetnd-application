@@ -22,6 +22,10 @@ import {
   Sparkles,
   Radio,
   LifeBuoy,
+  Copy,
+  Check,
+  Tag,
+  Clock,
 } from "lucide-react";
 import SearchBox from "../../components/SearchBox/SearchBox";
 import OffersModal from "../../components/PopularOffers/OffersModal";
@@ -29,44 +33,48 @@ import "./Home.css";
 
 const CAROUSEL_SLIDES = [
   {
-    id: "sunset-tour",
-    tag: "Travel Beyond Destinations",
-    title: "Comfort in Every Mile",
-    highlight: "Every Mile",
-    subtitle: "Modern buses, premium seating and a safer travel experience for a better tomorrow.",
-    image: "/images/hero_bus_sunset_hd.jpg",
-    accent: "#E2725B",
-    routeBadge: "Over 1000+ Scenic Routes",
+    id: "luxury-sleeper-fleet",
+    tag: "India's Flagship Fleet",
+    title: "Redefining Luxury Sleeper",
+    highlight: "Luxury Sleeper",
+    subtitle: "Custom-crafted private berths, climate-controlled cabins, ambient reading suites, and whisper-quiet suspension.",
+    image: "/images/bus_luxury.jpg",
+    accent: "#F06A38",
+    routeBadge: "AiBus Black Executive",
+    stats: "40+ Express Routes",
   },
   {
-    id: "scenic-highway",
-    tag: "Explore Beautiful Horizons",
-    title: "Unforgettable Journeys",
-    highlight: "Journeys",
-    subtitle: "Connecting vibrant cities across India with punctual departures and panoramic views.",
-    image: "/images/scenic_bus.jpg",
-    accent: "#F59E0B",
-    routeBadge: "Direct Highway Express",
-  },
-  {
-    id: "luxury-cabin",
-    tag: "First Class Experience",
-    title: "Luxury On Every Route",
-    highlight: "Luxury",
-    subtitle: "Ergonomic leather recliners, climate control, individual charging points and ultra-smooth ride.",
-    image: "/images/leather_interior.jpg",
+    id: "city-express-highways",
+    tag: "High-Speed Connect",
+    title: "Direct Intercity Highways",
+    highlight: "Intercity",
+    subtitle: "Punctual departures connecting financial hubs and metro capitals with non-stop express highway lanes.",
+    image: "/hero/city-bus.jpg",
     accent: "#38BDF8",
-    routeBadge: "Executive Class Comfort",
+    routeBadge: "Metro Highway Lines",
+    stats: "99.4% On-Time Record",
   },
   {
-    id: "night-sleeper",
-    tag: "Sleep While You Travel",
-    title: "Peaceful Overnight Travel",
-    highlight: "Overnight",
-    subtitle: "Spacious private sleeper berths with sanitised linens, reading lights and live GPS tracking.",
-    image: "/images/amenities_bus.jpg",
+    id: "panoramic-mountains",
+    tag: "Scenic Mountain Passes",
+    title: "Panoramic Horizon Journeys",
+    highlight: "Horizon",
+    subtitle: "Breathtaking vistas across misty mountain passes, coastal routes, and golden sunrise corridors in ultimate comfort.",
+    image: "/hero/adventure-bus.jpg",
+    accent: "#F59E0B",
+    routeBadge: "Scenic Express",
+    stats: "1000+ Verified Routes",
+  },
+  {
+    id: "first-class-cabin",
+    tag: "Ultra-Comfort Interiors",
+    title: "First Class Ergonomic Recliners",
+    highlight: "First Class",
+    subtitle: "Supple Italian leather seating, high-speed onboard charging, sanitised bedding, and 24/7 telematics tracking.",
+    image: "/images/leather_interior.jpg",
     accent: "#34D399",
-    routeBadge: "Star Sleeper Fleet",
+    routeBadge: "Gold Class Fleet",
+    stats: "Live GPS Telematics",
   },
 ];
 
@@ -145,6 +153,61 @@ const BUS_TYPES = [
   },
 ];
 
+const COUPON_OFFERS = [
+  {
+    id: "aibus100",
+    code: "AIBUS100",
+    title: "Flat ₹100 OFF",
+    desc: "Valid on all AC and Sleeper express bookings across India",
+    minSpend: "Min. spend ₹500",
+    validTill: "Valid till 30 Nov",
+    tag: "Most Popular",
+    color: "#D95325",
+    bgGradient: "linear-gradient(135deg, #FFF6F0 0%, #FFE9DF 100%)",
+    accentBorder: "rgba(217, 83, 37, 0.35)",
+    discountBadge: "SAVE ₹100",
+  },
+  {
+    id: "firstbus",
+    code: "FIRSTBUS",
+    title: "Flat 15% OFF",
+    desc: "Welcome discount for all new travelers on their first route",
+    minSpend: "No min. order required",
+    validTill: "New Users Only",
+    tag: "Welcome Gift",
+    color: "#2563EB",
+    bgGradient: "linear-gradient(135deg, #F0F6FF 0%, #DEECFF 100%)",
+    accentBorder: "rgba(37, 99, 235, 0.35)",
+    discountBadge: "UP TO ₹150",
+  },
+  {
+    id: "weekend20",
+    code: "WEEKEND20",
+    title: "Weekend 20% OFF",
+    desc: "Friday to Sunday departures for quick getaways and vacations",
+    minSpend: "Min. spend ₹700",
+    validTill: "Fri - Sun Travel",
+    tag: "Weekend Special",
+    color: "#D97706",
+    bgGradient: "linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)",
+    accentBorder: "rgba(217, 119, 6, 0.35)",
+    discountBadge: "20% OFF",
+  },
+  {
+    id: "return50",
+    code: "RETURN50",
+    title: "Round Trip ₹50 OFF",
+    desc: "Book round-trip journey tickets together and save instantly",
+    minSpend: "Round trip tickets",
+    validTill: "Instant Cashback",
+    tag: "Double Journey",
+    color: "#059669",
+    bgGradient: "linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)",
+    accentBorder: "rgba(5, 150, 105, 0.35)",
+    discountBadge: "INSTANT ₹50",
+  },
+];
+
 const TESTIMONIALS = [
   {
     id: 1,
@@ -175,6 +238,16 @@ function Home() {
   const [isHeroHovered, setIsHeroHovered] = useState(false);
   const [activeTestimonialIndex, setActiveTestimonialIndex] = useState(0);
   const [showOffersModal, setShowOffersModal] = useState(false);
+  const [copiedCoupon, setCopiedCoupon] = useState(null);
+
+  const handleCopyCoupon = (code, e) => {
+    if (e) e.stopPropagation();
+    navigator.clipboard.writeText(code);
+    setCopiedCoupon(code);
+    setTimeout(() => {
+      setCopiedCoupon(null);
+    }, 2200);
+  };
 
   useEffect(() => {
     const handleOpen = () => setShowOffersModal(true);
@@ -190,6 +263,38 @@ function Home() {
     }, 5500);
     return () => clearInterval(interval);
   }, [isHeroHovered]);
+
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Swipe detection threshold
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEndX(null);
+    setTouchStartX(e.targetTouches ? e.targetTouches[0].clientX : e.clientX);
+    setIsDragging(true);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEndX(e.targetTouches ? e.targetTouches[0].clientX : e.clientX);
+  };
+
+  const onTouchEnd = () => {
+    setIsDragging(false);
+    if (!touchStartX || !touchEndX) return;
+    const distance = touchStartX - touchEndX;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      handleNextHero();
+    } else if (isRightSwipe) {
+      handlePrevHero();
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
+  };
 
   const handleNextHero = () => {
     setActiveHeroIndex((prev) => (prev + 1) % CAROUSEL_SLIDES.length);
@@ -230,15 +335,26 @@ function Home() {
   return (
     <main className="ogl-home-page">
       {/* =======================================================
-          1. FULL-WIDTH HERO CAROUSEL SLIDER
+          1. FULL-WIDTH HERO CAROUSEL SLIDER (SWIPEABLE & FULL-SCREEN)
           ======================================================= */}
       <section
-        className="ogl-fullwidth-hero"
+        className={`ogl-fullwidth-hero ${isDragging ? "is-dragging" : ""}`}
         onMouseEnter={() => setIsHeroHovered(true)}
-        onMouseLeave={() => setIsHeroHovered(false)}
+        onMouseLeave={() => {
+          setIsHeroHovered(false);
+          if (isDragging) onTouchEnd();
+        }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onMouseDown={onTouchStart}
+        onMouseMove={(e) => {
+          if (isDragging) onTouchMove(e);
+        }}
+        onMouseUp={onTouchEnd}
         aria-label="Featured Travel Destinations Carousel"
       >
-        {/* Full-bleed Background Images with Smooth Cross-fade and Ken-Burns animation */}
+        {/* Full-bleed Background Images & Video with Smooth Cross-fade and Ken-Burns animation */}
         <div className="hero-carousel-backgrounds">
           {CAROUSEL_SLIDES.map((slide, idx) => (
             <div
@@ -246,12 +362,24 @@ function Home() {
               className={`hero-bg-slide ${activeHeroIndex === idx ? "active" : ""}`}
               aria-hidden={activeHeroIndex !== idx}
             >
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="hero-bg-img"
-                loading={idx === 0 ? "eager" : "lazy"}
-              />
+              {slide.video ? (
+                <video
+                  src={slide.video}
+                  poster={slide.image}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="hero-bg-img hero-bg-video"
+                />
+              ) : (
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className="hero-bg-img"
+                  loading={idx === 0 ? "eager" : "lazy"}
+                />
+              )}
               <div className="hero-bg-overlay" />
             </div>
           ))}
@@ -295,34 +423,6 @@ function Home() {
               </button>
             </div>
 
-            {/* Social Proof */}
-            <div className="ogl-hero-social">
-              <div className="ogl-avatar-stack">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-                  alt="Traveller"
-                  className="ogl-avatar"
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80"
-                  alt="Traveller"
-                  className="ogl-avatar"
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80"
-                  alt="Traveller"
-                  className="ogl-avatar"
-                />
-              </div>
-              <div className="ogl-social-text">
-                <span className="ogl-social-count">10,000+ Happy Travellers</span>
-                <div className="ogl-stars-row">
-                  <span className="gold-stars">★★★★★</span>
-                  <span className="rating-val">4.8/5</span>
-                </div>
-              </div>
-            </div>
-
             {/* Handwritten Doodle in the Hero */}
             <div className="ogl-hero-doodle">
               <span className="doodle-text">Good Journeys,</span>
@@ -331,17 +431,20 @@ function Home() {
             </div>
           </div>
 
-          {/* Right Column: Glassmorphic Preview & Thumbnails */}
+          {/* Right Column: Editorial Fleet Preview with live stats and thumbnail switch */}
           <div className="ogl-hero-right-glass">
             <div className="glass-preview-card">
               <div className="glass-card-header">
-                <span className="glass-card-num">0{activeHeroIndex + 1} / 0{CAROUSEL_SLIDES.length}</span>
-                <span className="glass-live-indicator"><span className="pulse-dot" /> LIVE FLEET</span>
+                <span className="glass-card-num">0{activeHeroIndex + 1} &mdash; 0{CAROUSEL_SLIDES.length}</span>
+                <span className="glass-live-indicator"><span className="pulse-dot" /> {CAROUSEL_SLIDES[activeHeroIndex].stats || "LIVE FLEET"}</span>
+              </div>
+              <div className="glass-card-badge-row">
+                <span className="glass-pill-highlight">{CAROUSEL_SLIDES[activeHeroIndex].routeBadge}</span>
               </div>
               <h3 className="glass-card-title">{CAROUSEL_SLIDES[activeHeroIndex].title}</h3>
               <p className="glass-card-desc">{CAROUSEL_SLIDES[activeHeroIndex].subtitle}</p>
 
-              {/* Mini thumbnail strip */}
+              {/* Interactive thumbnail strip with active indicator */}
               <div className="glass-thumbnails-row">
                 {CAROUSEL_SLIDES.map((slide, idx) => (
                   <button
@@ -352,6 +455,7 @@ function Home() {
                     aria-label={`Slide ${idx + 1}: ${slide.title}`}
                   >
                     <img src={slide.image} alt={slide.title} />
+                    <span className="thumb-idx">0{idx + 1}</span>
                   </button>
                 ))}
               </div>
@@ -410,55 +514,97 @@ function Home() {
       </section>
 
       {/* =======================================================
-          3. VALUE PROPOSITION FEATURES ROW (4 Items)
+          3. EXCLUSIVE OFFERS & COUPONS SECTION (REPLACED FEATURE BAR)
           ======================================================= */}
-      <section className="ogl-features-bar">
-        <div className="ogl-features-inner">
-          <div className="ogl-feature-card">
-            <div className="ogl-feature-icon-circle green">
-              <Globe size={20} />
+      <section className="ogl-section ogl-coupons-section" id="offers-and-coupons">
+        <div className="ogl-coupons-header">
+          <div className="ogl-coupons-header-left">
+            <div className="ogl-coupons-badge">
+              <Sparkles size={16} />
+              <span>LIMITED TIME DEALS</span>
             </div>
-            <div className="ogl-feature-info">
-              <h4 className="ogl-feature-title">Wide Network</h4>
-              <p className="ogl-feature-desc">1000+ cities across India</p>
-            </div>
+            <h2 className="ogl-coupons-title">
+              Exclusive Offers <span className="highlight-script">&amp; Coupons</span>
+            </h2>
+            <p className="ogl-coupons-sub">
+              Apply these promo codes at checkout for instant cash discounts on your bookings.
+            </p>
           </div>
 
-          <div
-            className="ogl-feature-card clickable"
+          <button
+            type="button"
+            className="ogl-coupons-view-all-btn"
             onClick={() => setShowOffersModal(true)}
-            role="button"
-            tabIndex={0}
-            title="Click to view exclusive offers and coupon codes"
           >
-            <div className="ogl-feature-icon-circle orange">
-              <Percent size={18} />
-            </div>
-            <div className="ogl-feature-info">
-              <h4 className="ogl-feature-title">Best Prices</h4>
-              <p className="ogl-feature-desc">Get exclusive offers</p>
-            </div>
-          </div>
+            <span>View All Deals</span>
+            <ArrowRight size={16} />
+          </button>
+        </div>
 
-          <div className="ogl-feature-card">
-            <div className="ogl-feature-icon-circle blue">
-              <ShieldCheck size={20} />
-            </div>
-            <div className="ogl-feature-info">
-              <h4 className="ogl-feature-title">Safe & Reliable</h4>
-              <p className="ogl-feature-desc">Verified operators</p>
-            </div>
-          </div>
+        {/* Dynamic Coupon Cards Grid with modern luxury styling & copy animation */}
+        <div className="ogl-coupons-grid">
+          {COUPON_OFFERS.map((coupon, idx) => {
+            const isCopied = copiedCoupon === coupon.code;
+            return (
+              <div
+                key={coupon.id}
+                className="ogl-coupon-card"
+                style={{
+                  "--accent-color": coupon.color,
+                  "--card-bg": coupon.bgGradient,
+                  "--card-border": coupon.accentBorder,
+                  animationDelay: `${idx * 0.1}s`,
+                }}
+              >
+                {/* Decorative cutouts on coupon ticket edges */}
+                <div className="coupon-notch notch-left" />
+                <div className="coupon-notch notch-right" />
 
-          <div className="ogl-feature-card">
-            <div className="ogl-feature-icon-circle purple">
-              <Headphones size={20} />
-            </div>
-            <div className="ogl-feature-info">
-              <h4 className="ogl-feature-title">24/7 Support</h4>
-              <p className="ogl-feature-desc">We're always here</p>
-            </div>
-          </div>
+                <div className="coupon-card-top">
+                  <div className="coupon-tags-row">
+                    <span className="coupon-pill-tag" style={{ color: coupon.color }}>
+                      <Tag size={12} />
+                      {coupon.tag}
+                    </span>
+                    <span className="coupon-discount-badge" style={{ backgroundColor: coupon.color }}>
+                      {coupon.discountBadge}
+                    </span>
+                  </div>
+
+                  <h3 className="coupon-title">{coupon.title}</h3>
+                  <p className="coupon-desc">{coupon.desc}</p>
+                </div>
+
+                <div className="coupon-divider">
+                  <div className="coupon-dash-line" />
+                </div>
+
+                <div className="coupon-card-bottom">
+                  <div className="coupon-meta-col">
+                    <span className="coupon-min-spend">{coupon.minSpend}</span>
+                    <span className="coupon-validity">
+                      <Clock size={11} />
+                      {coupon.validTill}
+                    </span>
+                  </div>
+
+                  {/* Copy Coupon Action Button with micro-animation */}
+                  <button
+                    type="button"
+                    className={`coupon-copy-btn ${isCopied ? "copied" : ""}`}
+                    onClick={(e) => handleCopyCoupon(coupon.code, e)}
+                    aria-label={`Copy coupon code ${coupon.code}`}
+                  >
+                    <span className="coupon-code-text">{coupon.code}</span>
+                    <span className="coupon-copy-icon">
+                      {isCopied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
+                    </span>
+                    <span className="coupon-tooltip">{isCopied ? "Copied!" : "Click to copy"}</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -831,13 +977,13 @@ function Home() {
             </p>
 
             <div className="ogl-store-badges">
-              {/* Google Play Store Badge */}
+              {/* Official Google Play Store Link */}
               <a
-                href="https://play.google.com"
+                href="https://play.google.com/store/apps/details?id=com.worknai.aibus&pcampaignid=web_share"
                 target="_blank"
-                rel="noreferrer"
-                className="ogl-store-btn"
-                aria-label="Get on Google Play"
+                rel="noopener noreferrer"
+                className="ogl-store-btn primary-store-btn"
+                aria-label="Get on Google Play Store"
               >
                 <svg className="store-icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M3.609 1.814L13.793 12 3.61 22.186a1.996 1.996 0 0 1-.61-1.442V3.256c0-.568.228-1.08.609-1.442z" />
@@ -855,7 +1001,7 @@ function Home() {
               <a
                 href="https://apple.com"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="ogl-store-btn"
                 aria-label="Download on App Store"
               >
@@ -868,49 +1014,35 @@ function Home() {
                 </div>
               </a>
             </div>
+
+            {/* Quick rating trust badge */}
+            <div className="app-rating-pill">
+              <span className="rating-stars">★★★★★</span>
+              <span className="rating-text"><strong>4.8</strong> on Google Play &bull; 10K+ Downloads</span>
+            </div>
           </div>
 
-          {/* Center & Right: Phone Mockup & Scenic View */}
+          {/* Center & Right: Dual Realistic 3D Mobile Device Mockup */}
           <div className="ogl-app-right">
-            <div className="ogl-app-doodle">
-              <span>Your Next Destination</span>
-              <span>Awaits ♡</span>
-            </div>
-
-            {/* Smartphone Mockup */}
-            <div className="ogl-phone-mockup">
-              <div className="phone-notch"></div>
-              <div className="phone-screen">
-                <div className="phone-app-header">
-                  <Bus size={14} />
-                  <span>Ai<span className="accent">Bus</span></span>
-                </div>
-                <div className="phone-card">
-                  <span className="p-label">From</span>
-                  <strong className="p-val">Mumbai</strong>
-                  <span className="p-label">To</span>
-                  <strong className="p-val">Pune</strong>
-                  <div className="p-row">
-                    <div>
-                      <span className="p-label">Date</span>
-                      <strong className="p-subval">18 Oct 2026</strong>
-                    </div>
-                    <div>
-                      <span className="p-label">Passengers</span>
-                      <strong className="p-subval">1 Passenger</strong>
-                    </div>
-                  </div>
-                  <button type="button" className="phone-search-btn">
-                    Search Buses
-                  </button>
+            <a
+              href="https://play.google.com/store/apps/details?id=com.worknai.aibus&pcampaignid=web_share"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ogl-dual-phones-link"
+              title="Download AiBus on Google Play"
+            >
+              <div className="ogl-dual-phones-card">
+                <img
+                  src="/images/aibus_app_mockup.png"
+                  alt="AiBus Mobile App Real Device Preview"
+                  className="ogl-dual-phones-img"
+                />
+                <div className="ogl-phones-badge">
+                  <span className="badge-glow-dot" />
+                  <span>Get on Google Play &bull; Free Download</span>
                 </div>
               </div>
-            </div>
-
-            {/* Bus on road backdrop image */}
-            <div className="ogl-app-bus-bg">
-              <img src="/images/scenic_bus.jpg" alt="AiBus Mobile" />
-            </div>
+            </a>
           </div>
         </div>
       </section>
@@ -918,7 +1050,13 @@ function Home() {
       {/* =======================================================
           OFFERS & COUPONS MODAL (Preserving full functionality)
           ======================================================= */}
-      {showOffersModal && <OffersModal onClose={() => setShowOffersModal(false)} />}
+      {showOffersModal && (
+        <OffersModal
+          isOpen={true}
+          onClose={() => setShowOffersModal(false)}
+          onCopyCode={(code) => handleCopyCoupon(code)}
+        />
+      )}
     </main>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Mail,
@@ -21,14 +21,13 @@ function Login() {
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get("returnTo") || "/";
 
-  const [activeTab, setActiveTab] = useState("login"); // 'login' | 'register'
+  const [activeTab, setActiveTab] = useState("otp"); // 'otp' | 'login'
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   // Show/Hide Password States
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Login Form State
   const [loginForm, setLoginForm] = useState({
@@ -36,15 +35,93 @@ function Login() {
     password: "",
   });
 
-  // Register Form State
-  const [registerForm, setRegisterForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-  });
+  // SMS OTP Form State
+  const [otpStep, setOtpStep] = useState("request"); // 'request' | 'verify'
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Countdown timer for OTP resend cooldown
+  useEffect(() => {
+    let timer;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown((prev) => (prev > 1 ? prev - 1 : 0));
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
+  const handleSendOtp = async (e) => {
+    if (e) e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    const cleanPhone = phone.replace(/\D/g, "").slice(-10);
+    if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      setErrorMessage("Please enter a valid 10-digit Indian mobile number (e.g. 9876543210).");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const data = await authService.sendOtp({ phone: cleanPhone });
+      setOtpStep("verify");
+      setResendCooldown(data?.resendCooldownSeconds || 30);
+      setSuccessMessage(
+        data?.debugOtp
+          ? `OTP sent! (Test OTP: ${data.debugOtp})`
+          : `6-digit verification code sent to +91 ${cleanPhone}.`
+      );
+    } catch (err) {
+      setErrorMessage(err.message || "Failed to send OTP. Please check your number.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    const cleanPhone = phone.replace(/\D/g, "").slice(-10);
+    const cleanOtp = otp.trim();
+
+    if (!cleanOtp || cleanOtp.length < 4 || cleanOtp.length > 6) {
+      setErrorMessage("Please enter the 6-digit OTP received on your mobile.");
+      return;
+    }
+
+    const nameParts = fullName.trim().split(" ");
+    const firstName = nameParts[0] || undefined;
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : undefined;
+
+    try {
+      setLoading(true);
+      const data = await authService.verifyOtp({
+        phone: cleanPhone,
+        otp: cleanOtp,
+        firstName,
+        lastName,
+      });
+
+      setSuccessMessage(
+        data?.isNewUser
+          ? "Welcome to AiBus! Your account is ready."
+          : "Verified successfully! Logging in..."
+      );
+
+      setTimeout(() => {
+        navigate(returnTo);
+      }, 600);
+    } catch (err) {
+      setErrorMessage(err.message || "Invalid or expired OTP. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -79,68 +156,6 @@ function Login() {
     }
   };
 
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage("");
-    setSuccessMessage("");
-
-    const { firstName, lastName, email, phone, password, confirmPassword } = registerForm;
-
-    if (!firstName || firstName.trim().length < 2) {
-      setErrorMessage("First name must be at least 2 characters.");
-      return;
-    }
-
-    if (!lastName || lastName.trim().length < 1) {
-      setErrorMessage("Last name is required.");
-      return;
-    }
-
-    if (!email || !email.includes("@") || !email.includes(".")) {
-      setErrorMessage("Please enter a valid email address.");
-      return;
-    }
-
-    if (phone && !/^[0-9]{10}$/.test(phone.replace(/\D/g, ""))) {
-      setErrorMessage("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-
-    // Backend requirements: min 8 chars, 1 uppercase, 1 lowercase, 1 digit
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    if (!password || !passwordRegex.test(password)) {
-      setErrorMessage(
-        "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number."
-      );
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      await authService.register({
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        email: email.trim(),
-        phone: phone ? `+91${phone.replace(/\D/g, "")}` : undefined,
-        password,
-      });
-
-      setSuccessMessage("Account created successfully! Redirecting...");
-      setTimeout(() => {
-        navigate(returnTo);
-      }, 600);
-    } catch (err) {
-      setErrorMessage(err.message || "Registration failed. Please check the provided information.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <main className="auth-page">
       <div className="auth-card-wrapper">
@@ -164,8 +179,21 @@ function Login() {
             </div>
           </div>
 
-          {/* Navigation Tabs */}
+          {/* Navigation Tabs: Mobile OTP vs Email & Password */}
           <div className="auth-tab-group" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === "otp"}
+              className={`auth-tab ${activeTab === "otp" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("otp");
+                setErrorMessage("");
+                setSuccessMessage("");
+              }}
+            >
+              Mobile OTP
+            </button>
             <button
               type="button"
               role="tab"
@@ -177,20 +205,7 @@ function Login() {
                 setSuccessMessage("");
               }}
             >
-              Sign In
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === "register"}
-              className={`auth-tab ${activeTab === "register" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("register");
-                setErrorMessage("");
-                setSuccessMessage("");
-              }}
-            >
-              Create Account
+              Email & Password
             </button>
           </div>
 
@@ -209,8 +224,148 @@ function Login() {
             </div>
           )}
 
-          {/* Tab 1: SIGN IN FORM */}
-          {activeTab === "login" ? (
+          {/* Tab 1: SMS OTP VERIFICATION (FAST LOGIN & REGISTRATION) */}
+          {activeTab === "otp" ? (
+            otpStep === "request" ? (
+              /* Step 1: Request OTP */
+              <form onSubmit={handleSendOtp} className="auth-form" noValidate>
+                <div className="auth-input-group">
+                  <label htmlFor="otp-phone">Mobile Number</label>
+                  <div className="auth-phone-input-row">
+                    <span className="auth-country-prefix">+91</span>
+                    <div className="auth-input-container auth-phone-container">
+                      <Phone size={18} className="auth-input-icon" />
+                      <input
+                        id="otp-phone"
+                        type="tel"
+                        maxLength={10}
+                        placeholder="10-digit mobile number"
+                        value={phone}
+                        disabled={loading}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          setPhone(val);
+                          setErrorMessage("");
+                        }}
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                  <span className="auth-field-hint">
+                    We will send a 6-digit verification code to your phone via SMS.
+                  </span>
+                </div>
+
+                <button
+                  type="submit"
+                  className="auth-submit-btn"
+                  disabled={loading || phone.replace(/\D/g, "").length !== 10}
+                >
+                  {loading ? (
+                    <span className="auth-btn-spinner-text">Sending OTP...</span>
+                  ) : (
+                    <>
+                      <span>Get Verification Code</span>
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </button>
+              </form>
+            ) : (
+              /* Step 2: Verify OTP */
+              <form onSubmit={handleVerifyOtp} className="auth-form" noValidate>
+                <div className="auth-otp-edit-row">
+                  <div className="auth-otp-phone-badge">
+                    <span>Sent to: <strong>+91 {phone}</strong></span>
+                  </div>
+                  <button
+                    type="button"
+                    className="auth-change-phone-btn"
+                    onClick={() => {
+                      setOtpStep("request");
+                      setOtp("");
+                      setErrorMessage("");
+                    }}
+                  >
+                    Change Number
+                  </button>
+                </div>
+
+                <div className="auth-input-group">
+                  <label htmlFor="otp-code">Enter 6-digit OTP</label>
+                  <div className="auth-input-container">
+                    <ShieldCheck size={18} className="auth-input-icon" />
+                    <input
+                      id="otp-code"
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      autoComplete="one-time-code"
+                      placeholder="• • • • • •"
+                      className="auth-otp-code-input"
+                      value={otp}
+                      disabled={loading}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                        setOtp(val);
+                        setErrorMessage("");
+                      }}
+                      autoFocus
+                    />
+                  </div>
+                </div>
+
+                {/* Optional full name if user is new */}
+                <div className="auth-input-group">
+                  <label htmlFor="otp-fullName">Your Name (Optional for New Users)</label>
+                  <div className="auth-input-container">
+                    <User size={18} className="auth-input-icon" />
+                    <input
+                      id="otp-fullName"
+                      type="text"
+                      placeholder="Jane Doe"
+                      value={fullName}
+                      disabled={loading}
+                      onChange={(e) => setFullName(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="auth-resend-row">
+                  {resendCooldown > 0 ? (
+                    <span className="auth-resend-timer">
+                      Resend OTP in <strong>{resendCooldown}s</strong>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="auth-resend-btn"
+                      disabled={loading}
+                      onClick={handleSendOtp}
+                    >
+                      Resend OTP via SMS
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  className="auth-submit-btn"
+                  disabled={loading || otp.length < 4}
+                >
+                  {loading ? (
+                    <span className="auth-btn-spinner-text">Verifying...</span>
+                  ) : (
+                    <>
+                      <span>Verify & Continue</span>
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </button>
+              </form>
+            )
+          ) : (
+            /* Tab 2: EMAIL & PASSWORD SIGN IN */
             <form onSubmit={handleLoginSubmit} className="auth-form" noValidate>
               <div className="auth-input-group">
                 <label htmlFor="login-email">Email Address</label>
@@ -271,164 +426,7 @@ function Login() {
                   <span className="auth-btn-spinner-text">Signing in...</span>
                 ) : (
                   <>
-                    <span>Sign In</span>
-                    <ArrowRight size={18} />
-                  </>
-                )}
-              </button>
-            </form>
-          ) : (
-            /* Tab 2: SIGN UP / REGISTER FORM */
-            <form onSubmit={handleRegisterSubmit} className="auth-form" noValidate>
-              <div className="auth-input-row">
-                <div className="auth-input-group">
-                  <label htmlFor="register-firstName">First Name</label>
-                  <div className="auth-input-container">
-                    <User size={18} className="auth-input-icon" />
-                    <input
-                      id="register-firstName"
-                      type="text"
-                      required
-                      placeholder="Jane"
-                      value={registerForm.firstName}
-                      disabled={loading}
-                      onChange={(e) => {
-                        setRegisterForm({ ...registerForm, firstName: e.target.value });
-                        setErrorMessage("");
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="auth-input-group">
-                  <label htmlFor="register-lastName">Last Name</label>
-                  <div className="auth-input-container">
-                    <User size={18} className="auth-input-icon" />
-                    <input
-                      id="register-lastName"
-                      type="text"
-                      required
-                      placeholder="Doe"
-                      value={registerForm.lastName}
-                      disabled={loading}
-                      onChange={(e) => {
-                        setRegisterForm({ ...registerForm, lastName: e.target.value });
-                        setErrorMessage("");
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="auth-input-group">
-                <label htmlFor="register-email">Email Address</label>
-                <div className="auth-input-container">
-                  <Mail size={18} className="auth-input-icon" />
-                  <input
-                    id="register-email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    placeholder="name@example.com"
-                    value={registerForm.email}
-                    disabled={loading}
-                    onChange={(e) => {
-                      setRegisterForm({ ...registerForm, email: e.target.value });
-                      setErrorMessage("");
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="auth-input-group">
-                <label htmlFor="register-phone">Mobile Number (Optional)</label>
-                <div className="auth-input-container">
-                  <Phone size={18} className="auth-input-icon" />
-                  <input
-                    id="register-phone"
-                    type="tel"
-                    maxLength={10}
-                    placeholder="10-digit mobile number"
-                    value={registerForm.phone}
-                    disabled={loading}
-                    onChange={(e) => {
-                      const digits = e.target.value.replace(/\D/g, "");
-                      setRegisterForm({ ...registerForm, phone: digits });
-                      setErrorMessage("");
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="auth-input-group">
-                <label htmlFor="register-password">Password</label>
-                <div className="auth-input-container">
-                  <Lock size={18} className="auth-input-icon" />
-                  <input
-                    id="register-password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    required
-                    placeholder="At least 8 chars, 1 uppercase, 1 digit"
-                    value={registerForm.password}
-                    disabled={loading}
-                    onChange={(e) => {
-                      setRegisterForm({ ...registerForm, password: e.target.value });
-                      setErrorMessage("");
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="auth-password-toggle"
-                    onClick={() => setShowPassword(!showPassword)}
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-                <span className="auth-field-hint">
-                  Must be 8+ characters with uppercase, lowercase, and numeric digits.
-                </span>
-              </div>
-
-              <div className="auth-input-group">
-                <label htmlFor="register-confirmPassword">Confirm Password</label>
-                <div className="auth-input-container">
-                  <Lock size={18} className="auth-input-icon" />
-                  <input
-                    id="register-confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    required
-                    placeholder="Confirm your password"
-                    value={registerForm.confirmPassword}
-                    disabled={loading}
-                    onChange={(e) => {
-                      setRegisterForm({ ...registerForm, confirmPassword: e.target.value });
-                      setErrorMessage("");
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="auth-password-toggle"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    tabIndex={-1}
-                  >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="auth-submit-btn"
-                disabled={loading}
-              >
-                {loading ? (
-                  <span className="auth-btn-spinner-text">Creating Account...</span>
-                ) : (
-                  <>
-                    <span>Create Account</span>
+                    <span>Sign In with Password</span>
                     <ArrowRight size={18} />
                   </>
                 )}
