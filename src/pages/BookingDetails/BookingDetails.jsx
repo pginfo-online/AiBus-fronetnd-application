@@ -267,9 +267,9 @@ function BookingDetails() {
           fare: booking.totalAmount || 105,
         }));
 
-  const primaryContactName = gdsDetails?.ContactInfo?.CustomerName || booking.traveller?.name || "Customer";
-  const primaryMobile = gdsDetails?.ContactInfo?.Mobile || booking.userMobile || booking.contactPhone || "9876543210";
-  const primaryEmail = gdsDetails?.ContactInfo?.Email || booking.contactEmail || "booking@aibus.in";
+  const primaryContactName = gdsDetails?.ContactInfo?.CustomerName || booking.contactName || booking.traveller?.name || "Customer";
+  const primaryMobile = gdsDetails?.ContactInfo?.Mobile || booking.contactPhone || booking.userMobile || "";
+  const primaryEmail = gdsDetails?.ContactInfo?.Email || booking.contactEmail || "";
   const totalAmount = gdsDetails?.TotalFare || booking.totalAmount || 105;
 
   return (

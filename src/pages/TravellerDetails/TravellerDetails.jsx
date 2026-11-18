@@ -277,10 +277,10 @@ function TravellerDetails() {
 
   // Contact Info State
   const [contactMobile, setContactMobile] = useState(() =>
-    cleanMobileNumber(loggedInUser?.mobile || loggedInUser?.phone || "9496192710")
+    cleanMobileNumber(loggedInUser?.mobile || loggedInUser?.phone || "")
   );
   const [contactEmail, setContactEmail] = useState(
-    loggedInUser?.email || "booking@aibus.in"
+    loggedInUser?.email && !loggedInUser?.email.includes("mobile.aibus.app") ? loggedInUser.email : ""
   );
   const [sendWhatsApp, setSendWhatsApp] = useState(true);
 
@@ -507,6 +507,10 @@ function TravellerDetails() {
         (toParam && !isNaN(Number(toParam)) ? toParam : 4562)
       );
 
+      const effectiveContactPhone = cleanMobileNumber(contactMobile);
+      const effectiveContactEmail = (contactEmail || "").trim() || (effectiveContactPhone ? `${effectiveContactPhone}@mobile.aibus.app` : "");
+      const effectiveContactName = (travellers[0]?.name || loggedInUser?.name || "Traveller").trim();
+
       let holdId = null;
       try {
         const holdRes = await bookingService.holdSeats({
@@ -517,10 +521,10 @@ function TravellerDetails() {
           pickupId: String(pickupCode),
           dropoffId: String(dropoffCode),
           contactInfo: {
-            customerName: travellers[0]?.name || "Traveller",
-            email: contactEmail || "booking@aibus.in",
-            phone: contactMobile,
-            mobile: contactMobile,
+            customerName: effectiveContactName,
+            email: effectiveContactEmail,
+            phone: effectiveContactPhone,
+            mobile: effectiveContactPhone,
           },
           passengers: travellers.map((t, idx) => {
             const seatObj = stateSeats[idx] || selectedBus?.seatsLayout?.Layout?.find(s => String(s.seat_no) === String(t.seat));
@@ -531,12 +535,12 @@ function TravellerDetails() {
               fare: Number(fare),
               gender: t.gender === "Female" || t.gender === "F" ? "F" : "M",
               age: parseInt(t.age, 10) || 28,
-              name: t.name,
+              name: (t.name || `Passenger ${idx + 1}`).trim(),
               isAcSeat: Boolean(selectedBus?.busType?.toLowerCase().includes("ac")),
             };
           }),
         });
-        holdId = holdRes?.holdId || holdRes?.providerHoldId || holdRes?.id;
+        holdId = holdRes?.id || holdRes?.holdId || holdRes?.providerHoldId;
       } catch (holdErr) {
         console.warn("[TravellerDetails] Provider hold failed, proceeding with fallback session hold:", holdErr);
         holdId = `hold-local-${Date.now()}`;
@@ -552,8 +556,9 @@ function TravellerDetails() {
         busId: String(selectedBus?.busId || selectedBus?.id || busId),
         seats: selectedSeats.join(","),
         travellersData: JSON.stringify(travellers),
-        contactMobile,
-        contactEmail: contactEmail || "booking@aibus.in",
+        contactName: effectiveContactName,
+        contactMobile: effectiveContactPhone,
+        contactEmail: effectiveContactEmail,
         sendWhatsApp: String(sendWhatsApp),
         ...(holdId && { holdId: String(holdId) }),
         fromId: String(resolvedFromCityId),
@@ -579,7 +584,12 @@ function TravellerDetails() {
         state: {
           bus: selectedBus,
           travellers,
-          contact: { mobile: contactMobile, email: contactEmail, sendWhatsApp },
+          contact: {
+            name: effectiveContactName,
+            mobile: effectiveContactPhone,
+            email: effectiveContactEmail,
+            sendWhatsApp,
+          },
           holdId,
           pricing: { baseFare, discount, taxes, total: finalTotal },
           pickup: finalPickupObj,
@@ -902,7 +912,7 @@ function TravellerDetails() {
                       <input
                         id="contact-email"
                         type="email"
-                        placeholder="booking@aibus.in"
+                        placeholder="yourname@example.com"
                         value={contactEmail}
                         onChange={(e) => setContactEmail(e.target.value)}
                       />

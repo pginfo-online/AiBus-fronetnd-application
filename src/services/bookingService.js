@@ -47,23 +47,25 @@ function mapBackendBooking(b) {
     seat: p.seatNo || p.seatNumber || "A1",
     name: p.name || "Passenger",
     age: p.age || 25,
-    gender: p.gender || "Male",
+    gender: p.gender === "F" || p.gender === "Female" ? "Female" : "Male",
     mobile: p.mobile || b.contactPhone || "",
-    fare: p.fare || 0,
+    fare: Number(p.fare || 0),
   }));
 
   const primaryPassenger = passengers[0] || {};
-  const seatsList = b.selectedSeats || passengers.map((p) => p.seat);
+  const seatsList = b.selectedSeats || (b.seats && b.seats.map((s) => s.seatNo)) || passengers.map((p) => p.seat);
 
   return {
     id: b.id || b.bookingReference,
     bookingId: b.id || b.bookingReference,
     bookingReference: b.bookingReference || b.bookingNumber || b.id,
-    pnr: b.providerPnrNo || b.pnrNumber || b.pnr || b.bookingReference,
-    ticketNumber: b.providerTicketNo || b.ticketNumber || b.ticketNo || b.bookingReference,
+    bookingNumber: b.bookingNumber || b.bookingReference || b.id,
+    pnr: b.providerPnrNo || b.pnrNumber || b.pnr || b.ticket?.pnrNumber || b.bookingReference,
+    ticketNumber: b.providerTicketNo || b.ticketNumber || b.ticketNo || b.ticket?.ticketNumber || b.bookingReference,
     userMobile: b.contactPhone || b.user?.mobile || primaryPassenger.mobile || "",
-    contactEmail: b.contactEmail || "customer@aibus.in",
+    contactEmail: b.contactEmail || b.user?.email || "",
     contactPhone: b.contactPhone || primaryPassenger.mobile || "",
+    contactName: b.contactName || primaryPassenger.name || "Passenger",
     bus: {
       id: b.busId || b.scheduleId || 1,
       operator: b.operatorName || b.busName || "AIBus Travels",
@@ -154,10 +156,14 @@ export const bookingService = {
     busId,
     pickupId,
     dropoffId,
-    contactInfo,
-    passengers,
+    contactInfo = {},
+    passengers = [],
   }) => {
     try {
+      const cleanPhone = String(contactInfo.phone || contactInfo.mobile || "9876543210").replace(/\D/g, "").slice(-10) || "9876543210";
+      const cleanEmail = (contactInfo.email || "").trim() || `${cleanPhone}@mobile.aibus.app`;
+      const cleanCustomerName = (contactInfo.customerName || contactInfo.name || passengers[0]?.name || "Traveller").trim();
+
       const response = await api.post("/api/v1/holds", {
         fromCityId: Number(fromCityId || 4292),
         toCityId: Number(toCityId || 4562),
@@ -166,10 +172,11 @@ export const bookingService = {
         pickupId: String(pickupId || "44953"),
         dropoffId: String(dropoffId || "750"),
         contactInfo: {
-          customerName: contactInfo.customerName || "Traveller",
-          email: contactInfo.email || "traveller@aibus.in",
-          phone: String(contactInfo.phone || "9876543210"),
-          mobile: String(contactInfo.mobile || contactInfo.phone || "9876543210"),
+          customerName: cleanCustomerName,
+          email: cleanEmail,
+          phone: cleanPhone,
+          mobile: cleanPhone,
+          ...(contactInfo.state ? { state: contactInfo.state } : {}),
         },
         passengers: passengers.map((p, idx) => ({
           seatNo: String(p.seat || p.seatNo || `S${idx + 1}`),
@@ -177,7 +184,7 @@ export const bookingService = {
           fare: Number(p.fare || 650),
           gender: p.gender === "Female" || p.gender === "F" ? "F" : "M",
           age: Number(p.age || 25),
-          name: p.name || `Passenger ${idx + 1}`,
+          name: (p.name || `Passenger ${idx + 1}`).trim(),
           isAcSeat: Boolean(p.isAcSeat),
         })),
       });
@@ -201,9 +208,12 @@ export const bookingService = {
   // ----------------------------------------------------
   createBooking: async ({
     bus,
-    travellers,
-    seats,
+    travellers = [],
+    seats = [],
     totalAmount,
+    contactName,
+    contactEmail,
+    contactPhone,
     userMobile,
     userId,
     isGuest = false,
@@ -213,36 +223,100 @@ export const bookingService = {
     pickup,
     dropoff,
   }) => {
-    const passengersList = (travellers || []).map((t, idx) => ({
-      seatNo: String(t.seat || seats[idx] || "A1"),
-      seatTypeId: 1,
-      fare: Number(bus.price || 650),
-      gender: t.gender === "Female" || t.gender === "F" ? "F" : "M",
-      age: parseInt(t.age, 10) || 25,
-      name: t.name || `Passenger ${idx + 1}`,
-      isAcSeat: Boolean(bus.busType?.toLowerCase().includes("ac")),
-    }));
+    const passengersList = (travellers || []).map((t, idx) => {
+      const seatNo = String(t.seat || t.seatNo || seats[idx] || `S${idx + 1}`);
+      const fare = Number(t.fare || t.price || (totalAmount && seats.length ? Math.round(totalAmount / seats.length) : bus.price) || 205);
+      const seatTypeId = Number(t.seatTypeId || 1);
+      const gender = t.gender === "Female" || t.gender === "F" ? "F" : "M";
+      const age = parseInt(t.age, 10) || 28;
+      const name = (t.name || `Passenger ${idx + 1}`).trim();
+      const isAcSeat = Boolean(t.isAcSeat ?? bus.busType?.toLowerCase().includes("ac"));
+      return {
+        seatNo,
+        seatTypeId,
+        fare,
+        gender,
+        age,
+        name,
+        isAcSeat,
+      };
+    });
 
-    const primaryName = travellers?.[0]?.name || "Passenger";
-    const primaryPhone = userMobile || travellers?.[0]?.mobile || "9876543210";
-    const primaryEmail = "booking@aibus.in";
+    const primaryName = (contactName || travellers?.[0]?.name || "Passenger").trim();
+
+    let rawPhone = String(contactPhone || userMobile || travellers?.[0]?.mobile || "9876543210");
+    let cleanDigits = rawPhone.replace(/\D/g, "");
+    while (cleanDigits.length > 10 && cleanDigits.startsWith("91")) {
+      cleanDigits = cleanDigits.slice(2);
+    }
+    if (cleanDigits.length > 10) {
+      cleanDigits = cleanDigits.slice(-10);
+    }
+    const primaryPhone = cleanDigits.length === 10 ? cleanDigits : "9876543210";
+
+    const primaryEmail = (
+      contactEmail ||
+      travellers?.[0]?.email ||
+      `${primaryPhone}@mobile.aibus.app`
+    ).trim();
+
     const cleanDate = String(bus.date || new Date().toISOString().split("T")[0]).split("T")[0];
 
     const resolvedPickupCode = String(
       pickup?.PickupCode ||
+      pickup?.pickupCode ||
       pickup?.PickUpID ||
       pickup?.pickupId ||
+      pickup?.code ||
       pickup?.Id ||
       (Number(bus.busId || bus.id) === 2 ? "74717" : "39436")
     );
 
+    const resolvedPickupLocation =
+      pickup?.PickupName ||
+      pickup?.pickupName ||
+      pickup?.name ||
+      pickup?.location ||
+      "Boarding Point";
+
+    const rawPickupTime =
+      pickup?.PickupTime ||
+      pickup?.pickupTime ||
+      pickup?.time ||
+      "";
+    const resolvedPickupTime = rawPickupTime
+      ? (rawPickupTime.includes(":") && !rawPickupTime.includes("-") ? `${cleanDate} ${rawPickupTime}:00`.replace(/:00:00$/, ":00") : rawPickupTime)
+      : `${cleanDate} 23:00:00`;
+
     const resolvedDropoffCode = String(
       dropoff?.DropoffCode ||
+      dropoff?.dropoffCode ||
       dropoff?.DropOffID ||
       dropoff?.dropoffId ||
+      dropoff?.code ||
       dropoff?.Id ||
       (Number(bus.busId || bus.id) === 2 ? "746" : "750")
     );
+
+    const resolvedDropoffLocation =
+      dropoff?.DropoffName ||
+      dropoff?.dropoffName ||
+      dropoff?.name ||
+      dropoff?.location ||
+      "Dropping Point";
+
+    const rawDropoffTime =
+      dropoff?.DropoffTime ||
+      dropoff?.dropoffTime ||
+      dropoff?.time ||
+      "";
+    const resolvedDropoffTime = rawDropoffTime
+      ? (rawDropoffTime.includes(":") && !rawDropoffTime.includes("-") ? `${cleanDate} ${rawDropoffTime}:00`.replace(/:00:00$/, ":00") : rawDropoffTime)
+      : `${cleanDate} 09:15:00`;
+
+    const calcTotalFare = passengersList.reduce((sum, p) => sum + p.fare, 0);
+    const finalTotalFare = Number(totalAmount || calcTotalFare || bus.price * (seats.length || 1) || 105);
+    const finalBaseFare = Number(calcTotalFare || bus.price * (seats.length || 1) || totalAmount || 105);
 
     const payload = {
       ...(holdId && { holdId: String(holdId) }),
@@ -254,15 +328,15 @@ export const bookingService = {
       busId: Number(bus.busId || bus.id || 1),
       tripId: String(bus.tripId || bus.id || "46754"),
       pickupCode: resolvedPickupCode,
-      pickupLocation: pickup?.PickupName || pickup?.name || pickup?.location || "Boarding Point",
-      pickupTime: pickup?.PickupTime || `${cleanDate} 23:00:00`,
+      pickupLocation: resolvedPickupLocation,
+      pickupTime: resolvedPickupTime,
       dropoffCode: resolvedDropoffCode,
-      dropoffLocation: dropoff?.DropoffName || dropoff?.name || dropoff?.location || "Dropping Point",
-      dropoffTime: dropoff?.DropoffTime || `${cleanDate} 09:15:00`,
+      dropoffLocation: resolvedDropoffLocation,
+      dropoffTime: resolvedDropoffTime,
       operatorName: bus.operator || "Express Line",
       busType: bus.busType || "AC Seater/Sleeper",
-      totalFare: Number(totalAmount || bus.price * seats.length || 105),
-      baseFare: Number(bus.price * seats.length || totalAmount || 105),
+      totalFare: finalTotalFare,
+      baseFare: finalBaseFare,
       serviceTax: Number(0),
       contactName: primaryName,
       contactEmail: primaryEmail,
@@ -308,34 +382,46 @@ export const bookingService = {
       id: bookingIdentifier,
       bookingId: bookingIdentifier,
       bookingReference: createdBooking?.bookingNumber || createdBooking?.bookingReference || bookingIdentifier,
-      pnr: createdBooking?.providerPnrNo || createdBooking?.pnrNumber || `PNR-${Math.floor(100000 + Math.random() * 900000)}`,
-      ticketNumber: createdBooking?.providerTicketNo || createdBooking?.ticketNumber || `TKT-${Math.floor(100000 + Math.random() * 900000)}`,
-      totalAmount: Number(createdBooking?.totalFare || createdBooking?.totalAmount || totalAmount),
+      bookingNumber: createdBooking?.bookingNumber || bookingIdentifier,
+      pnr: createdBooking?.providerPnrNo || createdBooking?.pnrNumber || createdBooking?.ticket?.pnrNumber || `PNR-${Math.floor(100000 + Math.random() * 900000)}`,
+      ticketNumber: createdBooking?.providerTicketNo || createdBooking?.ticketNumber || createdBooking?.ticket?.ticketNumber || `TKT-${Math.floor(100000 + Math.random() * 900000)}`,
+      totalAmount: Number(createdBooking?.totalFare || createdBooking?.totalAmount || finalTotalFare),
       status: createdBooking?.status || "Confirmed",
-      seats: createdBooking?.selectedSeats || seats,
-      passengers: createdBooking.passengers || passengersList,
-      travellers: passengersList,
-      traveller: { name: primaryName, mobile: primaryPhone },
+      seats: createdBooking?.selectedSeats || (createdBooking?.seats && createdBooking.seats.map((s) => s.seatNo)) || seats,
+      passengers: createdBooking?.passengers || passengersList,
+      travellers: createdBooking?.passengers?.map((p) => ({
+        seat: p.seatNo,
+        name: p.name,
+        age: p.age,
+        gender: p.gender === "F" || p.gender === "Female" ? "Female" : "Male",
+        mobile: primaryPhone,
+        fare: p.fare,
+      })) || passengersList,
+      traveller: { name: primaryName, mobile: primaryPhone, email: primaryEmail },
       userMobile: primaryPhone,
+      contactName: primaryName,
+      contactEmail: primaryEmail,
+      contactPhone: primaryPhone,
       bus: {
         id: bus.id,
-        operator: bus.operator || "AIBus Travels",
+        operator: createdBooking?.operatorName || bus.operator || "AIBus Travels",
         busNumber: bus.busNumber || "AI001",
-        busType: formatBusType(bus.busType),
-        from: bus.from || "Bengaluru",
-        to: bus.to || "Chennai",
-        departureTime: bus.departureTime || "08:30",
-        arrivalTime: bus.arrivalTime || "14:30",
+        busType: formatBusType(createdBooking?.busType || bus.busType),
+        from: createdBooking?.fromCityName || bus.from || "Bengaluru",
+        to: createdBooking?.toCityName || bus.to || "Chennai",
+        departureTime: bus.departureTime || (resolvedPickupTime.includes(":") ? resolvedPickupTime.slice(11, 16) : "08:30"),
+        arrivalTime: bus.arrivalTime || (resolvedDropoffTime.includes(":") ? resolvedDropoffTime.slice(11, 16) : "14:30"),
         duration: bus.duration || "6h 00m",
         date: cleanDate,
+        pickupLocation: createdBooking?.pickupLocation || resolvedPickupLocation,
+        dropoffLocation: createdBooking?.dropoffLocation || resolvedDropoffLocation,
       },
-      bookingDate: new Date().toISOString(),
+      bookingDate: createdBooking?.createdAt || new Date().toISOString(),
       isGuest,
     };
 
-    if (isGuest || !userId) {
-      bookingService.saveGuestBooking(fullBookingData);
-    }
+    // Always cache the created booking locally so receipt/ticket can retrieve it instantly
+    bookingService.saveGuestBooking(fullBookingData);
 
     return fullBookingData;
   },

@@ -182,83 +182,92 @@ function BookingSuccess() {
             if (data) {
               setBooking(data);
             } else {
-              // Fallback demo data with the given bookingId
-              setBooking({
-                id: bookingId,
-                bookingId: bookingId,
-                bookingReference: bookingId,
-                pnr: "GDS-984210",
-                ticketNumber: "TKT-AIBUS-58705",
-                userMobile: "9087654567",
-                contactEmail: "vrinda@aibus.in",
-                bus: {
-                  operator: "GDS Demo Testnaveen",
-                  busType: "AC Seater (2+2)",
-                  from: "Bengaluru",
-                  to: "Chennai",
-                  departureTime: "11:50",
-                  arrivalTime: "00:21",
-                  duration: "12h 31m",
-                  date: "2027-01-14",
-                  pickupLocation: "Majestic Bus Terminal (Bay 12)",
-                  dropoffLocation: "Koyambedu Bus Stand (Platform 4)",
-                },
-                travellers: [
-                  {
-                    seat: "21",
-                    name: "vrinda sa",
-                    age: 33,
-                    gender: "Male",
-                    mobile: "9087654567",
+              const cached = bookingService.getGuestBookingById?.(bookingId) || bookingService.getGuestBookings?.()?.[0];
+              if (cached) {
+                setBooking(cached);
+              } else {
+                setBooking({
+                  id: bookingId,
+                  bookingId: bookingId,
+                  bookingReference: bookingId,
+                  pnr: `PNR-${bookingId.slice(0, 6).toUpperCase()}`,
+                  ticketNumber: `TKT-${bookingId.slice(0, 8).toUpperCase()}`,
+                  userMobile: "",
+                  contactEmail: "",
+                  bus: {
+                    operator: "AIBus Travels",
+                    busType: "AC Seater/Sleeper",
+                    from: "Origin",
+                    to: "Destination",
+                    departureTime: "08:30",
+                    arrivalTime: "14:30",
+                    duration: "6h 00m",
+                    date: new Date().toISOString().slice(0, 10),
+                    pickupLocation: "Boarding Point",
+                    dropoffLocation: "Dropping Point",
                   },
-                ],
-                seats: ["21"],
-                totalAmount: 15,
-                baseFare: 15,
-                serviceTax: 0,
-                status: "Confirmed",
-              });
+                  travellers: [
+                    {
+                      seat: "1",
+                      name: "Passenger",
+                      age: 28,
+                      gender: "Male",
+                      mobile: "",
+                    },
+                  ],
+                  seats: ["1"],
+                  totalAmount: 105,
+                  baseFare: 105,
+                  serviceTax: 0,
+                  status: "Confirmed",
+                });
+              }
             }
             setLoading(false);
           }
         })
         .catch(() => {
           if (isMounted) {
-            setBooking({
-              id: bookingId,
-              bookingId: bookingId,
-              bookingReference: bookingId,
-              pnr: "GDS-984210",
-              ticketNumber: "TKT-AIBUS-58705",
-              userMobile: "9087654567",
-              contactEmail: "vrinda@aibus.in",
-              bus: {
-                operator: "GDS Demo Testnaveen",
-                busType: "AC Seater (2+2)",
-                from: "Bengaluru",
-                to: "Chennai",
-                departureTime: "11:50",
-                arrivalTime: "00:21",
-                duration: "12h 31m",
-                date: "2027-01-14",
-                pickupLocation: "Majestic Bus Terminal (Bay 12)",
-                dropoffLocation: "Koyambedu Bus Stand (Platform 4)",
-              },
-              travellers: [
-                {
-                  seat: "21",
-                  name: "vrinda sa",
-                  age: 33,
-                  gender: "Male",
-                  mobile: "9087654567",
+            const cached = bookingService.getGuestBookingById?.(bookingId) || bookingService.getGuestBookings?.()?.[0];
+            if (cached) {
+              setBooking(cached);
+            } else {
+              setBooking({
+                id: bookingId,
+                bookingId: bookingId,
+                bookingReference: bookingId,
+                pnr: `PNR-${bookingId.slice(0, 6).toUpperCase()}`,
+                ticketNumber: `TKT-${bookingId.slice(0, 8).toUpperCase()}`,
+                userMobile: "",
+                contactEmail: "",
+                bus: {
+                  operator: "AIBus Travels",
+                  busType: "AC Seater/Sleeper",
+                  from: "Origin",
+                  to: "Destination",
+                  departureTime: "08:30",
+                  arrivalTime: "14:30",
+                  duration: "6h 00m",
+                  date: new Date().toISOString().slice(0, 10),
+                  pickupLocation: "Boarding Point",
+                  dropoffLocation: "Dropping Point",
                 },
-              ],
-              seats: ["21"],
-              totalAmount: 15,
-              baseFare: 15,
-              serviceTax: 0,
-              status: "Confirmed",
-            });
+                travellers: [
+                  {
+                    seat: "1",
+                    name: "Passenger",
+                    age: 28,
+                    gender: "Male",
+                    mobile: "",
+                  },
+                ],
+                seats: ["1"],
+                totalAmount: 105,
+                baseFare: 105,
+                serviceTax: 0,
+                status: "Confirmed",
+              });
+            }
             setLoading(false);
           }
         });
@@ -268,39 +277,38 @@ function BookingSuccess() {
       if (guests.length > 0) {
         setBooking(guests[0]);
       } else {
-        // Default demo booking
         setBooking({
-          id: "36358705-059e-4058-8776-de10b9df8f6d",
-          bookingId: "36358705-059e-4058-8776-de10b9df8f6d",
-          bookingReference: "36358705-059e-4058-8776-de10b9df8f6d",
-          pnr: "GDS-984210",
-          ticketNumber: "TKT-AIBUS-58705",
-          userMobile: "9087654567",
-          contactEmail: "vrinda@aibus.in",
+          id: "demo-booking-ref",
+          bookingId: "demo-booking-ref",
+          bookingReference: "demo-booking-ref",
+          pnr: "PNR-AIBUS",
+          ticketNumber: "TKT-AIBUS",
+          userMobile: "",
+          contactEmail: "",
           bus: {
-            operator: "GDS Demo Testnaveen",
-            busType: "AC Seater (2+2)",
-            from: "Bengaluru",
-            to: "Chennai",
-            departureTime: "11:50",
-            arrivalTime: "00:21",
-            duration: "12h 31m",
-            date: "2027-01-14",
-            pickupLocation: "Majestic Bus Terminal (Bay 12)",
-            dropoffLocation: "Koyambedu Bus Stand (Platform 4)",
+            operator: "AIBus Travels",
+            busType: "AC Seater/Sleeper",
+            from: "Origin",
+            to: "Destination",
+            departureTime: "08:30",
+            arrivalTime: "14:30",
+            duration: "6h 00m",
+            date: new Date().toISOString().slice(0, 10),
+            pickupLocation: "Boarding Point",
+            dropoffLocation: "Dropping Point",
           },
           travellers: [
             {
-              seat: "21",
-              name: "vrinda sa",
-              age: 33,
+              seat: "1",
+              name: "Passenger",
+              age: 28,
               gender: "Male",
-              mobile: "9087654567",
+              mobile: "",
             },
           ],
-          seats: ["21"],
-          totalAmount: 15,
-          baseFare: 15,
+          seats: ["1"],
+          totalAmount: 105,
+          baseFare: 105,
           serviceTax: 0,
           status: "Confirmed",
         });
@@ -411,15 +419,15 @@ function BookingSuccess() {
       : (booking.seats && booking.seats.length > 0
           ? booking.seats.map((s, i) => ({
               seat: s,
-              name: booking.traveller?.name || `Passenger ${i + 1}`,
+              name: booking.traveller?.name || booking.contactName || `Passenger ${i + 1}`,
               age: booking.traveller?.age || 28,
               gender: booking.traveller?.gender || "Male",
             }))
-          : [{ seat: "21", name: "vrinda sa", age: 33, gender: "Male" }]);
+          : [{ seat: "1", name: booking.contactName || "Passenger", age: 28, gender: "Male" }]);
 
-  const rawPhone = booking.userMobile || booking.traveller?.mobile || "9087654567";
+  const rawPhone = booking.contactPhone || booking.userMobile || booking.traveller?.mobile || "";
   const cleanedPhone = formatCleanPhone(rawPhone);
-  const contactEmail = booking.contactEmail || "vrinda@aibus.in";
+  const contactEmail = booking.contactEmail || "";
 
   const rawStatus = String(booking.status || "CONFIRMED").toUpperCase();
   const isFailedStatus = rawStatus.includes("FAIL") || rawStatus.includes("CANCEL");

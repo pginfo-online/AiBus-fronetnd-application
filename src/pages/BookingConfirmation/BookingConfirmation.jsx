@@ -87,9 +87,30 @@ function BookingConfirmation() {
   const busId = searchParams.get("busId");
   const seatsParam = searchParams.get("seats");
   const travellersDataParam = searchParams.get("travellersData");
+
+  const loggedInUser = authService.getLoggedInUser();
+
+  const contactName =
+    location.state?.contact?.name ||
+    searchParams.get("contactName") ||
+    location.state?.travellers?.[0]?.name ||
+    loggedInUser?.name ||
+    "";
+
   const contactMobile =
-    searchParams.get("contactMobile") || searchParams.get("mobile") || "9496192710";
-  const contactEmail = searchParams.get("contactEmail") || "booking@aibus.in";
+    location.state?.contact?.mobile ||
+    searchParams.get("contactMobile") ||
+    searchParams.get("mobile") ||
+    loggedInUser?.mobile ||
+    loggedInUser?.phone ||
+    "";
+
+  const contactEmail =
+    location.state?.contact?.email ||
+    searchParams.get("contactEmail") ||
+    loggedInUser?.email ||
+    (contactMobile ? `${contactMobile.replace(/\D/g, "").slice(-10)}@mobile.aibus.app` : "");
+
   const from = searchParams.get("from");
   const to = searchParams.get("to");
   const fromId = searchParams.get("fromId");
@@ -113,8 +134,6 @@ function BookingConfirmation() {
   const [upiVerifyMsg, setUpiVerifyMsg] = useState("");
   const [selectedBank, setSelectedBank] = useState("HDFC");
   const [insuranceOpted, setInsuranceOpted] = useState(true);
-
-  const loggedInUser = authService.getLoggedInUser();
 
   useEffect(() => {
     let isMounted = true;
@@ -203,21 +222,23 @@ function BookingConfirmation() {
 
   const selectedSeats = seatsParam
     ? seatsParam.split(",").map((s) => s.trim()).filter(Boolean)
-    : ["2"];
+    : (location.state?.travellers?.map((t) => t.seat) || ["2"]);
 
-  let travellers = [];
-  try {
-    if (travellersDataParam) {
-      travellers = JSON.parse(travellersDataParam);
+  let travellers = location.state?.travellers || [];
+  if (!travellers || travellers.length === 0) {
+    try {
+      if (travellersDataParam) {
+        travellers = JSON.parse(travellersDataParam);
+      }
+    } catch {
+      travellers = [];
     }
-  } catch {
-    travellers = [];
   }
 
   if (travellers.length === 0 && selectedSeats.length > 0) {
     travellers = selectedSeats.map((seat, index) => ({
       seat,
-      name: index === 0 ? loggedInUser?.name || "Primary Passenger" : `Passenger ${index + 1}`,
+      name: index === 0 ? contactName || loggedInUser?.name || "Passenger" : `Passenger ${index + 1}`,
       age: index === 0 ? "28" : "26",
       gender: "Male",
       mobile: contactMobile,
@@ -348,7 +369,7 @@ function BookingConfirmation() {
       return;
     }
 
-    const userMobile = loggedInUser?.mobile || loggedInUser?.phone || contactMobile;
+    const resolvedUserMobile = contactMobile || loggedInUser?.mobile || loggedInUser?.phone || "";
     const holdId = holdIdParam || location.state?.holdId;
 
     try {
@@ -367,6 +388,10 @@ function BookingConfirmation() {
       );
 
       const isGuest = false;
+      const effectiveContactName = (contactName || travellers[0]?.name || loggedInUser?.name || "Passenger").trim();
+      const effectiveContactEmail = (contactEmail || loggedInUser?.email || (resolvedUserMobile ? `${resolvedUserMobile.replace(/\D/g, "").slice(-10)}@mobile.aibus.app` : "")).trim();
+      const effectiveContactPhone = resolvedUserMobile;
+
       const newBooking = await bookingService.createBooking({
         bus: {
           ...selectedBus,
@@ -376,7 +401,10 @@ function BookingConfirmation() {
         travellers,
         seats: selectedSeats,
         totalAmount,
-        userMobile,
+        contactName: effectiveContactName,
+        contactEmail: effectiveContactEmail,
+        contactPhone: effectiveContactPhone,
+        userMobile: effectiveContactPhone,
         userId: loggedInUser?.id || null,
         isGuest,
         fromId: resolvedFromCityId,
@@ -415,9 +443,9 @@ function BookingConfirmation() {
         await paymentService.openRazorpayCheckout({
           intent: { ...intent, bookingId: bId, bookingNumber: newBooking.bookingNumber, paymentMode: (paymentMethod || "upi").toUpperCase() },
           traveller: {
-            name: contactInfo?.name || contactInfo?.fullName || passengersList[0]?.name || "",
-            email: contactInfo?.email || "",
-            phone: contactInfo?.phone || "",
+            name: effectiveContactName,
+            email: effectiveContactEmail || "customer@aibus.in",
+            phone: effectiveContactPhone || "9876543210",
           },
           onPaymentSuccess: (res) => {
             navigate(
