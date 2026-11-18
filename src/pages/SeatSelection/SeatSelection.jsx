@@ -122,23 +122,27 @@ function SeatSelection() {
       const stateBus = location.state?.bus || null;
       try {
         let busObj = stateBus;
-        if (!busObj && fromId && toId && date && busId) {
+        const effectiveFromId = fromId || (await busService.resolveCityId(from || resolvedFromCity));
+        const effectiveToId = toId || (await busService.resolveCityId(to || resolvedToCity));
+        const effectiveDate = date || new Date().toISOString().split("T")[0];
+
+        if (!busObj && effectiveFromId && effectiveToId && busId) {
           busObj = await busService.searchSingleBus({
-            fromCityId: fromId,
-            toCityId: toId,
-            journeyDate: date,
+            fromCityId: effectiveFromId,
+            toCityId: effectiveToId,
+            journeyDate: effectiveDate,
             busId,
-            from: from || "",
-            to: to || "",
+            from: from || resolvedFromCity,
+            to: to || resolvedToCity,
           });
 
           if (!busObj) {
             const searchResults = await busService.searchBuses({
-              from: from || "",
-              to: to || "",
-              fromCityId: fromId,
-              toCityId: toId,
-              journeyDate: date,
+              from: from || resolvedFromCity,
+              to: to || resolvedToCity,
+              fromCityId: effectiveFromId,
+              toCityId: effectiveToId,
+              journeyDate: effectiveDate,
             });
             busObj =
               searchResults.find(
@@ -155,7 +159,7 @@ function SeatSelection() {
         if (busObj && isMounted) {
           const realBusId = busObj.routeBusId || busObj.busId || busObj.id;
           const chartId = realBusId;
-          const seatsResponse = await busService.getSeatAvailability(fromId, toId, date, chartId);
+          const seatsResponse = await busService.getSeatAvailability(effectiveFromId, effectiveToId, effectiveDate, chartId);
           if (isMounted) {
             const resolvedPickups =
               seatsResponse?.BoardingPoints?.length > 0 ? seatsResponse.BoardingPoints : (busObj.pickups || []);

@@ -10,6 +10,7 @@ import {
   Ticket,
 } from "lucide-react";
 import paymentService from "../../services/paymentService";
+import bookingService from "../../services/bookingService";
 import BookingStepper from "../../components/BookingStepper/BookingStepper";
 import "./PaymentResult.css";
 
@@ -111,6 +112,16 @@ function PaymentResult() {
       if (verifiedSuccess) {
         setStep(3);
         setStatusNote("Payment confirmed! Generating your bus ticket...");
+        if (res?.booking) {
+          const mapped = bookingService.mapBackendBooking ? bookingService.mapBackendBooking(res.booking) : res.booking;
+          bookingService.saveGuestBooking(mapped);
+        } else if (bookingId) {
+          try {
+            await bookingService.getBookingById(bookingId);
+          } catch {
+            // Ignore prefetch error
+          }
+        }
         await new Promise((resolve) => setTimeout(resolve, 800));
 
         localStorage.removeItem("aibus_pending_payment");

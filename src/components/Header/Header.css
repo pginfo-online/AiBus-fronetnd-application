@@ -245,6 +245,16 @@
   border: 1px solid rgba(0, 0, 0, 0.1);
   padding: 6px 14px;
   border-radius: 9999px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ogl-user-badge:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(1, 60, 154, 0.3);
+  color: #013C9A;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .ogl-logout-btn {

@@ -190,7 +190,10 @@ export const bookingService = {
       });
       const holdData = response.data?.data || response.data;
       console.log("[HoldSeats Live Response]", holdData);
-      return holdData;
+      return {
+        ...holdData,
+        id: holdData?.id || holdData?.holdId,
+      };
     } catch (err) {
       const errData = err.response?.data;
       const errorMsg =
@@ -455,7 +458,11 @@ export const bookingService = {
     try {
       const response = await api.get(`/api/v1/bookings/${bookingReference}`);
       const data = response.data?.data;
-      if (data) return mapBackendBooking(data);
+      if (data) {
+        const mapped = mapBackendBooking(data);
+        bookingService.saveGuestBooking(mapped);
+        return mapped;
+      }
     } catch (err) {
       console.warn("Checking guest storage for booking:", err.message);
     }
@@ -463,16 +470,95 @@ export const bookingService = {
     return bookingService.getGuestBookingById(bookingReference);
   },
 
+  mapBackendBooking,
+
   // ----------------------------------------------------
   // 4️⃣ User Bookings List
   // ----------------------------------------------------
   getMyBookings: async () => {
-    const response = await api.get("/api/v1/bookings/my-bookings");
-    const list = response.data?.data || [];
-    if (Array.isArray(list)) {
-      return list.map(mapBackendBooking);
+    let remoteBookings = [];
+    try {
+      const response = await api.get("/api/v1/bookings/my-bookings");
+      const raw = response.data?.data;
+      const list = Array.isArray(raw)
+        ? raw
+        : Array.isArray(raw?.items)
+          ? raw.items
+          : Array.isArray(raw?.bookings)
+            ? raw.bookings
+            : Array.isArray(raw?.data)
+              ? raw.data
+              : [];
+
+      remoteBookings = list.map(mapBackendBooking);
+    } catch (err) {
+      console.warn("Failed to fetch remote /my-bookings:", err.message);
     }
-    return [];
+
+    // Retrieve locally saved device / guest bookings
+    const localBookings = (bookingService.getGuestBookings() || []).map((b) => ({
+      ...b,
+      isGuest: b.isGuest !== undefined ? Boolean(b.isGuest) : false,
+    }));
+
+    // Check if any recent pending payment booking can be fetched live
+    try {
+      const pendingRaw = localStorage.getItem("aibus_pending_payment");
+      if (pendingRaw) {
+        const pending = JSON.parse(pendingRaw);
+        if (pending.bookingId) {
+          const alreadyInLocal = localBookings.some((b) => {
+            const bId = String(b.id || b.bookingId || b.bookingReference || b.bookingNumber || "");
+            return bId === String(pending.bookingId);
+          });
+          if (!alreadyInLocal) {
+            const liveBooking = await bookingService.getBookingById(pending.bookingId);
+            if (liveBooking) {
+              localBookings.unshift(liveBooking);
+              bookingService.saveGuestBooking(liveBooking);
+            }
+          }
+        }
+      }
+    } catch {
+      // Ignore pending payment fetch error
+    }
+
+    // Merge remote and local bookings by ID / Reference / PNR
+    const seenKeys = new Set();
+    const merged = [];
+
+    const getKeys = (b) => {
+      const keys = [];
+      if (b.id) keys.push(String(b.id));
+      if (b.bookingId) keys.push(String(b.bookingId));
+      if (b.bookingReference) keys.push(String(b.bookingReference));
+      if (b.bookingNumber) keys.push(String(b.bookingNumber));
+      if (b.pnr && !String(b.pnr).startsWith("PNR-")) keys.push(String(b.pnr));
+      return keys;
+    };
+
+    // Prioritize remote bookings
+    for (const rb of remoteBookings) {
+      const keys = getKeys(rb);
+      const isSeen = keys.some((k) => seenKeys.has(k));
+      if (!isSeen) {
+        keys.forEach((k) => seenKeys.add(k));
+        merged.push(rb);
+      }
+    }
+
+    // Add local bookings not already in remote
+    for (const lb of localBookings) {
+      const keys = getKeys(lb);
+      const isSeen = keys.some((k) => seenKeys.has(k));
+      if (!isSeen) {
+        keys.forEach((k) => seenKeys.add(k));
+        merged.push(lb);
+      }
+    }
+
+    return merged;
   },
 
   getUserBookings: async (userId) => {
@@ -606,13 +692,35 @@ export const bookingService = {
   // ----------------------------------------------------
   saveGuestBooking: (booking) => {
     try {
+      if (!booking) return [];
       const existing = bookingService.getGuestBookings();
-      const bookingId = booking.bookingId || booking.bookingReference;
-      const filtered = existing.filter(
-        (b) => (b.bookingId || b.bookingReference) !== bookingId
+      const targetId = String(
+        booking.id ||
+        booking.bookingId ||
+        booking.bookingReference ||
+        booking.bookingNumber ||
+        ""
       );
+      const targetPnr = String(booking.pnr || booking.pnrNumber || "");
+
+      const filtered = existing.filter((b) => {
+        const bId = String(b.id || b.bookingId || b.bookingReference || b.bookingNumber || "");
+        const bPnr = String(b.pnr || b.pnrNumber || "");
+        if (targetId && bId && targetId === bId) return false;
+        if (targetPnr && bPnr && targetPnr === bPnr) return false;
+        return true;
+      });
+
       const updated = [
-        { ...booking, isGuest: true, bookedAt: new Date().toISOString() },
+        {
+          ...booking,
+          id: targetId || booking.id,
+          bookingId: targetId || booking.bookingId,
+          bookingReference: booking.bookingReference || booking.bookingNumber || targetId,
+          bookingNumber: booking.bookingNumber || booking.bookingReference || targetId,
+          isGuest: booking.isGuest !== undefined ? Boolean(booking.isGuest) : false,
+          bookedAt: booking.bookedAt || booking.bookingDate || new Date().toISOString(),
+        },
         ...filtered,
       ];
       localStorage.setItem(GUEST_BOOKINGS_KEY, JSON.stringify(updated));
@@ -634,9 +742,15 @@ export const bookingService = {
   },
 
   getGuestBookingById: (bookingId) => {
+    if (!bookingId) return null;
     const list = bookingService.getGuestBookings();
+    const target = String(bookingId);
     return (
-      list.find((b) => (b.bookingId || b.bookingReference) === bookingId) || null
+      list.find((b) => {
+        const bId = String(b.id || b.bookingId || b.bookingReference || b.bookingNumber || "");
+        const bPnr = String(b.pnr || b.pnrNumber || "");
+        return bId === target || bPnr === target;
+      }) || null
     );
   },
 

@@ -246,6 +246,31 @@ export const busService = {
   },
 
   /**
+   * Helper to resolve city ID given a city name or string
+   */
+  resolveCityId: async (cityNameOrId) => {
+    if (!cityNameOrId) return 4292;
+    const str = String(cityNameOrId).trim();
+    if (!isNaN(Number(str))) return Number(str);
+    const lower = str.toLowerCase();
+    if (lower.includes("bengaluru") || lower.includes("bangalore")) return 4292;
+    if (lower.includes("chennai") || lower.includes("madras")) return 4562;
+    if (lower.includes("pune")) return 4492;
+    if (lower.includes("hyderabad")) return 4120;
+    if (lower.includes("mumbai") || lower.includes("bombay")) return 4300;
+    if (lower.includes("delhi")) return 1;
+    if (lower.includes("jaipur")) return 2;
+    try {
+      const cities = await busService.getCities();
+      const match = cities.find((c) => c.name?.toLowerCase() === lower || c.City?.toLowerCase() === lower);
+      if (match) return Number(match.id || match.CityId);
+    } catch {
+      // ignore
+    }
+    return 4292;
+  },
+
+  /**
    * Helper to resolve city name given a city ID or name string
    */
   resolveCityName: async (cityIdOrName) => {

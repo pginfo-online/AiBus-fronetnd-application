@@ -266,7 +266,9 @@ function BookingConfirmation() {
         clearInterval(timer);
         bookingService.clearSeatLock();
         alert("Your seat reservation timer expired. Please select seats again.");
-        navigate(`/seat-selection?busId=${busId || "1"}&from=${from || ""}&to=${to || ""}&date=${date || ""}`);
+        const fId = fromId || selectedBus?.fromCityId || "";
+        const tId = toId || selectedBus?.toCityId || "";
+        navigate(`/seat-selection?busId=${busId || "1"}&from=${from || ""}&to=${to || ""}&fromId=${fId}&toId=${tId}&date=${date || ""}`);
       }
     }, 1000);
 
@@ -370,7 +372,7 @@ function BookingConfirmation() {
     }
 
     const resolvedUserMobile = contactMobile || loggedInUser?.mobile || loggedInUser?.phone || "";
-    const holdId = holdIdParam || location.state?.holdId;
+    let effectiveHoldId = holdIdParam || location.state?.holdId;
 
     try {
       setSubmitting(true);
@@ -392,27 +394,145 @@ function BookingConfirmation() {
       const effectiveContactEmail = (contactEmail || loggedInUser?.email || (resolvedUserMobile ? `${resolvedUserMobile.replace(/\D/g, "").slice(-10)}@mobile.aibus.app` : "")).trim();
       const effectiveContactPhone = resolvedUserMobile;
 
-      const newBooking = await bookingService.createBooking({
-        bus: {
-          ...selectedBus,
-          from: resolvedFromCity,
-          to: resolvedToCity,
-        },
-        travellers,
-        seats: selectedSeats,
-        totalAmount,
-        contactName: effectiveContactName,
-        contactEmail: effectiveContactEmail,
-        contactPhone: effectiveContactPhone,
-        userMobile: effectiveContactPhone,
-        userId: loggedInUser?.id || null,
-        isGuest,
-        fromId: resolvedFromCityId,
-        toId: resolvedToCityId,
-        holdId,
-        pickup: pickupPoint,
-        dropoff: dropoffPoint,
-      });
+      const cleanDate = String(selectedBus?.date || date || new Date().toISOString().split("T")[0]).split("T")[0];
+
+      const resolvedPickupCode = String(
+        pickupPoint?.PickupCode ||
+        pickupPoint?.pickupCode ||
+        pickupPoint?.PickUpID ||
+        pickupPoint?.pickupId ||
+        pickupPoint?.code ||
+        pickupPoint?.Id ||
+        (Number(selectedBus?.busId || busId) === 2 ? "74717" : "39436")
+      );
+      const resolvedDropoffCode = String(
+        dropoffPoint?.DropoffCode ||
+        dropoffPoint?.dropoffCode ||
+        dropoffPoint?.DropOffID ||
+        dropoffPoint?.dropoffId ||
+        dropoffPoint?.code ||
+        dropoffPoint?.Id ||
+        (Number(selectedBus?.busId || busId) === 2 ? "746" : "750")
+      );
+
+      const acquireFreshHold = async () => {
+        const holdRes = await bookingService.holdSeats({
+          fromCityId: resolvedFromCityId,
+          toCityId: resolvedToCityId,
+          journeyDate: cleanDate,
+          busId: selectedBus?.routeBusId || selectedBus?.busId || Number(busId) || 1,
+          pickupId: resolvedPickupCode,
+          dropoffId: resolvedDropoffCode,
+          contactInfo: {
+            customerName: effectiveContactName,
+            email: effectiveContactEmail,
+            phone: effectiveContactPhone,
+            mobile: effectiveContactPhone,
+          },
+          passengers: travellers.map((t, idx) => {
+            const seatNo = String(t.seat || selectedSeats[idx] || `S${idx + 1}`);
+            const seatObj = selectedBus?.seatsLayout?.Layout?.find((s) => String(s.seat_no) === seatNo);
+            const fare = Number(t.fare || seatObj?.price || seatObj?.total_fare || busPrice || 205);
+            return {
+              seatNo,
+              seatTypeId: Number(t.seatTypeId || seatObj?.seat_type || 1),
+              fare,
+              gender: t.gender === "Female" || t.gender === "F" ? "F" : "M",
+              age: parseInt(t.age, 10) || 28,
+              name: (t.name || `Passenger ${idx + 1}`).trim(),
+              isAcSeat: Boolean(selectedBus?.busType?.toLowerCase().includes("ac")),
+            };
+          }),
+        });
+        return holdRes?.id || holdRes?.holdId || holdRes?.providerHoldId;
+      };
+
+      const isHoldValidUuid = effectiveHoldId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(effectiveHoldId);
+
+      // If holdId is missing or is a local placeholder, acquire an active hold with logged-in user credentials
+      if (!isHoldValidUuid || String(effectiveHoldId).startsWith("hold-local")) {
+        try {
+          const freshHoldId = await acquireFreshHold();
+          if (freshHoldId) {
+            effectiveHoldId = freshHoldId;
+          }
+        } catch (holdErr) {
+          console.warn("[BookingConfirmation] Initial hold refresh note:", holdErr.message);
+        }
+      }
+
+      let newBooking;
+      try {
+        newBooking = await bookingService.createBooking({
+          bus: {
+            ...selectedBus,
+            from: resolvedFromCity,
+            to: resolvedToCity,
+          },
+          travellers,
+          seats: selectedSeats,
+          totalAmount,
+          contactName: effectiveContactName,
+          contactEmail: effectiveContactEmail,
+          contactPhone: effectiveContactPhone,
+          userMobile: effectiveContactPhone,
+          userId: loggedInUser?.id || null,
+          isGuest,
+          fromId: resolvedFromCityId,
+          toId: resolvedToCityId,
+          holdId: effectiveHoldId,
+          pickup: pickupPoint,
+          dropoff: dropoffPoint,
+        });
+      } catch (createErr) {
+        const errStr = String(createErr.message || "").toLowerCase();
+        // If seat hold was missing in DB, expired, or tied to previous session, re-acquire active hold and retry
+        if (
+          errStr.includes("seat hold not found") ||
+          errStr.includes("seat_hold_not_found") ||
+          errStr.includes("expired") ||
+          errStr.includes("hold")
+        ) {
+          console.warn("[BookingConfirmation] Hold expired or mismatched; re-holding seats with live user session and retrying...");
+          try {
+            const freshHoldId = await acquireFreshHold();
+            if (freshHoldId) {
+              effectiveHoldId = freshHoldId;
+              newBooking = await bookingService.createBooking({
+                bus: {
+                  ...selectedBus,
+                  from: resolvedFromCity,
+                  to: resolvedToCity,
+                },
+                travellers,
+                seats: selectedSeats,
+                totalAmount,
+                contactName: effectiveContactName,
+                contactEmail: effectiveContactEmail,
+                contactPhone: effectiveContactPhone,
+                userMobile: effectiveContactPhone,
+                userId: loggedInUser?.id || null,
+                isGuest,
+                fromId: resolvedFromCityId,
+                toId: resolvedToCityId,
+                holdId: effectiveHoldId,
+                pickup: pickupPoint,
+                dropoff: dropoffPoint,
+              });
+            } else {
+              throw createErr;
+            }
+          } catch (retryErr) {
+            throw new Error(
+              retryErr.message?.includes("Seat") || retryErr.message?.includes("available")
+                ? retryErr.message
+                : "Seat reservation expired. Please select your seats again."
+            );
+          }
+        } else {
+          throw createErr;
+        }
+      }
 
       const bId = newBooking.bookingId || newBooking.id;
 

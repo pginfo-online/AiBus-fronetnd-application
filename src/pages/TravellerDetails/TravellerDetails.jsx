@@ -327,8 +327,10 @@ function TravellerDetails() {
         clearInterval(timer);
         bookingService.clearSeatLock();
         alert("Your seat lock timer expired. Please select seats again.");
+        const fId = fromIdParam || selectedBus?.fromCityId || "";
+        const tId = toIdParam || selectedBus?.toCityId || "";
         navigate(
-          `/seat-selection?busId=${busId}&from=${fromParam}&to=${toParam}&date=${dateParam}`
+          `/seat-selection?busId=${busId}&from=${fromParam}&to=${toParam}&fromId=${fId}&toId=${tId}&date=${dateParam}`
         );
       }
     }, 1000);
@@ -542,8 +544,8 @@ function TravellerDetails() {
         });
         holdId = holdRes?.id || holdRes?.holdId || holdRes?.providerHoldId;
       } catch (holdErr) {
-        console.warn("[TravellerDetails] Provider hold failed, proceeding with fallback session hold:", holdErr);
-        holdId = `hold-local-${Date.now()}`;
+        console.warn("[TravellerDetails] Provider hold failed, will auto-acquire during confirmation:", holdErr.message);
+        holdId = null;
       }
 
       // Calculate final pricing

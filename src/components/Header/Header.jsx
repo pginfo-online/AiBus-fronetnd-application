@@ -106,6 +106,10 @@ function Header() {
           </button>
 
           <Link to="/my-bookings" className="ogl-nav-link">
+            My Bookings
+          </Link>
+
+          <Link to="/my-bookings" className="ogl-nav-link">
             Track Bus
           </Link>
 
@@ -133,14 +137,14 @@ function Header() {
 
           {user ? (
             <div className="ogl-user-menu">
-              <span className="ogl-user-badge">
+              <Link to="/my-bookings" className="ogl-user-badge" title="View My Bookings">
                 <UserIcon size={15} />
                 <span className="ogl-user-name">
                   {user.firstName
                     ? `${user.firstName} ${user.lastName || ""}`.trim()
                     : user.name || (user.phone ? `+91 ${user.phone.slice(-4)}` : "Traveller")}
                 </span>
-              </span>
+              </Link>
               <button type="button" className="ogl-logout-btn" onClick={handleLogout}>
                 Logout
               </button>
@@ -188,7 +192,10 @@ function Header() {
             >
               Offers
             </button>
-            <Link to="/my-bookings" className="ogl-mobile-link">
+            <Link to="/my-bookings" className="ogl-mobile-link" onClick={() => setMobileMenuOpen(false)}>
+              My Bookings
+            </Link>
+            <Link to="/my-bookings" className="ogl-mobile-link" onClick={() => setMobileMenuOpen(false)}>
               Track Bus
             </Link>
             <button

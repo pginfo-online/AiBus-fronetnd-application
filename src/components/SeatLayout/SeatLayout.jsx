@@ -30,6 +30,10 @@ function SteeringWheelIcon() {
 // Dynamic berth price calculator matching Image 1 (₹2000/₹1700 Lower, ₹1900/₹1600 Upper)
 export function getSeatPrice(baseFare = 1700, isUpper = false, isSingle = false) {
   let price = Number(baseFare) || 1700;
+  // If base fare is budget/short distance (< ₹600), keep seat pricing uniform to avoid jumpy pricing
+  if (price < 600) {
+    return price;
+  }
   if (isSingle) {
     return isUpper ? Math.round(price + 200) : Math.round(price + 300); // ₹1900 Upper / ₹2000 Lower
   }

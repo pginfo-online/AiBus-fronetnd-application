@@ -12,37 +12,38 @@ function MyBookings() {
   const [filterTab, setFilterTab] = useState("ALL");
   const navigate = useNavigate();
 
-  const loadBookings = (currentUser) => {
-    if (!currentUser || !authService.isAuthenticated()) {
-      setBookings([]);
-      return;
-    }
-
+  const loadBookings = async (currentUser) => {
     setLoading(true);
     setError("");
 
-    bookingService
-      .getMyBookings()
-      .then((data) => {
-        setBookings(Array.isArray(data) ? data : []);
-      })
-      .catch((err) => {
-        console.error("Failed to load bookings:", err);
-        if (err?.response?.status === 401) {
-          setError("Session expired. Please log in again.");
-        } else {
-          setError(err.message || "Failed to load bookings. Please try again.");
-        }
-        setBookings([]);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const data = await bookingService.getMyBookings();
+      setBookings(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to load bookings:", err);
+      const local = bookingService.getGuestBookings() || [];
+      if (local.length > 0) {
+        setBookings(local);
+      } else if (err?.response?.status === 401) {
+        setError("Session expired. Please log in again.");
+      } else {
+        setError(err.message || "Failed to load bookings. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const handleLoginChange = () => {
-      const loggedInUser = authService.getLoggedInUser();
+    const handleLoginChange = async () => {
+      let loggedInUser = authService.getLoggedInUser();
+      if (!loggedInUser && authService.isAuthenticated()) {
+        try {
+          loggedInUser = await authService.getProfile();
+        } catch {
+          // Ignore profile sync error
+        }
+      }
       setUser(loggedInUser);
       loadBookings(loggedInUser);
     };
@@ -50,9 +51,13 @@ function MyBookings() {
     handleLoginChange();
 
     window.addEventListener("loginStatusChanged", handleLoginChange);
+    window.addEventListener("storage", handleLoginChange);
+    window.addEventListener("guestBookingsChanged", handleLoginChange);
 
     return () => {
       window.removeEventListener("loginStatusChanged", handleLoginChange);
+      window.removeEventListener("storage", handleLoginChange);
+      window.removeEventListener("guestBookingsChanged", handleLoginChange);
     };
   }, []);
 
@@ -77,7 +82,7 @@ function MyBookings() {
   };
 
   const handleShareTicket = async (booking) => {
-    const bRef = booking.bookingId || booking.bookingReference;
+    const bRef = booking.bookingId || booking.bookingReference || booking.id || booking.bookingNumber;
     const shareText = `🚌 AiBus Ticket\nBooking ID: ${bRef}\nRoute: ${booking.bus?.from} → ${booking.bus?.to}\nDate: ${booking.bus?.date}\nSeats: ${Array.isArray(booking.seats) ? booking.seats.join(', ') : booking.seats}`;
     const url = `${window.location.origin}/booking-details?bookingId=${bRef}`;
 
@@ -105,7 +110,7 @@ function MyBookings() {
   };
 
   const handleDownloadTicket = (booking) => {
-    const bRef = booking.bookingId || booking.bookingReference;
+    const bRef = booking.bookingId || booking.bookingReference || booking.id || booking.bookingNumber;
     navigate(`/booking-details?bookingId=${bRef}`);
   };
 
@@ -192,8 +197,8 @@ function MyBookings() {
           </div>
         )}
 
-        {/* Case 1: Not logged in */}
-        {!user ? (
+        {/* Case 1: Not logged in and no device bookings */}
+        {!user && bookings.length === 0 ? (
           <section className="empty-bookings-simple">
             <p className="simple-login-msg">Please log in to view your bookings.</p>
             <button
@@ -247,7 +252,7 @@ function MyBookings() {
           <div className="bookings-list">
             {filteredBookings.map((booking) => {
               const isCancelled = booking.status?.toLowerCase() === "cancelled";
-              const refId = booking.bookingId || booking.bookingReference;
+              const refId = booking.bookingId || booking.bookingReference || booking.id || booking.bookingNumber;
 
               return (
                 <article key={refId} className="booking-card">
