@@ -23,15 +23,29 @@ function PaymentResult() {
   const [step, setStep] = useState(1);
   const [statusNote, setStatusNote] = useState("Connecting to payment gateway...");
   const [isVerifying, setIsVerifying] = useState(true);
+  const [resultStatus, setResultStatus] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const isCancelledRef = useRef(false);
 
   const executeVerification = useCallback(async () => {
     isCancelledRef.current = false;
     setIsVerifying(true);
+    setResultStatus(null);
     setErrorMessage(null);
     setStep(1);
     setStatusNote("Initiating transaction verification...");
+
+    const checkoutStatus = searchParams.get("status")?.toUpperCase();
+    if (checkoutStatus === "FAILED") {
+      localStorage.removeItem("aibus_pending_payment");
+      setIsVerifying(false);
+      setResultStatus("FAILED");
+      setErrorMessage(
+        searchParams.get("reason") ||
+          "Your payment was not completed. Please check your payment method before trying again."
+      );
+      return;
+    }
 
     // 1. Resolve identifiers: URL params or persistent pending payment storage
     let bookingId = searchParams.get("bookingId");
@@ -72,6 +86,7 @@ function PaymentResult() {
       let verifiedSuccess = false;
       let finalStatus = "PENDING";
       let lastError = null;
+      let finalResponse = null;
 
       for (let i = 0; i < BACKOFF_DELAYS.length; i++) {
         if (isCancelledRef.current) return;
@@ -85,6 +100,7 @@ function PaymentResult() {
             gatewaySignature,
           });
 
+          finalResponse = res;
           finalStatus = res.status;
 
           if (res.status === "SUCCESS") {
@@ -111,9 +127,11 @@ function PaymentResult() {
 
       if (verifiedSuccess) {
         setStep(3);
-        setStatusNote("Payment confirmed! Generating your bus ticket...");
-        if (res?.booking) {
-          const mapped = bookingService.mapBackendBooking ? bookingService.mapBackendBooking(res.booking) : res.booking;
+        setStatusNote("Payment confirmed! Your booking is complete.");
+        if (finalResponse?.booking) {
+          const mapped = bookingService.mapBackendBooking
+            ? bookingService.mapBackendBooking(finalResponse.booking)
+            : finalResponse.booking;
           bookingService.saveGuestBooking(mapped);
         } else if (bookingId) {
           try {
@@ -122,33 +140,35 @@ function PaymentResult() {
             // Ignore prefetch error
           }
         }
-        await new Promise((resolve) => setTimeout(resolve, 800));
-
         localStorage.removeItem("aibus_pending_payment");
-        navigate(`/booking-success?bookingId=${bookingId}`, { replace: true });
+        setResultStatus("SUCCESS");
+        setIsVerifying(false);
       } else if (finalStatus === "FAILED") {
         localStorage.removeItem("aibus_pending_payment");
         setIsVerifying(false);
+        setResultStatus("FAILED");
         setErrorMessage(
-          "Payment was declined or cancelled by the bank. If money was debited, it will be automatically refunded within 5-7 business days."
+          "Your payment could not be confirmed. Check your bank or payment app before trying again. If you were charged, contact support with your booking details."
         );
       } else {
         // Still pending after backoff
         setIsVerifying(false);
+        setResultStatus("PENDING");
         setErrorMessage(
-          lastError?.message ||
-            "Payment confirmation is taking longer than expected with your bank. If the amount was debited, your ticket will be confirmed shortly or refunded automatically."
+          lastError?.response?.data?.message ||
+            "Payment confirmation is taking longer than expected. Check My Bookings before making another payment. If you were charged but the booking is not confirmed, contact support."
         );
       }
     } catch (err) {
       if (isCancelledRef.current) return;
       setIsVerifying(false);
+      setResultStatus("PENDING");
       setErrorMessage(
-        err.message ||
-          "Payment could not be verified. If amount was debited, it will be refunded automatically."
+        err.response?.data?.message ||
+          "Payment could not be verified. Check My Bookings before making another payment. If you were charged but the booking is not confirmed, contact support."
       );
     }
-  }, [searchParams, navigate]);
+  }, [searchParams]);
 
   useEffect(() => {
     executeVerification();
@@ -217,6 +237,35 @@ function PaymentResult() {
                 <span>Please do not close or refresh this window while we verify your transaction.</span>
               </div>
             </div>
+          ) : resultStatus === "SUCCESS" ? (
+            <div className="result-alert-box">
+              <div className="result-icon-circle success">
+                <CheckCircle2 size={44} />
+              </div>
+              <h1 className="payment-result-title">Payment Successful!</h1>
+              <p className="payment-result-desc">
+                Your payment is confirmed and your booking is complete. You can view your ticket and booking
+                details in My Bookings.
+              </p>
+              <div className="result-actions-group">
+                <button
+                  type="button"
+                  className="result-btn primary"
+                  onClick={() => navigate("/my-bookings", { replace: true })}
+                >
+                  <Ticket size={18} />
+                  <span>Go to My Bookings</span>
+                </button>
+                <button
+                  type="button"
+                  className="result-btn text"
+                  onClick={() => navigate("/", { replace: true })}
+                >
+                  <Home size={16} />
+                  <span>Return to Home</span>
+                </button>
+              </div>
+            </div>
           ) : (
             /* Failed / Pending Alert View */
             <div className="result-alert-box">
@@ -224,29 +273,35 @@ function PaymentResult() {
                 <AlertCircle size={44} />
               </div>
 
-              <h1 className="payment-result-title">Payment Verification Notice</h1>
+              <h1 className="payment-result-title">
+                {resultStatus === "FAILED" ? "Payment Not Successful" : "Payment Status Unconfirmed"}
+              </h1>
               <p className="payment-result-desc">{errorMessage}</p>
 
-              <div className="result-guarantee-card">
-                <ShieldCheck size={20} className="guarantee-shield" />
-                <div className="guarantee-text">
-                  <strong>Zero-Risk Payment Protection</strong>
-                  <span>
-                    If any money was debited from your bank account or UPI handle, our automated reconciliation
-                    engine will ensure your ticket is confirmed or issue a 100% full refund to the original source.
-                  </span>
+              {resultStatus !== "FAILED" && (
+                <div className="result-guarantee-card">
+                  <ShieldCheck size={20} className="guarantee-shield" />
+                  <div className="guarantee-text">
+                    <strong>What to do next</strong>
+                    <span>
+                      Check My Bookings before making another payment. If you were charged but the booking is not
+                      confirmed, contact support with your booking details.
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="result-actions-group">
-                <button
-                  type="button"
-                  className="result-btn primary"
-                  onClick={() => executeVerification()}
-                >
-                  <RefreshCw size={18} />
-                  <span>Retry Verification</span>
-                </button>
+                {resultStatus !== "FAILED" && (
+                  <button
+                    type="button"
+                    className="result-btn primary"
+                    onClick={() => executeVerification()}
+                  >
+                    <RefreshCw size={18} />
+                    <span>Retry Verification</span>
+                  </button>
+                )}
 
                 <button
                   type="button"
