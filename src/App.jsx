@@ -14,6 +14,7 @@ import Login from "./pages/Login/Login";
 import BookingDetails from "./pages/BookingDetails/BookingDetails";
 import PaymentResult from "./pages/PaymentResult/PaymentResult";
 import CancellationPolicy from "./pages/CancellationPolicy/CancellationPolicy";
+import Offers from "./pages/Offers/Offers";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -50,6 +51,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/booking-details" element={<BookingDetails />} />
           <Route path="/cancellation-policy" element={<CancellationPolicy />} />
+          <Route path="/offers" element={<Offers />} />
         </Routes>
       </NavigationLayout>
     </BrowserRouter>

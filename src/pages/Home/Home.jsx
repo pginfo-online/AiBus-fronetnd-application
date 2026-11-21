@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import SearchBox from "../../components/SearchBox/SearchBox";
 import OffersModal from "../../components/PopularOffers/OffersModal";
+import offersService from "../../services/offersService";
 import "./Home.css";
 
 const CAROUSEL_SLIDES = [
@@ -239,6 +240,39 @@ function Home() {
   const [activeTestimonialIndex, setActiveTestimonialIndex] = useState(0);
   const [showOffersModal, setShowOffersModal] = useState(false);
   const [copiedCoupon, setCopiedCoupon] = useState(null);
+  const [couponsList, setCouponsList] = useState(COUPON_OFFERS);
+
+  useEffect(() => {
+    let isMounted = true;
+    offersService
+      .getOffers()
+      .then((data) => {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          const colors = [
+            { color: "#D95325", bgGradient: "linear-gradient(135deg, #FFF6F0 0%, #FFE9DF 100%)", accentBorder: "rgba(217, 83, 37, 0.35)" },
+            { color: "#2563EB", bgGradient: "linear-gradient(135deg, #F0F6FF 0%, #DEECFF 100%)", accentBorder: "rgba(37, 99, 235, 0.35)" },
+            { color: "#059669", bgGradient: "linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)", accentBorder: "rgba(5, 150, 105, 0.35)" },
+            { color: "#7C3AED", bgGradient: "linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%)", accentBorder: "rgba(124, 58, 237, 0.35)" },
+          ];
+          const enriched = data.slice(0, 4).map((c, i) => ({
+            id: c.id || c.code,
+            code: c.code,
+            title: c.title,
+            desc: c.description || c.subtitle,
+            minSpend: c.subtitle || (c.minOrderValue ? `Min. spend ₹${c.minOrderValue}` : "No min. order"),
+            validTill: c.formattedExpiry || "Active today",
+            tag: c.category || "Hot Deal",
+            discountBadge: c.discountBadge || (c.type === "PERCENTAGE" ? `${c.value}% OFF` : `₹${c.value} OFF`),
+            ...colors[i % colors.length],
+          }));
+          setCouponsList(enriched);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleCopyCoupon = (code, e) => {
     if (e) e.stopPropagation();
@@ -534,7 +568,7 @@ function Home() {
           <button
             type="button"
             className="ogl-coupons-view-all-btn"
-            onClick={() => setShowOffersModal(true)}
+            onClick={() => navigate("/offers")}
           >
             <span>View All Deals</span>
             <ArrowRight size={16} />
@@ -543,7 +577,7 @@ function Home() {
 
         {/* Dynamic Coupon Cards Grid with modern luxury styling & copy animation */}
         <div className="ogl-coupons-grid">
-          {COUPON_OFFERS.map((coupon, idx) => {
+          {couponsList.map((coupon, idx) => {
             const isCopied = copiedCoupon === coupon.code;
             return (
               <div

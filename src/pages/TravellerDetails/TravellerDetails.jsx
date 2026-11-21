@@ -27,6 +27,7 @@ import {
 import busService from "../../services/busService";
 import bookingService from "../../services/bookingService";
 import authService from "../../services/authService";
+import offersService from "../../services/offersService";
 import BookingStepper from "../../components/BookingStepper/BookingStepper";
 import BoardingDroppingSelector, { formatPointTime } from "../../components/BoardingDroppingSelector/BoardingDroppingSelector";
 import AiBusChatAssistant from "../../components/AiBusChatAssistant/AiBusChatAssistant";
@@ -293,6 +294,23 @@ function TravellerDetails() {
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [promoError, setPromoError] = useState("");
+  const [availableOffers, setAvailableOffers] = useState([]);
+  const [validatingPromo, setValidatingPromo] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    offersService
+      .getOffers()
+      .then((data) => {
+        if (isMounted && Array.isArray(data)) {
+          setAvailableOffers(data);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
@@ -374,29 +392,46 @@ function TravellerDetails() {
     setFormError("");
   };
 
-  const handleApplyCoupon = (e) => {
-    e.preventDefault();
+  const handleApplyCoupon = async (e, overrideCode) => {
+    if (e && typeof e.preventDefault === "function") {
+      e.preventDefault();
+    }
     setPromoError("");
-    const cleanCode = promoCode.trim().toUpperCase();
+    const cleanCode = (overrideCode || promoCode || "").trim().toUpperCase();
 
     if (!cleanCode) {
       setPromoError("Please enter a valid coupon code");
       return;
     }
 
-    if (cleanCode === "AIBUS50" || cleanCode === "FIRST50") {
-      setAppliedPromo({ code: cleanCode, discount: 50, label: "₹50 Instant Discount" });
+    const currentTotalFare = Number(
+      travellers.reduce((sum, t) => sum + Number(t.fare || selectedBus?.price || 205), 0) ||
+      (selectedBus?.price || 205) * selectedSeats.length
+    );
+
+    setValidatingPromo(true);
+    try {
+      const result = await offersService.validateOffer({
+        code: cleanCode,
+        totalFare: currentTotalFare,
+        operatorName: selectedBus?.operator,
+        fromCityId: resolvedFromCityId,
+        toCityId: resolvedToCityId,
+        busId: selectedBus?.busId || selectedBus?.id,
+      });
+
+      setAppliedPromo({
+        code: cleanCode,
+        discount: result.discountAmount,
+        label: result.coupon?.title || `₹${result.discountAmount} Instant Discount`,
+        coupon: result.coupon,
+      });
       setPromoCode("");
-    } else if (cleanCode === "SUPER100" || cleanCode === "TRAVEL100") {
-      setAppliedPromo({ code: cleanCode, discount: 100, label: "₹100 Mega Discount" });
-      setPromoCode("");
-    } else if (cleanCode === "AIBUS10" || cleanCode === "FESTIVE") {
-      const baseAmt = (selectedBus?.price || 205) * selectedSeats.length;
-      const calcDiscount = Math.round(baseAmt * 0.1);
-      setAppliedPromo({ code: cleanCode, discount: calcDiscount, label: "10% Festive Savings" });
-      setPromoCode("");
-    } else {
-      setPromoError("Invalid coupon code. Try 'AIBUS50' or 'SUPER100'");
+      setPromoError("");
+    } catch (err) {
+      setPromoError(err.message || "Failed to apply coupon");
+    } finally {
+      setValidatingPromo(false);
     }
   };
 
@@ -1122,7 +1157,7 @@ function TravellerDetails() {
                       <Tag size={15} className="promo-icon" />
                       <input
                         type="text"
-                        placeholder="Enter Promo Code (e.g. AIBUS50)"
+                        placeholder="Enter Promo Code (e.g. AIBUS100)"
                         value={promoCode}
                         onChange={(e) => {
                           setPromoCode(e.target.value);
@@ -1130,12 +1165,37 @@ function TravellerDetails() {
                         }}
                       />
                     </div>
-                    <button type="submit" className="apply-coupon-btn">
-                      Apply
+                    <button
+                      type="submit"
+                      className="apply-coupon-btn"
+                      disabled={validatingPromo}
+                    >
+                      {validatingPromo ? "Checking..." : "Apply"}
                     </button>
                   </form>
                 )}
                 {promoError && <span className="promo-err-msg">{promoError}</span>}
+
+                {/* Quick-Apply Available Coupons */}
+                {!appliedPromo && availableOffers.length > 0 && (
+                  <div className="quick-offers-list">
+                    <span className="quick-offers-heading">Available Offers:</span>
+                    <div className="quick-offers-chips">
+                      {availableOffers.slice(0, 3).map((offer) => (
+                        <button
+                          key={offer.id || offer.code}
+                          type="button"
+                          className="quick-offer-pill"
+                          onClick={() => handleApplyCoupon(null, offer.code)}
+                          title={`Click to apply ${offer.code}`}
+                        >
+                          <span className="pill-code">{offer.code}</span>
+                          <span className="pill-disc">{offer.discountBadge || `₹${offer.value} OFF`}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Price Breakdown */}

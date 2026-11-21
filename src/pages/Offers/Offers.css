@@ -1,0 +1,567 @@
+/* ==========================================================================
+   AiBus Offers Page — Modern Luxury Ticket Voucher Styles
+   ========================================================================== */
+
+.offers-page {
+  min-height: 100vh;
+  background: #F8FAFC;
+  color: #1E293B;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  padding-bottom: 80px;
+}
+
+/* --------------------------------------------------------------------------
+   Hero Section
+   -------------------------------------------------------------------------- */
+.offers-hero {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #2D3748 100%);
+  color: #FFFFFF;
+  padding: 60px 24px 50px;
+  position: relative;
+  overflow: hidden;
+}
+
+.offers-hero::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(217, 83, 37, 0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.offers-hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.offers-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #FFB38A;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.offers-hero-title {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  color: #FFFFFF;
+}
+
+.offers-hero-title .highlight-accent {
+  color: #D95325;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.offers-hero-desc {
+  font-size: 1.05rem;
+  color: #94A3B8;
+  max-width: 680px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   Search & Filter Bar
+   -------------------------------------------------------------------------- */
+.offers-filter-bar {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.offers-search-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.offers-search-input-wrap svg {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+}
+
+.offers-search-input {
+  width: 100%;
+  padding: 14px 20px 14px 48px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
+  font-size: 0.95rem;
+  color: #0F172A;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.offers-search-input:focus {
+  background: #FFFFFF;
+  box-shadow: 0 4px 24px rgba(217, 83, 37, 0.25);
+  border-color: #D95325;
+}
+
+.offers-category-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.offers-pill-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #CBD5E1;
+  padding: 8px 18px;
+  border-radius: 100px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.offers-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+}
+
+.offers-pill-btn.active {
+  background: #D95325;
+  border-color: #D95325;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(217, 83, 37, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   Offers Grid Section
+   -------------------------------------------------------------------------- */
+.offers-content-section {
+  max-width: 1200px;
+  margin: -24px auto 0;
+  padding: 0 24px;
+  position: relative;
+  z-index: 3;
+}
+
+.offers-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  color: #64748B;
+  font-size: 0.92rem;
+}
+
+.offers-count-text {
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.offers-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+/* --------------------------------------------------------------------------
+   Voucher Ticket Card
+   -------------------------------------------------------------------------- */
+.offer-voucher-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+}
+
+.offer-voucher-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  border-color: #CBD5E1;
+}
+
+/* Edge Notches (Ticket Cutouts) */
+.voucher-notch {
+  position: absolute;
+  top: 58%;
+  width: 18px;
+  height: 24px;
+  background: #F8FAFC;
+  z-index: 2;
+  border: 1px solid #E2E8F0;
+}
+
+.voucher-notch.notch-left {
+  left: -9px;
+  border-radius: 0 16px 16px 0;
+  border-left: none;
+}
+
+.voucher-notch.notch-right {
+  right: -9px;
+  border-radius: 16px 0 0 16px;
+  border-right: none;
+}
+
+.voucher-top {
+  padding: 22px 22px 16px;
+  flex: 1;
+}
+
+.voucher-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.voucher-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #D95325;
+  background: #FFF5F2;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.voucher-discount-pill {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  background: #D95325;
+  padding: 4px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+}
+
+.voucher-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+
+.voucher-desc {
+  font-size: 0.88rem;
+  color: #64748B;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.voucher-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.78rem;
+  color: #475569;
+  background: #F1F5F9;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.voucher-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Dashed Ticket Divider */
+.voucher-divider {
+  position: relative;
+  padding: 0 20px;
+  margin: 4px 0;
+}
+
+.voucher-dashed-line {
+  border-top: 2px dashed #E2E8F0;
+  width: 100%;
+}
+
+.voucher-bottom {
+  padding: 16px 22px 20px;
+  background: #FAFAFA;
+  border-top: 1px solid #F1F5F9;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.voucher-action-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.voucher-copy-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #FFFFFF;
+  border: 1.5px dashed #CBD5E1;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.voucher-copy-btn:hover {
+  border-color: #D95325;
+  background: #FFF8F6;
+}
+
+.voucher-copy-btn.copied {
+  border-color: #16A34A;
+  background: #F0FDF4;
+}
+
+.voucher-code-label {
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  color: #0F172A;
+}
+
+.voucher-copy-btn.copied .voucher-code-label {
+  color: #16A34A;
+}
+
+.voucher-copy-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #D95325;
+}
+
+.voucher-copy-btn.copied .voucher-copy-status {
+  color: #16A34A;
+}
+
+.voucher-book-now-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: #0F172A;
+  color: #FFFFFF;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.voucher-book-now-btn:hover {
+  background: #D95325;
+}
+
+/* Expandable Terms Accordion */
+.voucher-terms-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  color: #64748B;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0 0;
+  transition: color 0.2s ease;
+}
+
+.voucher-terms-toggle:hover {
+  color: #D95325;
+}
+
+.voucher-terms-drawer {
+  padding-top: 10px;
+  margin-top: 6px;
+  border-top: 1px solid #E2E8F0;
+}
+
+.voucher-terms-list {
+  padding-left: 18px;
+  margin: 0;
+  font-size: 0.76rem;
+  color: #64748B;
+  line-height: 1.6;
+}
+
+.voucher-terms-list li {
+  margin-bottom: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Toast Notification
+   -------------------------------------------------------------------------- */
+.offers-toast-bar {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 12px 24px;
+  border-radius: 100px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 9999;
+  animation: slideUpFade 0.3s ease-out;
+}
+
+.offers-toast-bar svg {
+  color: #22C55E;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Empty & Loading States
+   -------------------------------------------------------------------------- */
+.offers-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1px solid #E2E8F0;
+  max-width: 500px;
+  margin: 30px auto;
+}
+
+.offers-empty-state svg {
+  color: #CBD5E1;
+  margin-bottom: 16px;
+}
+
+.offers-empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 8px;
+}
+
+.offers-empty-state p {
+  color: #64748B;
+  font-size: 0.92rem;
+  margin-bottom: 20px;
+}
+
+.offers-reset-btn {
+  background: #D95325;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.offers-reset-btn:hover {
+  opacity: 0.9;
+}
+
+/* Skeleton Loading Card */
+.voucher-skeleton-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1px solid #E2E8F0;
+  height: 280px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton-box {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Breakpoints
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .offers-hero {
+    padding: 40px 16px 36px;
+  }
+
+  .offers-grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  .offers-content-section {
+    padding: 0 16px;
+  }
+
+  .voucher-action-row {
+    flex-direction: column;
+  }
+
+  .voucher-book-now-btn {
+    width: 100%;
+  }
+}
+

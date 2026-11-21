@@ -483,6 +483,7 @@ function BookingConfirmation() {
           holdId: effectiveHoldId,
           pickup: pickupPoint,
           dropoff: dropoffPoint,
+          couponCode: promoCodeParam || null,
         });
       } catch (createErr) {
         const errStr = String(createErr.message || "").toLowerCase();
@@ -518,6 +519,7 @@ function BookingConfirmation() {
                 holdId: effectiveHoldId,
                 pickup: pickupPoint,
                 dropoff: dropoffPoint,
+                couponCode: promoCodeParam || null,
               });
             } else {
               throw createErr;

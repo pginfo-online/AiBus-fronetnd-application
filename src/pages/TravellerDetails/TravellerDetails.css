@@ -870,6 +870,67 @@
   display: block;
 }
 
+/* Quick Offers Chips */
+.quick-offers-list {
+  margin-top: 10px;
+}
+
+.quick-offers-heading {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748B;
+  display: block;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.quick-offers-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.quick-offer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFF7ED;
+  border: 1px dashed #FDBA74;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.quick-offer-pill:hover {
+  background: #FFEDD5;
+  border-color: #D95325;
+  transform: translateY(-1px);
+}
+
+.quick-offer-pill .pill-code {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #C2410C;
+  letter-spacing: 0.04em;
+}
+
+.quick-offer-pill .pill-disc {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #9A3412;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+.apply-coupon-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Price Breakdown */
 .summary-price-breakdown {
   border-top: 1px solid #f1f5f9;

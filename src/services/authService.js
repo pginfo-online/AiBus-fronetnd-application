@@ -1,4 +1,8 @@
-import api from "./api";
+import api, {
+  scheduleProactiveRefresh,
+  clearAuthRefreshTimer,
+  refreshAuthTokens,
+} from "./api";
 
 const LOGIN_KEY = "loggedInUser";
 const TOKEN_KEY = "aibus_auth_tokens";
@@ -28,6 +32,13 @@ export const authService = {
   },
 
   /**
+   * Refreshes the current authentication session tokens
+   */
+  refreshTokens: async () => {
+    return refreshAuthTokens();
+  },
+
+  /**
    * Register a new user account with production backend schema
    * @param {Object} params
    * @param {string} params.firstName
@@ -48,6 +59,7 @@ export const authService = {
     const data = response.data?.data;
     if (data?.tokens) {
       localStorage.setItem(TOKEN_KEY, JSON.stringify(data.tokens));
+      scheduleProactiveRefresh(data.tokens.accessToken);
     }
     if (data?.user) {
       localStorage.setItem(LOGIN_KEY, JSON.stringify(data.user));
@@ -71,6 +83,7 @@ export const authService = {
     const data = response.data?.data;
     if (data?.tokens) {
       localStorage.setItem(TOKEN_KEY, JSON.stringify(data.tokens));
+      scheduleProactiveRefresh(data.tokens.accessToken);
     }
     if (data?.user) {
       localStorage.setItem(LOGIN_KEY, JSON.stringify(data.user));
@@ -111,6 +124,7 @@ export const authService = {
     } catch {
       // Proceed with local clean-up even if remote token invalidation errors
     } finally {
+      clearAuthRefreshTimer();
       localStorage.removeItem(LOGIN_KEY);
       localStorage.removeItem(TOKEN_KEY);
       authService.notifyLoginStateChange();
@@ -152,6 +166,7 @@ export const authService = {
     const data = response.data?.data;
     if (data?.tokens) {
       localStorage.setItem(TOKEN_KEY, JSON.stringify(data.tokens));
+      scheduleProactiveRefresh(data.tokens.accessToken);
     }
     if (data?.user) {
       localStorage.setItem(LOGIN_KEY, JSON.stringify(data.user));

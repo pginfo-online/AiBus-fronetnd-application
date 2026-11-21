@@ -118,9 +118,7 @@ function Footer() {
                 </button>
               </li>
               <li>
-                <button type="button" className="ogl-link-btn" onClick={handleScrollToOffers}>
-                  Offers
-                </button>
+                <Link to="/offers">Offers</Link>
               </li>
               <li>
                 <Link to="/my-bookings">Track Bus</Link>

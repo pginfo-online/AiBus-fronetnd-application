@@ -225,6 +225,7 @@ export const bookingService = {
     holdId,
     pickup,
     dropoff,
+    couponCode,
   }) => {
     const passengersList = (travellers || []).map((t, idx) => {
       const seatNo = String(t.seat || t.seatNo || seats[idx] || `S${idx + 1}`);
@@ -323,6 +324,7 @@ export const bookingService = {
 
     const payload = {
       ...(holdId && { holdId: String(holdId) }),
+      ...(couponCode && { couponCode: String(couponCode).trim().toUpperCase() }),
       fromCityId: Number(fromId || 4292),
       toCityId: Number(toId || 4562),
       fromCityName: bus.from || "Bengaluru",

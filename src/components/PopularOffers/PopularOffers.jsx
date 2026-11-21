@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import OffersModal from "./OffersModal";
 import NearbyBusesModal from "./NearbyBusesModal";
 import EcoTravelModal from "./EcoTravelModal";
 import "./PopularOffers.css";
 
 function PopularOffers() {
+  const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null); // 'offers' | 'nearby' | 'eco' | null
   const [copied, setCopied] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -67,7 +69,7 @@ function PopularOffers() {
           <button
             type="button"
             className="view-all-offers-btn"
-            onClick={() => setActiveModal("offers")}
+            onClick={() => navigate("/offers")}
             id="view-all-offers-btn"
           >
             View All Offers &rarr;

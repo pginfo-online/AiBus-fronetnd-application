@@ -97,13 +97,9 @@ function Header() {
             Bus Tickets
           </button>
 
-          <button
-            type="button"
-            className="ogl-nav-link"
-            onClick={() => window.dispatchEvent(new CustomEvent("openOffersModal"))}
-          >
+          <Link to="/offers" className="ogl-nav-link">
             Offers
-          </button>
+          </Link>
 
           <Link to="/my-bookings" className="ogl-nav-link">
             My Bookings
@@ -182,16 +178,13 @@ function Header() {
             >
               Bus Tickets
             </button>
-            <button
-              type="button"
+            <Link
+              to="/offers"
               className="ogl-mobile-link"
-              onClick={() => {
-                window.dispatchEvent(new CustomEvent("openOffersModal"));
-                setMobileMenuOpen(false);
-              }}
+              onClick={() => setMobileMenuOpen(false)}
             >
               Offers
-            </button>
+            </Link>
             <Link to="/my-bookings" className="ogl-mobile-link" onClick={() => setMobileMenuOpen(false)}>
               My Bookings
             </Link>
