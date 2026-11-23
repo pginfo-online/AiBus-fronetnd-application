@@ -164,13 +164,14 @@ export const bookingService = {
       const cleanEmail = (contactInfo.email || "").trim() || `${cleanPhone}@mobile.aibus.app`;
       const cleanCustomerName = (contactInfo.customerName || contactInfo.name || passengers[0]?.name || "Traveller").trim();
 
+      const cleanBusId = Number(busId) || 1;
       const response = await api.post("/api/v1/holds", {
         fromCityId: Number(fromCityId || 4292),
         toCityId: Number(toCityId || 4562),
         journeyDate: String(journeyDate || new Date().toISOString().split("T")[0]).split("T")[0],
-        busId: Number(busId || 1),
-        pickupId: String(pickupId || "44953"),
-        dropoffId: String(dropoffId || "750"),
+        busId: cleanBusId,
+        pickupId: String(pickupId || (cleanBusId === 2 ? "74717" : "39436")),
+        dropoffId: String(dropoffId || (cleanBusId === 2 ? "746" : "750")),
         contactInfo: {
           customerName: cleanCustomerName,
           email: cleanEmail,
@@ -266,6 +267,7 @@ export const bookingService = {
 
     const cleanDate = String(bus.date || new Date().toISOString().split("T")[0]).split("T")[0];
 
+    const cleanBusId = Number(bus.routeBusId || bus.busId || bus.id) || 1;
     const resolvedPickupCode = String(
       pickup?.PickupCode ||
       pickup?.pickupCode ||
@@ -273,7 +275,9 @@ export const bookingService = {
       pickup?.pickupId ||
       pickup?.code ||
       pickup?.Id ||
-      (Number(bus.busId || bus.id) === 2 ? "74717" : "39436")
+      bus?.seatsLayout?.BoardingPoints?.[0]?.PickupCode ||
+      bus?.pickups?.[0]?.PickupCode ||
+      (cleanBusId === 2 ? "74717" : "39436")
     );
 
     const resolvedPickupLocation =
@@ -299,7 +303,9 @@ export const bookingService = {
       dropoff?.dropoffId ||
       dropoff?.code ||
       dropoff?.Id ||
-      (Number(bus.busId || bus.id) === 2 ? "746" : "750")
+      bus?.seatsLayout?.DroppingPoints?.[0]?.DropoffCode ||
+      bus?.dropoffs?.[0]?.DropoffCode ||
+      (cleanBusId === 2 ? "746" : "750")
     );
 
     const resolvedDropoffLocation =

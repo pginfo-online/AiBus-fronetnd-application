@@ -193,9 +193,31 @@ function SeatSelection() {
               setSelectedDropoff(stateBus.dropoffs[0]);
             }
           } else {
+            const fallbackBusId = Number(busId) === 2 ? 2 : 1;
+            const fallbackPickups =
+              fallbackBusId === 2
+                ? [
+                    { PickupCode: "74717", PickupName: "Peenya", PickupTime: "23:05", Address: "Peenya, Bengaluru" },
+                    { PickupCode: "74718", PickupName: "Majestic", PickupTime: "22:30", Address: "Kempegowda Bus Station" },
+                  ]
+                : [
+                    { PickupCode: "39436", PickupName: "Anand Rao Circle", PickupTime: "11:50", Address: "Anand Rao Circle, Bengaluru" },
+                    { PickupCode: "39437", PickupName: "Majestic", PickupTime: "11:20", Address: "Kempegowda Bus Station" },
+                  ];
+            const fallbackDropoffs =
+              fallbackBusId === 2
+                ? [
+                    { DropoffCode: "746", DropoffName: "Chennai Central", DropoffTime: "09:30", Address: "Chennai Central Railway Station" },
+                    { DropoffCode: "747", DropoffName: "Koyambedu", DropoffTime: "09:00", Address: "Omni Bus Stand, Koyambedu" },
+                  ]
+                : [
+                    { DropoffCode: "750", DropoffName: "Koyambedu", DropoffTime: "00:21", Address: "Koyambedu Omni Bus Stand, Chennai" },
+                    { DropoffCode: "751", DropoffName: "Guindy", DropoffTime: "00:50", Address: "Kathipara Junction" },
+                  ];
             setSelectedBus({
-              id: "BUS-1",
-              busId: "BUS-1",
+              id: String(fallbackBusId),
+              busId: fallbackBusId,
+              routeBusId: fallbackBusId,
               operator: "SRS Travels",
               busType: "2X2(35) NAC Seater",
               price: 205,
@@ -204,7 +226,11 @@ function SeatSelection() {
               departureTime: "12:16",
               arrivalTime: "00:21",
               duration: "12h 5m",
+              pickups: fallbackPickups,
+              dropoffs: fallbackDropoffs,
             });
+            if (!selectedPickup) setSelectedPickup(fallbackPickups[0]);
+            if (!selectedDropoff) setSelectedDropoff(fallbackDropoffs[0]);
           }
           setLoading(false);
         }
@@ -213,10 +239,38 @@ function SeatSelection() {
         if (isMounted) {
           if (stateBus) {
             setSelectedBus(stateBus);
+            if (!selectedPickup && stateBus.pickups?.length > 0) {
+              setSelectedPickup(stateBus.pickups[0]);
+            }
+            if (!selectedDropoff && stateBus.dropoffs?.length > 0) {
+              setSelectedDropoff(stateBus.dropoffs[0]);
+            }
           } else {
+            const fallbackBusId = Number(busId) === 2 ? 2 : 1;
+            const fallbackPickups =
+              fallbackBusId === 2
+                ? [
+                    { PickupCode: "74717", PickupName: "Peenya", PickupTime: "23:05", Address: "Peenya, Bengaluru" },
+                    { PickupCode: "74718", PickupName: "Majestic", PickupTime: "22:30", Address: "Kempegowda Bus Station" },
+                  ]
+                : [
+                    { PickupCode: "39436", PickupName: "Anand Rao Circle", PickupTime: "11:50", Address: "Anand Rao Circle, Bengaluru" },
+                    { PickupCode: "39437", PickupName: "Majestic", PickupTime: "11:20", Address: "Kempegowda Bus Station" },
+                  ];
+            const fallbackDropoffs =
+              fallbackBusId === 2
+                ? [
+                    { DropoffCode: "746", DropoffName: "Chennai Central", DropoffTime: "09:30", Address: "Chennai Central Railway Station" },
+                    { DropoffCode: "747", DropoffName: "Koyambedu", DropoffTime: "09:00", Address: "Omni Bus Stand, Koyambedu" },
+                  ]
+                : [
+                    { DropoffCode: "750", DropoffName: "Koyambedu", DropoffTime: "00:21", Address: "Koyambedu Omni Bus Stand, Chennai" },
+                    { DropoffCode: "751", DropoffName: "Guindy", DropoffTime: "00:50", Address: "Kathipara Junction" },
+                  ];
             setSelectedBus({
-              id: "BUS-1",
-              busId: "BUS-1",
+              id: String(fallbackBusId),
+              busId: fallbackBusId,
+              routeBusId: fallbackBusId,
               operator: "SRS Travels",
               busType: "2X2(35) NAC Seater",
               price: 205,
@@ -225,7 +279,11 @@ function SeatSelection() {
               departureTime: "12:16",
               arrivalTime: "00:21",
               duration: "12h 5m",
+              pickups: fallbackPickups,
+              dropoffs: fallbackDropoffs,
             });
+            if (!selectedPickup) setSelectedPickup(fallbackPickups[0]);
+            if (!selectedDropoff) setSelectedDropoff(fallbackDropoffs[0]);
           }
           setLoading(false);
         }
@@ -526,16 +584,16 @@ function SeatSelection() {
                     </label>
                     <select
                       className="point-select-dropdown"
-                      value={selectedPickup?.PickupId || selectedPickup?.pickupId || selectedPickup?.id || ""}
+                      value={selectedPickup?.PickupCode || selectedPickup?.pickupCode || selectedPickup?.PickupId || selectedPickup?.pickupId || selectedPickup?.id || ""}
                       onChange={(e) => {
                         const found = pickupsList.find(
-                          (p) => String(p.PickupId || p.pickupId || p.id) === e.target.value
+                          (p, idx) => String(p.PickupCode || p.pickupCode || p.PickupId || p.pickupId || p.code || p.id || `pickup-${idx}`) === e.target.value
                         );
                         if (found) setSelectedPickup(found);
                       }}
                     >
                       {pickupsList.map((p, idx) => {
-                        const id = p.PickupId || p.pickupId || p.id || `pickup-${idx}`;
+                        const id = p.PickupCode || p.pickupCode || p.PickupId || p.pickupId || p.code || p.id || `pickup-${idx}`;
                         const name = p.PickupName || p.pickupName || p.name || `Boarding Point ${idx + 1}`;
                         const time = p.PickupTime || p.pickupTime || p.time;
                         const uniqueKey = `pickup-opt-${id}-${idx}`;
@@ -554,16 +612,16 @@ function SeatSelection() {
                     </label>
                     <select
                       className="point-select-dropdown"
-                      value={selectedDropoff?.DropoffId || selectedDropoff?.dropoffId || selectedDropoff?.id || ""}
+                      value={selectedDropoff?.DropoffCode || selectedDropoff?.dropoffCode || selectedDropoff?.DropoffId || selectedDropoff?.dropoffId || selectedDropoff?.id || ""}
                       onChange={(e) => {
                         const found = dropoffsList.find(
-                          (d) => String(d.DropoffId || d.dropoffId || d.id) === e.target.value
+                          (d, idx) => String(d.DropoffCode || d.dropoffCode || d.DropoffId || d.dropoffId || d.code || d.id || `dropoff-${idx}`) === e.target.value
                         );
                         if (found) setSelectedDropoff(found);
                       }}
                     >
                       {dropoffsList.map((d, idx) => {
-                        const id = d.DropoffId || d.dropoffId || d.id || `dropoff-${idx}`;
+                        const id = d.DropoffCode || d.dropoffCode || d.DropoffId || d.dropoffId || d.code || d.id || `dropoff-${idx}`;
                         const name = d.DropoffName || d.dropoffName || d.name || `Dropping Point ${idx + 1}`;
                         const time = d.DropoffTime || d.dropoffTime || d.time;
                         const uniqueKey = `dropoff-opt-${id}-${idx}`;

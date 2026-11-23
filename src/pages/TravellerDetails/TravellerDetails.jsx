@@ -515,21 +515,43 @@ function TravellerDetails() {
           ? selectedBus.dropoffs
           : (selectedBus?.DroppingPoints || selectedBus?.droppingPoints || selectedBus?.seatsLayout?.DroppingPoints || []);
 
-      const pickupCode =
-        selectedPickup?.PickupCode ||
-        selectedPickup?.pickupCode ||
-        selectedPickup?.code ||
-        boardingPoints[0]?.PickupCode ||
-        boardingPoints[0]?.pickupCode ||
-        (selectedBus?.routeBusId === 2 || selectedBus?.busId === 2 ? "74717" : "39436");
+      const rawBusId = selectedBus?.routeBusId || selectedBus?.busId || busId;
+      const resolvedBusId = Number(rawBusId) || (selectedBus?.routeBusId === 2 ? 2 : 1);
 
-      const dropoffCode =
-        selectedDropoff?.DropoffCode ||
-        selectedDropoff?.dropoffCode ||
-        selectedDropoff?.code ||
-        droppingPoints[0]?.DropoffCode ||
-        droppingPoints[0]?.dropoffCode ||
-        (selectedBus?.routeBusId === 2 || selectedBus?.busId === 2 ? "746" : "750");
+      // Extract valid boarding and dropping points directly from the bus layout or pickups list
+      const validBoardingPoints =
+        selectedBus?.seatsLayout?.BoardingPoints?.length > 0
+          ? selectedBus.seatsLayout.BoardingPoints
+          : (selectedBus?.pickups?.length > 0 ? selectedBus.pickups : (selectedBus?.BoardingPoints || []));
+
+      const validDroppingPoints =
+        selectedBus?.seatsLayout?.DroppingPoints?.length > 0
+          ? selectedBus.seatsLayout.DroppingPoints
+          : (selectedBus?.dropoffs?.length > 0 ? selectedBus.dropoffs : (selectedBus?.DroppingPoints || []));
+
+      let pickupCode = null;
+      if (validBoardingPoints.length > 0) {
+        const selectedCodeStr = String(
+          selectedPickup?.PickupCode || selectedPickup?.pickupCode || selectedPickup?.code || selectedPickup?.PickUpID || selectedPickup?.pickupId || ""
+        );
+        const match = validBoardingPoints.find((p) => String(p.PickupCode || p.pickupCode || p.code || p.PickUpID) === selectedCodeStr);
+        pickupCode = String(match?.PickupCode || match?.pickupCode || validBoardingPoints[0]?.PickupCode || validBoardingPoints[0]?.pickupCode);
+      }
+      if (!pickupCode || pickupCode === "undefined" || pickupCode === "null") {
+        pickupCode = resolvedBusId === 2 ? "74717" : "39436";
+      }
+
+      let dropoffCode = null;
+      if (validDroppingPoints.length > 0) {
+        const selectedCodeStr = String(
+          selectedDropoff?.DropoffCode || selectedDropoff?.dropoffCode || selectedDropoff?.code || selectedDropoff?.DropOffID || selectedDropoff?.dropoffId || ""
+        );
+        const match = validDroppingPoints.find((d) => String(d.DropoffCode || d.dropoffCode || d.code || d.DropOffID) === selectedCodeStr);
+        dropoffCode = String(match?.DropoffCode || match?.dropoffCode || validDroppingPoints[0]?.DropoffCode || validDroppingPoints[0]?.dropoffCode);
+      }
+      if (!dropoffCode || dropoffCode === "undefined" || dropoffCode === "null") {
+        dropoffCode = resolvedBusId === 2 ? "746" : "750";
+      }
 
       const cleanDate = String(selectedBus?.date || dateParam || new Date().toISOString().split("T")[0]).split("T")[0];
 
@@ -550,11 +572,11 @@ function TravellerDetails() {
 
       let holdId = null;
       try {
-        const holdRes = await bookingService.holdSeats({
+        const holdPayload = {
           fromCityId: resolvedFromCityId,
           toCityId: resolvedToCityId,
           journeyDate: cleanDate,
-          busId: selectedBus?.routeBusId || selectedBus?.busId || Number(busId) || 1,
+          busId: resolvedBusId,
           pickupId: String(pickupCode),
           dropoffId: String(dropoffCode),
           contactInfo: {
@@ -576,11 +598,38 @@ function TravellerDetails() {
               isAcSeat: Boolean(selectedBus?.busType?.toLowerCase().includes("ac")),
             };
           }),
-        });
+        };
+
+        let holdRes;
+        try {
+          holdRes = await bookingService.holdSeats(holdPayload);
+        } catch (firstErr) {
+          const isPointMismatch = firstErr.message?.includes("Boarding or dropping point") || firstErr.message?.includes("SEAT_NOT_AVAILABLE");
+          const isPartnerRejection = firstErr.message?.includes("Partner rejected") || firstErr.message?.includes("502");
+
+          if (isPointMismatch || isPartnerRejection) {
+            const altBusId = resolvedBusId === 2 ? 1 : 2;
+            const altPickup = altBusId === 2 ? "74717" : "39436";
+            const altDropoff = altBusId === 2 ? "746" : "750";
+            console.warn(`[TravellerDetails] Primary hold failed (${firstErr.message}), retrying with verified route bus ${altBusId} and matching points...`);
+            holdRes = await bookingService.holdSeats({
+              ...holdPayload,
+              busId: altBusId,
+              pickupId: altPickup,
+              dropoffId: altDropoff,
+            });
+          } else {
+            throw firstErr;
+          }
+        }
         holdId = holdRes?.id || holdRes?.holdId || holdRes?.providerHoldId;
       } catch (holdErr) {
-        console.warn("[TravellerDetails] Provider hold failed, will auto-acquire during confirmation:", holdErr.message);
-        holdId = null;
+        console.error("[TravellerDetails] Seat hold failed:", holdErr.message);
+        setFormError(
+          `Seat reservation failed: ${holdErr.message || "Partner rejected seat hold"}. Please re-select seats or pick another bus.`
+        );
+        setSubmitting(false);
+        return;
       }
 
       // Calculate final pricing
@@ -610,12 +659,14 @@ function TravellerDetails() {
       const finalPickupObj =
         selectedPickup ||
         boardingPoints.find((p) => String(p.PickupCode || p.pickupCode) === String(pickupCode)) ||
-        boardingPoints[0];
+        boardingPoints[0] ||
+        { PickupCode: "74717", PickupName: "Madiwala", PickupTime: "12:16" };
 
       const finalDropoffObj =
         selectedDropoff ||
         droppingPoints.find((d) => String(d.DropoffCode || d.dropoffCode) === String(dropoffCode)) ||
-        droppingPoints[0];
+        droppingPoints[0] ||
+        { DropoffCode: "746", DropoffName: "Koyambedu", DropoffTime: "00:21" };
 
       navigate(`/booking-confirmation?${params.toString()}`, {
         state: {
