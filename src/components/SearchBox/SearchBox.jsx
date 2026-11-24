@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bus, ArrowLeftRight, Users, User, ArrowRight } from "lucide-react";
+import { ArrowLeftRight, ArrowRight } from "lucide-react";
 import LocationInput from "../LocationInput/LocationInput";
 import DateInput from "../DateInput/DateInput";
 import busService from "../../services/busService";
@@ -19,10 +19,6 @@ function SearchBox({
   const [to, setTo] = useState(null);
   const [date, setDate] = useState(initialDate);
   const [error, setError] = useState("");
-  const [tripType, setTripType] = useState("oneWay"); // "oneWay", "roundTrip", "groupBooking"
-  const [passengers, setPassengers] = useState(1);
-  const [showPassengerDropdown, setShowPassengerDropdown] = useState(false);
-  const passengerRef = useRef(null);
 
   useEffect(() => {
     busService.getCities().then((data) => {
@@ -75,17 +71,6 @@ function SearchBox({
     if (initialDate) setDate(initialDate);
   }, [initialDate]);
 
-  // Click outside to close passenger dropdown
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (passengerRef.current && !passengerRef.current.contains(e.target)) {
-        setShowPassengerDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleSwap = () => {
     setFrom(to);
     setTo(from);
@@ -118,8 +103,6 @@ function SearchBox({
         to: to.id,
         toName: to.name,
         date,
-        passengers,
-        tripType,
       });
     } else {
       const params = new URLSearchParams({
@@ -139,42 +122,7 @@ function SearchBox({
   if (isHero) {
     return (
       <div className="hero-search-card" id="bus-search-section">
-        {/* ================================
-            TRIP TYPE TOGGLES
-        ================================= */}
-        <div className="trip-type-tabs">
-          <button
-            type="button"
-            className={`trip-type-pill ${tripType === "oneWay" ? "active" : ""}`}
-            onClick={() => setTripType("oneWay")}
-          >
-            <Bus size={15} />
-            <span>One Way</span>
-          </button>
-
-          <button
-            type="button"
-            className={`trip-type-pill ${tripType === "roundTrip" ? "active" : ""}`}
-            onClick={() => setTripType("roundTrip")}
-          >
-            <ArrowLeftRight size={14} />
-            <span>Round Trip</span>
-          </button>
-
-          <button
-            type="button"
-            className={`trip-type-pill ${tripType === "groupBooking" ? "active" : ""}`}
-            onClick={() => setTripType("groupBooking")}
-          >
-            <Users size={15} />
-            <span>Group Booking</span>
-          </button>
-        </div>
-
-        {/* ================================
-            MAIN INPUTS ROW
-        ================================= */}
-        <div className="hero-search-row">
+      <div className="hero-search-row">
           {/* FROM */}
           <div className="hero-input-field from-field">
             <LocationInput
@@ -218,42 +166,6 @@ function SearchBox({
           {/* JOURNEY DATE */}
           <div className="hero-input-field date-field">
             <DateInput value={date} onChange={setDate} />
-          </div>
-
-          {/* PASSENGERS */}
-          <div className="hero-input-field passenger-field" ref={passengerRef}>
-            <label className="passenger-label">PASSENGERS</label>
-            <button
-              type="button"
-              className="passenger-trigger-btn"
-              onClick={() => setShowPassengerDropdown((prev) => !prev)}
-            >
-              <User size={16} className="passenger-icon" />
-              <span className="passenger-text">
-                {passengers} {passengers === 1 ? "Passenger" : "Passengers"}
-              </span>
-            </button>
-
-            {showPassengerDropdown && (
-              <div className="passenger-dropdown-menu">
-                <span className="passenger-dropdown-title">Select Travellers</span>
-                <div className="passenger-options-list">
-                  {[1, 2, 3, 4, 5, 6].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      className={`passenger-opt-btn ${passengers === num ? "selected" : ""}`}
-                      onClick={() => {
-                        setPassengers(num);
-                        setShowPassengerDropdown(false);
-                      }}
-                    >
-                      {num} {num === 1 ? "Passenger" : "Passengers"}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* SUBMIT BUTTON */}

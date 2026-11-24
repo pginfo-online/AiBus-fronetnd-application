@@ -95,15 +95,26 @@ export const refreshAuthTokens = async () => {
       }
 
       // Use a raw axios call with withCredentials to avoid interceptor recursion
-      const response = await axios.post(
-        `${BASE_URL}/api/v1/auth/refresh`,
-        { refreshToken },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-          timeout: 15000,
+      let response;
+      try {
+        response = await axios.post(
+          `${BASE_URL}/api/v1/auth/refresh`,
+          { refreshToken },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+            timeout: 15000,
+          }
+        );
+      } catch (axiosErr) {
+        if (axiosErr.response?.status === 401 || axiosErr.response?.status === 403) {
+          clearAuthRefreshTimer();
+          localStorage.removeItem("aibus_auth_tokens");
+          localStorage.removeItem("loggedInUser");
+          window.dispatchEvent(new Event("loginStatusChanged"));
         }
-      );
+        throw axiosErr;
+      }
 
       const newTokens = response.data?.data;
       if (newTokens?.accessToken) {
@@ -303,6 +314,27 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
+      // Check if we have an active session with tokens to refresh
+      const authData = localStorage.getItem("aibus_auth_tokens");
+      if (!authData) {
+        // No session tokens stored (guest or logged out); do not attempt refresh
+        return Promise.reject(error);
+      }
+
+      let parsedRefreshToken = null;
+      try {
+        parsedRefreshToken = JSON.parse(authData)?.refreshToken;
+      } catch {
+        parsedRefreshToken = null;
+      }
+
+      if (!parsedRefreshToken) {
+        clearAuthRefreshTimer();
+        localStorage.removeItem("aibus_auth_tokens");
+        localStorage.removeItem("loggedInUser");
+        return Promise.reject(error);
+      }
+
       // If another refresh is already in-flight, queue this request
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -345,19 +377,11 @@ api.interceptors.response.use(
       } catch (refreshErr) {
         processQueue(refreshErr, null);
 
-        // Only clear storage and trigger logout if refresh token was genuinely rejected by server
-        const isAuthError =
-          refreshErr.response?.status === 401 ||
-          refreshErr.response?.status === 403 ||
-          refreshErr.message?.includes("Refresh token") ||
-          refreshErr.message?.includes("Suspicious activity");
-
-        if (isAuthError) {
-          clearAuthRefreshTimer();
-          localStorage.removeItem("aibus_auth_tokens");
-          localStorage.removeItem("loggedInUser");
-          window.dispatchEvent(new Event("loginStatusChanged"));
-        }
+        // Clear storage and notify logout if refresh token was rejected or corrupted
+        clearAuthRefreshTimer();
+        localStorage.removeItem("aibus_auth_tokens");
+        localStorage.removeItem("loggedInUser");
+        window.dispatchEvent(new Event("loginStatusChanged"));
 
         return Promise.reject(refreshErr);
       } finally {

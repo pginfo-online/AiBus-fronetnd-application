@@ -1,5 +1,6 @@
 import api from "./api";
 import filterBuses from "../utils/filterBuses";
+import { resolveCityDisplayName } from "../utils/cities";
 
 
 
@@ -45,7 +46,7 @@ function extractTime(timeStr, fallback = "08:30") {
 /**
  * Maps Mantis GDS Search result to Normalized UI Bus Model
  */
-function mapNormalizedBus(bus, { from = "", to = "", date = "" } = {}) {
+function mapNormalizedBus(bus, { from = "", to = "", fromName = "", toName = "", date = "" } = {}) {
   const busTypeStr =
     bus.BusTypeName ||
     bus.busType ||
@@ -64,14 +65,33 @@ function mapNormalizedBus(bus, { from = "", to = "", date = "" } = {}) {
     bus.IsAC ||
     (busTypeStr.toLowerCase().includes("ac") && !busTypeStr.toLowerCase().includes("non-ac") && !busTypeStr.toLowerCase().includes("non ac"));
 
-  const rawFare =
-    bus.TotalFare ||
+  const rawTax = Number(
+    bus.ServiceTax ??
+    bus.serviceTax ??
+    bus.BusStatus?.TotalTax ??
+    bus.BusStatus?.ServiceTax ??
+    (bus.TotalFare && bus.BaseFare ? Math.max(0, Number(bus.TotalFare) - Number(bus.BaseFare)) : 0)
+  );
+
+  const rawBaseFare = Number(
     bus.BaseFare ||
+    bus.baseFare ||
     bus.BusStatus?.BaseFares?.[0] ||
-    bus.BusStatus?.DiscFares?.[0] ||
-    bus.fare?.amount ||
+    (bus.TotalFare && rawTax > 0 ? Number(bus.TotalFare) - rawTax : null) ||
     bus.price ||
-    650;
+    bus.fare?.amount ||
+    200
+  );
+
+  const rawTotalFare = Number(
+    bus.TotalFare ||
+    bus.totalFare ||
+    bus.BusStatus?.TotalFares?.[0] ||
+    (rawBaseFare > 0 && rawTax > 0 ? rawBaseFare + rawTax : null) ||
+    bus.price ||
+    bus.fare?.amount ||
+    rawBaseFare
+  );
 
   const rawDep = bus.DepartureTime || bus.DeptTime || bus.departure?.dateTime || "";
   const rawArr = bus.ArrivalTime || bus.ArrTime || bus.arrival?.dateTime || "";
@@ -93,6 +113,21 @@ function mapNormalizedBus(bus, { from = "", to = "", date = "" } = {}) {
     bus.totalSeats ??
     36;
 
+  const resolvedFromId = Number(bus.FromCityId || (!isNaN(Number(from)) ? from : 4292));
+  const resolvedToId = Number(bus.ToCityId || (!isNaN(Number(to)) ? to : 4562));
+
+  const resolvedFromName = resolveCityDisplayName(
+    bus.FromName || bus.FromCityName || bus.fromCityName || bus.departure?.location || bus.from,
+    fromName || from,
+    resolvedFromId
+  );
+
+  const resolvedToName = resolveCityDisplayName(
+    bus.ToName || bus.ToCityName || bus.toCityName || bus.arrival?.location || bus.to,
+    toName || to,
+    resolvedToId
+  );
+
   return {
     id: String(bus.TripId || bus.tripId || bus.RouteBusId || bus.id || Math.random()),
     tripId: String(bus.TripId || bus.tripId || bus.id || ""),
@@ -100,19 +135,33 @@ function mapNormalizedBus(bus, { from = "", to = "", date = "" } = {}) {
     scheduleId: String(bus.TripId || bus.scheduleId || bus.id || ""),
     routeBusId: Number(bus.RouteBusId || bus.busId || 1),
     busId: Number(bus.RouteBusId || bus.busId || 1),
-    fromCityId: Number(bus.FromCityId || (from && !isNaN(Number(from)) ? from : 4292)),
-    toCityId: Number(bus.ToCityId || (to && !isNaN(Number(to)) ? to : 4562)),
+    fromCityId: resolvedFromId,
+    toCityId: resolvedToId,
+    FromCityId: resolvedFromId,
+    ToCityId: resolvedToId,
     operator: bus.CompanyName || bus.operator?.name || bus.operator || "Intercity Express",
     busNumber: bus.BusLabel || bus.BusTypeName || bus.service?.name || bus.busNumber || "AI-BUS",
     busType: busTypeStr || "AC Luxury Coach",
     layoutType: isSleeper ? "SLEEPER_2_1" : "SEATER_2_2",
-    from: bus.FromName || from || bus.departure?.location || bus.from || "Origin",
-    to: bus.ToName || to || bus.arrival?.location || bus.to || "Destination",
+    from: resolvedFromName,
+    to: resolvedToName,
+    FromName: resolvedFromName,
+    ToName: resolvedToName,
+    FromCityName: resolvedFromName,
+    ToCityName: resolvedToName,
+    fromCityName: resolvedFromName,
+    toCityName: resolvedToName,
     departureTime: extractTime(rawDep, "08:30"),
     arrivalTime: extractTime(rawArr, "14:30"),
     duration: durationStr,
     date: rawDep.includes(" ") ? rawDep.split(" ")[0] : (rawDep.slice(0, 10) || date),
-    price: Number(rawFare),
+    price: Number(rawBaseFare),
+    BaseFare: Number(rawBaseFare),
+    baseFare: Number(rawBaseFare),
+    TotalFare: Number(rawTotalFare),
+    totalFare: Number(rawTotalFare),
+    ServiceTax: Number(rawTax),
+    serviceTax: Number(rawTax),
     availableSeats: Number(availableSeats),
     seats: Number(availableSeats),
     totalSeats: Number(totalSeats),
@@ -331,7 +380,7 @@ export const busService = {
   /**
    * Mantis GET /ota/Search -> Backend GET /api/v1/search
    */
-  searchBuses: async ({ from, to, date, fromCityId, toCityId, journeyDate, filters, sortBy } = {}) => {
+  searchBuses: async ({ from, to, date, fromCityId, toCityId, journeyDate, fromName, toName, filters, sortBy } = {}) => {
     const fId = fromCityId || from;
     const tId = toCityId || to;
     const jDate = journeyDate || date;
@@ -351,7 +400,18 @@ export const busService = {
         (data && Array.isArray(data.Buses) ? data.Buses : null) ||
         (Array.isArray(data) ? data : []);
 
-      let results = rawBuses.map((b) => mapNormalizedBus(b, { from, to, date: jDate }));
+      const resolvedFromParam = data?.fromCityName || data?.from || fromName || from;
+      const resolvedToParam = data?.toCityName || data?.to || toName || to;
+
+      let results = rawBuses.map((b) =>
+        mapNormalizedBus(b, {
+          from: resolvedFromParam,
+          to: resolvedToParam,
+          fromName: resolvedFromParam,
+          toName: resolvedToParam,
+          date: jDate,
+        })
+      );
 
       if (filters || sortBy) {
         results = filterBuses(results, filters, sortBy);
@@ -368,7 +428,17 @@ export const busService = {
           (data2 && Array.isArray(data2.results) ? data2.results : null) ||
           (data2 && Array.isArray(data2.Buses) ? data2.Buses : null) ||
           (Array.isArray(data2) ? data2 : []);
-        let results2 = rawBuses2.map((b) => mapNormalizedBus(b, { from, to, date: jDate }));
+        const resolvedFromParam2 = data2?.fromCityName || data2?.from || fromName || from;
+        const resolvedToParam2 = data2?.toCityName || data2?.to || toName || to;
+        let results2 = rawBuses2.map((b) =>
+          mapNormalizedBus(b, {
+            from: resolvedFromParam2,
+            to: resolvedToParam2,
+            fromName: resolvedFromParam2,
+            toName: resolvedToParam2,
+            date: jDate,
+          })
+        );
 
         if (filters || sortBy) {
           results2 = filterBuses(results2, filters, sortBy);
@@ -445,7 +515,15 @@ export const busService = {
         (Array.isArray(data) ? data : []);
 
       if (rawBuses.length > 0) {
-        return mapNormalizedBus(rawBuses[0], { from, to, date: jDate });
+        const resolvedFrom = data?.fromCityName || data?.from || from;
+        const resolvedTo = data?.toCityName || data?.to || to;
+        return mapNormalizedBus(rawBuses[0], {
+          from: resolvedFrom,
+          to: resolvedTo,
+          fromName: resolvedFrom,
+          toName: resolvedTo,
+          date: jDate,
+        });
       }
       return null;
     } catch (err) {

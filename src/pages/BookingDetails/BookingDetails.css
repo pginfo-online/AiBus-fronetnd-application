@@ -1,12 +1,13 @@
 /* ========================================================
-   AIBus - Modern Digital Bus Ticket / Boarding Pass
+   AiBus - Official E-Ticket Layout (Exact AbhiBus Format)
    ======================================================== */
 
 .booking-details-page {
   min-height: calc(100vh - 72px);
-  background: #f1f5f9;
-  padding: 32px 20px 64px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: #f4f6f8;
+  padding: 30px 20px 60px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #222222;
 }
 
 .booking-details-container {
@@ -15,7 +16,7 @@
   margin: 0 auto;
 }
 
-/* Loading State */
+/* Loading & Empty States */
 .loading-wrap {
   display: flex;
   align-items: center;
@@ -25,15 +26,15 @@
 
 .ticket-pulse-loader {
   background: #ffffff;
-  border-radius: 16px;
-  padding: 48px 32px;
+  border-radius: 8px;
+  padding: 40px 30px;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   max-width: 440px;
 }
 
 .loader-bus-icon {
-  font-size: 48px;
+  font-size: 40px;
   display: inline-block;
   animation: busBounce 1.2s infinite ease-in-out;
 }
@@ -48,15 +49,23 @@
 }
 
 .ticket-pulse-loader h2 {
-  margin: 16px 0 8px;
-  font-size: 20px;
-  color: #0f172a;
+  margin: 14px 0 6px;
+  font-size: 18px;
+  color: #111827;
 }
 
 .ticket-pulse-loader p {
   margin: 0;
-  font-size: 14px;
-  color: #64748b;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.booking-not-found-card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 40px 24px;
+  text-align: center;
+  margin-top: 20px;
 }
 
 /* Navigation & Action Bar */
@@ -65,40 +74,41 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .subtle-back-btn {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   padding: 8px 16px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: #374151;
   cursor: pointer;
   transition: all 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .subtle-back-btn:hover {
-  background: #f8fafc;
-  color: #0f172a;
-  border-color: #cbd5e1;
+  background: #f9fafb;
+  color: #111827;
+  border-color: #9ca3af;
 }
 
 .ticket-quick-actions {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .action-pill-btn {
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 8px 16px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  border: 1px solid transparent;
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
@@ -106,1049 +116,879 @@
 }
 
 .action-pill-btn.print-btn {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #0f172a;
+  background: #d84e55;
+  color: #ffffff;
 }
 
-.action-pill-btn.print-btn:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
-}
-
-.action-pill-btn.cancel-btn {
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-}
-
-.action-pill-btn.cancel-btn:hover {
-  background: #fecaca;
+.action-pill-btn.print-btn:hover:not(:disabled) {
+  background: #c23b42;
 }
 
 .action-pill-btn.share-btn {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  color: #2563eb;
+  background: #ffffff;
+  color: #374151;
+  border-color: #d1d5db;
 }
 
 .action-pill-btn.share-btn:hover {
-  background: #dbeafe;
-  border-color: #93c5fd;
+  background: #f9fafb;
 }
 
-/* ========================================================
-   DIGITAL TICKET WRAPPER (BOARDING PASS)
-   ======================================================== */
-.digital-ticket-wrapper {
+.action-pill-btn.cancel-btn {
   background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.04);
-  overflow: hidden;
-  position: relative;
+  color: #dc2626;
+  border-color: #fca5a5;
 }
 
-/* Ticket Hero Header */
-.ticket-hero-header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #ffffff;
-  padding: 24px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.brand-logo-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 6px;
-}
-
-.ticket-logo-badge {
-  font-size: 20px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.5px;
-}
-
-.operator-name-pill {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #f8fafc;
-}
-
-.bus-category-subtext {
-  font-size: 13px;
-  color: #94a3b8;
-  font-weight: 400;
-}
-
-.header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-.ticket-status-pill {
-  padding: 6px 14px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.ticket-status-pill.confirmed {
-  background: #22c55e;
-  color: #ffffff;
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
-}
-
-.ticket-status-pill.cancelled {
-  background: #ef4444;
-  color: #ffffff;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
-}
-
-.booking-ref-badge {
-  font-size: 12px;
-  color: #cbd5e1;
-}
-
-.booking-ref-badge strong {
-  color: #ffffff;
-}
-
-/* Cancellation & Refund Banner */
-.ticket-cancellation-banner {
+.action-pill-btn.cancel-btn:hover {
   background: #fef2f2;
-  border-bottom: 2px solid #fecaca;
-  padding: 20px 32px;
+}
+
+/* Cancellation Notice Banner */
+.ticket-cancellation-banner {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
 }
 
 .cancellation-banner-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
-}
-
-.cancellation-icon {
-  font-size: 28px;
 }
 
 .cancellation-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-  color: #991b1b;
+  font-size: 15px;
+  font-weight: 700;
+  color: #9f1239;
 }
 
 .cancellation-subtitle {
-  margin: 2px 0 0;
-  font-size: 13.5px;
-  color: #7f1d1d;
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #be123c;
 }
 
 .refund-status-highlight {
-  background: #fee2e2;
-  color: #b91c1c;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.cancellation-financial-breakdown {
-  display: flex;
-  gap: 24px;
-  background: #ffffff;
-  border: 1px solid #fee2e2;
-  border-radius: 8px;
-  padding: 12px 18px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.fin-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.fin-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: #6b7280;
-}
-
-.fin-val {
-  font-size: 16px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.fin-val.penalty {
-  color: #dc2626;
-}
-
-.fin-val.refund {
-  color: #16a34a;
-}
-
-.cancellation-payout-note {
-  margin: 0;
-  font-size: 12.5px;
-  color: #991b1b;
-  font-style: italic;
-}
-
-/* Reference Identifiers Bar */
-.ticket-identifiers-bar {
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 16px 32px;
-  gap: 16px;
-}
-
-.id-block {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.id-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #64748b;
-}
-
-.id-copy-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.id-code {
-  font-size: 15px;
-  font-weight: 700;
-  color: #0f172a;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-}
-
-.copy-mini-btn {
-  background: transparent;
-  border: none;
-  font-size: 13px;
-  cursor: pointer;
-  padding: 2px 4px;
-  border-radius: 4px;
-  color: #64748b;
-  transition: all 0.15s ease;
-}
-
-.copy-mini-btn:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-
-.id-date, .id-fare {
-  font-size: 15px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.id-fare {
-  color: #16a34a;
-}
-
-/* Route & Timeline Matrix */
-.ticket-route-timeline {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 24px;
-  padding: 32px;
-}
-
-.timeline-node {
-  display: flex;
-  flex-direction: column;
-}
-
-.timeline-node.origin {
-  align-items: flex-start;
-}
-
-.timeline-node.destination {
-  align-items: flex-end;
-  text-align: right;
-}
-
-.city-time {
-  font-size: 26px;
-  font-weight: 800;
-  color: #0f172a;
-  line-height: 1.1;
-}
-
-.city-name {
-  margin: 4px 0 2px;
-  font-size: 18px;
-  font-weight: 700;
-  color: #334155;
-}
-
-.city-date {
-  font-size: 13px;
-  color: #64748b;
-}
-
-.stop-loc-tag {
-  margin-top: 8px;
-  background: #f1f5f9;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #475569;
-}
-
-.timeline-path {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  min-width: 180px;
-}
-
-.bus-travel-line {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.bus-travel-line::before {
-  content: "";
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  height: 2px;
-  background: #cbd5e1;
-  z-index: 1;
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #ef4444;
-  z-index: 2;
-}
-
-.dot.end-dot {
-  background: #22c55e;
-}
-
-.animated-bus-icon {
-  font-size: 18px;
-  position: relative;
-  z-index: 3;
-  background: #ffffff;
-  padding: 0 4px;
-}
-
-.duration-tag {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #64748b;
-  letter-spacing: 0.5px;
+  color: #047857;
 }
 
 /* ========================================================
-   PERFORATED CUT LINE WITH NOTCHES
+   ABHIBUS STYLE TICKET SHEET
    ======================================================== */
-.perforated-ticket-divider {
-  position: relative;
+.abhibus-ticket-sheet {
+  background: transparent;
+  margin: 0 auto;
+}
+
+.ticket-page {
+  background: #ffffff;
+  border: 1px solid #777777;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+/* 1. Header Row */
+.ticket-sheet-header {
   display: flex;
   align-items: center;
-  height: 24px;
-  margin: 0 -1px;
+  justify-content: space-between;
+  padding-bottom: 12px;
 }
 
-.notch {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  background: #f1f5f9;
-  border-radius: 50%;
-  z-index: 10;
+.brand-aibus-text {
+  font-size: 32px;
+  font-weight: 800;
+  color: #d84e55;
+  letter-spacing: -1px;
+  font-family: inherit;
+  line-height: 1;
 }
 
-.notch-left {
-  left: -12px;
-  box-shadow: inset -2px 0 3px rgba(0, 0, 0, 0.06);
-}
-
-.notch-right {
-  right: -12px;
-  box-shadow: inset 2px 0 3px rgba(0, 0, 0, 0.06);
-}
-
-.dashed-cut-line {
-  width: 100%;
-  border-bottom: 2px dashed #cbd5e1;
-  margin: 0 16px;
-}
-
-/* Boarding Point & Contact Grid */
-.ticket-info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  padding: 24px 32px;
-  background: #ffffff;
-}
-
-.info-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 18px 20px;
+.ticket-app-badges {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
 }
 
-.info-card-title {
+.store-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #333333;
+  background: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.store-badge-pill:hover {
+  border-color: #999999;
+  background-color: #f7f9fc;
+  color: #111111;
+  text-decoration: none;
+}
+
+.badge-svg-icon {
+  flex-shrink: 0;
+}
+
+/* 2. Ticket Meta Bar */
+.ticket-meta-section {
+  border-top: 1px solid #dddddd;
+  padding-top: 10px;
+  margin-top: 6px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ticket-title-bold {
   margin: 0;
   font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
+  color: #222222;
 }
 
-.point-details-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.booked-on-text {
+  display: block;
+  font-size: 11.5px;
+  color: #555555;
+  margin-top: 2px;
 }
 
-.detail-line {
+.meta-right {
+  text-align: right;
+}
+
+.meta-kv-row {
+  font-size: 11.5px;
+  color: #555555;
+  line-height: 1.5;
+}
+
+.meta-kv-row strong {
+  color: #222222;
+  margin-left: 4px;
+}
+
+.copy-mini-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  margin-left: 5px;
+  padding: 0;
+  color: #6b7280;
+}
+
+/* 3. Operator & Service Row */
+.operator-service-section {
+  border-top: 1px solid #dddddd;
+  padding-top: 10px;
+  margin-top: 10px;
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
-  font-size: 13px;
 }
 
-.p-label {
-  color: #64748b;
+.operator-name-bold {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #222222;
+}
+
+.bus-type-text {
+  display: block;
+  font-size: 11.5px;
+  color: #444444;
+  margin-top: 2px;
+}
+
+.bus-start-time-text {
+  display: block;
+  font-size: 11.5px;
+  color: #444444;
+  margin-top: 2px;
+}
+
+.bus-start-time-text strong {
+  color: #222222;
+}
+
+.op-right {
+  text-align: right;
+  font-size: 11.5px;
+  color: #444444;
+}
+
+.service-number-text {
+  font-weight: 700;
+  color: #222222;
+}
+
+.service-route-text {
+  font-weight: 700;
+  color: #333333;
+  margin-top: 1px;
+}
+
+.service-gstin-text {
+  color: #555555;
+  margin-top: 1px;
+}
+
+.service-helpline-row {
+  color: #555555;
+  margin-top: 1px;
+}
+
+.helpline-blue-link {
+  color: #0284c7;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.helpline-blue-link:hover {
+  text-decoration: underline;
+}
+
+/* 4. Journey Grid */
+.journey-grid-section {
+  border-top: 1px solid #dddddd;
+  padding-top: 12px;
+  margin-top: 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.journey-col {
+  flex: 1;
+}
+
+.dep-col {
+  max-width: 130px;
+}
+
+.journey-col-label {
+  display: block;
+  font-size: 11px;
+  color: #777777;
+}
+
+.journey-col-label strong {
+  color: #222222;
+}
+
+.journey-date-text {
+  display: block;
+  font-size: 11.5px;
+  color: #444444;
+  margin-top: 2px;
+}
+
+.journey-time-text {
+  display: block;
+  font-size: 13px;
+  color: #222222;
+  margin-top: 2px;
+}
+
+.boarding-col {
+  flex: 1.4;
+}
+
+.journey-point-title {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #222222;
+}
+
+.journey-point-desc {
+  margin: 2px 0 0;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: #444444;
+}
+
+.journey-point-phone {
+  display: block;
+  font-size: 10.5px;
+  color: #444444;
+  margin-top: 2px;
+}
+
+.journey-arrow-col {
+  flex-shrink: 0;
+  padding: 10px 4px 0;
+}
+
+.journey-maroon-arrow {
+  color: #b71c1c;
+  font-size: 20px;
+  font-weight: 700;
+  display: inline-block;
+}
+
+.arr-col {
+  max-width: 140px;
+}
+
+.arrival-city-bold {
+  display: block;
+  font-size: 13px;
+  color: #222222;
+  margin-top: 1px;
+}
+
+.dropping-col {
+  flex: 1.2;
+}
+
+.reporting-time-footer-note {
+  font-size: 11px;
+  color: #333333;
+  margin-top: 10px;
+  padding-bottom: 4px;
+}
+
+/* 5. Passenger & Payment Tables Split */
+.manifest-payment-split {
+  border-top: 1px solid #dddddd;
+  padding-top: 12px;
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.split-col-header-bar {
+  background: #efefef;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #222222;
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+
+.abhibus-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.abhibus-table th {
+  font-weight: 700;
+  color: #555555;
+  padding: 4px 6px;
+  text-align: left;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.abhibus-table td {
+  padding: 5px 6px;
+  color: #222222;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.passenger-name-cell {
+  color: #222222;
   font-weight: 500;
 }
 
-.p-val {
-  color: #0f172a;
-  font-weight: 600;
-  text-align: right;
-  word-break: break-word;
+.payment-line-rows {
+  padding: 2px 6px 6px;
 }
 
-.p-val.text-red {
-  color: #ef4444;
-}
-
-/* Passenger Manifest Section */
-.passenger-manifest-section {
-  padding: 16px 32px 24px;
-}
-
-.manifest-title {
-  margin: 0 0 14px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.passenger-tickets-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.passenger-ticket-row {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 12px 18px;
+.pay-line {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-size: 11.5px;
+  color: #444444;
+  padding: 3px 0;
 }
 
-.seat-badge-square {
-  background: #0f172a;
-  color: #ffffff;
-  border-radius: 8px;
-  padding: 6px 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 60px;
+.pay-val {
+  color: #222222;
+  font-weight: 500;
 }
 
-.seat-lbl {
-  font-size: 9px;
+.discount-line .pay-val,
+.promo-line .pay-val {
+  color: #2e7d32;
+}
+
+.pay-divider-line {
+  border-top: 1px solid #dddddd;
+  margin: 6px 0;
+}
+
+.total-paid-line {
+  padding-top: 2px;
+}
+
+.pay-lbl-bold {
+  font-size: 12.5px;
+  color: #222222;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #94a3b8;
 }
 
-.seat-num {
-  font-size: 16px;
-  font-weight: 800;
-}
-
-.passenger-details-col {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  margin-left: 18px;
-}
-
-.p-name-badge {
-  font-size: 15px;
+.pay-val-red {
+  font-size: 13.5px;
+  color: #d32f2f;
   font-weight: 700;
-  color: #0f172a;
 }
 
-.p-demographics {
-  font-size: 13px;
-  color: #64748b;
+.you-saved-banner-box {
+  border: 1px solid #4caf50;
+  background: #f1f8e9;
+  border-radius: 2px;
+  padding: 6px 10px;
+  text-align: center;
+  margin-top: 8px;
 }
 
-.passenger-fare-col {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-}
-
-.fare-tag {
-  font-size: 11px;
-  font-weight: 600;
-  color: #16a34a;
-  background: #dcfce7;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.fare-val {
-  font-size: 16px;
+.saved-title-green {
+  font-size: 11.5px;
   font-weight: 700;
-  color: #0f172a;
+  color: #2e7d32;
 }
 
-/* Barcode & Verification Footer */
-.ticket-barcode-footer {
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
-  padding: 24px 32px;
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  align-items: center;
-  gap: 24px;
+.saved-subtext-green {
+  font-size: 10px;
+  color: #388e3c;
+  margin-top: 2px;
 }
 
-.barcode-graphic-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+/* 6. Important Information */
+.important-info-box {
+  border-top: 1px solid #dddddd;
+  padding-top: 12px;
+  margin-top: 10px;
 }
 
-.barcode-bars {
-  display: flex;
-  align-items: stretch;
-  height: 40px;
-  gap: 3px;
-}
-
-.b-line {
-  background: #0f172a;
-  border-radius: 1px;
-}
-
-.b-line.w1 { width: 2px; }
-.b-line.w2 { width: 3px; }
-.b-line.w3 { width: 5px; }
-.b-line.w4 { width: 7px; }
-
-.barcode-num {
-  font-size: 11px;
-  font-family: monospace;
-  letter-spacing: 1px;
-  color: #64748b;
-  font-weight: 600;
-}
-
-.ticket-guidelines-col {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.guideline-text {
-  margin: 0;
+.important-info-header {
+  background: #efefef;
+  padding: 5px 10px;
   font-size: 12px;
-  color: #64748b;
-  line-height: 1.4;
+  font-weight: 700;
+  color: #222222;
+  border-radius: 2px;
+  margin-bottom: 6px;
 }
 
-.guideline-text strong {
-  color: #0f172a;
+.important-info-list {
+  list-style: none;
+  padding: 4px 10px;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #333333;
+}
+
+.important-info-list a {
+  color: #0284c7;
+  text-decoration: underline;
+}
+
+/* 7. Terms & Conditions and Cancellation Policy */
+.terms-cancellation-split {
+  border-top: 1px solid #dddddd;
+  padding-top: 12px;
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.section-subtitle-bold {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #222222;
+}
+
+.terms-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: #444444;
+}
+
+.terms-bullets li {
+  margin-bottom: 4px;
+}
+
+.cancel-table th,
+.cancel-table td {
+  font-size: 10.5px;
+  padding: 3px 6px;
+}
+
+.cancellation-extra-note {
+  font-size: 10px;
+  color: #666666;
+  margin-top: 6px;
+}
+
+/* PAGE 2: GENERAL TERMS AND CONDITIONS */
+.ticket-page-2 {
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.page-2-title {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #222222;
+}
+
+.page-2-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #333333;
+}
+
+.page-2-list li {
+  margin-bottom: 8px;
+}
+
+.page-2-list a {
+  color: #0284c7;
+  text-decoration: underline;
+}
+
+.ticket-page-2-footer {
+  text-align: center;
+  font-size: 11px;
+  color: #777777;
+  padding-top: 24px;
+  border-top: 1px solid #eeeeee;
+  margin-top: 30px;
 }
 
 /* Bottom Action Buttons */
 .ticket-bottom-actions {
   display: flex;
-  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
   margin-top: 24px;
 }
 
 .btn-print-ticket-main {
-  flex: 1;
-  height: 50px;
-  background: #ffffff;
-  border: 2px solid #0f172a;
-  border-radius: 10px;
-  font-size: 15px;
+  background: #d84e55;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 28px;
+  font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
   cursor: pointer;
   transition: all 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  box-shadow: 0 2px 8px rgba(216, 78, 85, 0.25);
 }
 
-.btn-print-ticket-main:hover {
-  background: #0f172a;
-  color: #ffffff;
+.btn-print-ticket-main:hover:not(:disabled) {
+  background: #c23b42;
 }
 
 .btn-cancel-ticket-main {
-  flex: 1;
-  height: 50px;
-  background: #ef4444;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #ffffff;
+  background: #ffffff;
+  color: #dc2626;
+  border: 1px solid #f87171;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
 }
 
-.btn-cancel-ticket-main:hover {
-  background: #dc2626;
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+.btn-cancel-ticket-main:hover:not(:disabled) {
+  background: #fef2f2;
 }
 
-/* =========================================
-   CANCELLATION & REFUND PREVIEW MODAL
-   ========================================= */
+/* Modal Styles */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 16px;
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  z-index: 9999;
+  padding: 20px;
 }
 
 .cancellation-modal-card {
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  max-width: 520px;
   width: 100%;
-  max-width: 540px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(16px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .modal-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 24px 28px 18px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
 }
 
 .modal-title {
   margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 18px;
+  color: #111827;
 }
 
 .modal-subtitle {
   margin: 4px 0 0;
-  font-size: 13px;
-  color: #64748b;
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .modal-close-btn {
-  background: transparent;
+  background: none;
   border: none;
   font-size: 18px;
-  color: #94a3b8;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 6px;
-  transition: all 0.15s ease;
-  line-height: 1;
-}
-
-.modal-close-btn:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-}
-
-.modal-loading-state {
-  padding: 48px 24px;
-  text-align: center;
-  color: #64748b;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.modal-loading-state .spinner-icon {
-  font-size: 32px;
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 0.7;
-  }
-}
-
-.modal-body-content {
-  padding: 24px 28px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.cancel-error-banner {
-  background: #fef2f2;
-  border: 1px solid #fee2e2;
-  color: #dc2626;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.cancellation-eligibility-badge {
-  display: flex;
-  align-items: center;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.cancellation-eligibility-badge.eligible {
-  background: #ecfdf5;
-  color: #059669;
-  border: 1px solid #a7f3d0;
-}
-
-.cancellation-eligibility-badge.not-eligible {
-  background: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
+  color: #9ca3af;
 }
 
 .refund-summary-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 10px;
+  margin: 16px 0;
 }
 
 .refund-stat-box {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 14px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 10px;
   text-align: center;
 }
 
-.refund-stat-box.highlight-green {
-  background: #f0fdf4;
-  border-color: #bbf7d0;
-}
-
 .stat-label {
+  display: block;
   font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #64748b;
+  color: #6b7280;
 }
 
 .stat-value {
-  font-size: 18px;
+  display: block;
+  font-size: 16px;
   font-weight: 700;
-  color: #0f172a;
+  color: #111827;
+  margin-top: 4px;
 }
 
 .stat-value.text-red {
-  color: #ef4444;
+  color: #dc2626;
 }
 
 .stat-value.text-green {
-  color: #16a34a;
+  color: #059669;
+}
+
+.refund-stat-box.highlight-green {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
 }
 
 .cancellation-details-list {
-  background: #f8fafc;
-  border-radius: 8px;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  font-size: 12px;
+  color: #374151;
+  background: #f9fafb;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 14px;
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
-}
-
-.detail-lbl {
-  color: #64748b;
-  font-weight: 500;
-}
-
-.detail-val {
-  color: #0f172a;
-  font-weight: 600;
-}
-
-.cancellation-reason-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.reason-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #334155;
+  padding: 3px 0;
 }
 
 .reason-input {
-  height: 42px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 0 14px;
-  font-size: 14px;
-  color: #0f172a;
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.reason-input:focus {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-top: 6px;
+  box-sizing: border-box;
 }
 
 .modal-actions-footer {
   display: flex;
-  gap: 12px;
-  margin-top: 8px;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .btn-cancel-back {
-  flex: 1;
-  height: 44px;
   background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #475569;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
   cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.btn-cancel-back:hover {
-  background: #f8fafc;
-  color: #0f172a;
 }
 
 .btn-confirm-cancellation {
-  flex: 1.2;
-  height: 44px;
-  background: #ef4444;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #ffffff;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
-  transition: all 0.15s ease;
-}
-
-.btn-confirm-cancellation:hover:not(:disabled) {
   background: #dc2626;
-  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35);
-}
-
-.btn-confirm-cancellation:disabled {
-  background: #fca5a5;
-  cursor: not-allowed;
-  box-shadow: none;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 /* ========================================================
    PRINT STYLESHEET (@media print)
+   Exact Page 1 & Page 2 Output
    ======================================================== */
 @media print {
-  body {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 8mm 8mm 8mm;
+  }
+
+  body, html {
     background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #000000 !important;
   }
 
   .booking-details-page {
     background: #ffffff !important;
     padding: 0 !important;
+    margin: 0 !important;
     min-height: auto !important;
   }
 
   .booking-details-container {
     max-width: 100% !important;
     width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  .no-print, header, footer, nav, .ticket-top-nav-bar, .ticket-bottom-actions {
+  .no-print, header, footer, nav, .ticket-top-nav-bar, .ticket-bottom-actions, .modal-overlay {
     display: none !important;
   }
 
-  .digital-ticket-wrapper {
+  .abhibus-ticket-sheet {
     box-shadow: none !important;
-    border: 1px solid #0f172a !important;
-    border-radius: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  .ticket-hero-header {
-    background: #0f172a !important;
+  .ticket-page {
+    box-shadow: none !important;
+    border: 1px solid #666666 !important;
+    margin: 0 !important;
+    padding: 18px 22px !important;
+  }
+
+  .ticket-page-1 {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .ticket-page-2 {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  .split-col-header-bar,
+  .important-info-header {
+    background: #f0f0f0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .brand-aibus-text {
+    color: #d84e55 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pay-val-red {
+    color: #d32f2f !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .you-saved-banner-box {
+    border: 1px solid #4caf50 !important;
+    background: #f1f8e9 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .journey-maroon-arrow {
+    color: #b71c1c !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 }
 
-/* Responsive Behavior */
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
   .booking-details-page {
-    padding: 20px 14px 40px;
+    padding: 16px 10px 40px;
   }
 
-  .ticket-hero-header {
+  .ticket-page {
+    padding: 16px;
+  }
+
+  .journey-grid-section {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 20px;
+    gap: 10px;
   }
 
-  .header-right {
-    align-items: flex-start;
+  .journey-arrow-col {
+    display: none;
   }
 
-  .ticket-identifiers-bar {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 16px 20px;
-  }
-
-  .ticket-route-timeline {
+  .manifest-payment-split,
+  .terms-cancellation-split {
     grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 24px 20px;
-  }
-
-  .timeline-node.destination {
-    align-items: flex-start;
-    text-align: left;
-  }
-
-  .timeline-path {
-    width: 100%;
-  }
-
-  .ticket-info-grid {
-    grid-template-columns: 1fr;
-    padding: 16px 20px;
-  }
-
-  .passenger-manifest-section {
-    padding: 16px 20px;
-  }
-
-  .ticket-barcode-footer {
-    grid-template-columns: 1fr;
-    padding: 20px;
-  }
-
-  .ticket-bottom-actions {
-    flex-direction: column;
+    gap: 14px;
   }
 }

@@ -24,6 +24,7 @@ import BookingStepper from "../../components/BookingStepper/BookingStepper";
 import AiBusChatAssistant from "../../components/AiBusChatAssistant/AiBusChatAssistant";
 import CancellationPolicyModal from "../../components/CancellationPolicyModal/CancellationPolicyModal";
 import { formatPointTime } from "../../components/BoardingDroppingSelector/BoardingDroppingSelector";
+import authService from "../../services/authService";
 import "./SeatSelection.css";
 
 function formatTripDate(dateStr) {
@@ -166,10 +167,31 @@ function SeatSelection() {
             const resolvedDropoffs =
               seatsResponse?.DroppingPoints?.length > 0 ? seatsResponse.DroppingPoints : (busObj.dropoffs || []);
 
+            // Calculate minimum seat fare across available seats in layout
+            const layoutSeats = seatsResponse?.Layout || [];
+            const seatFares = layoutSeats
+              .map((s) => s.total_fare || s.price)
+              .filter((p) => p && !isNaN(p) && p > 0);
+            const minSeatTotalFare = seatFares.length > 0 ? Math.min(...seatFares) : (busObj.TotalFare || busObj.price);
+
+            const seatBaseFares = layoutSeats
+              .map((s) => s.base_fare)
+              .filter((p) => p && !isNaN(p) && p > 0);
+            const minSeatBaseFare = seatBaseFares.length > 0 ? Math.min(...seatBaseFares) : (busObj.BaseFare || busObj.price);
+
+            const seatTaxes = layoutSeats
+              .map((s) => s.service_tax)
+              .filter((p) => p !== undefined && !isNaN(p) && p >= 0);
+            const minSeatTax = seatTaxes.length > 0 ? Math.min(...seatTaxes) : (busObj.ServiceTax || 0);
+
             setSelectedBus({
               ...busObj,
               busId: realBusId,
               routeBusId: realBusId,
+              price: minSeatTotalFare || busObj.price,
+              TotalFare: minSeatTotalFare || busObj.TotalFare,
+              BaseFare: minSeatBaseFare || busObj.BaseFare,
+              ServiceTax: minSeatTax,
               seatsLayout: seatsResponse,
               pickups: resolvedPickups,
               dropoffs: resolvedDropoffs,
@@ -338,7 +360,22 @@ function SeatSelection() {
       date: selectedBus?.date || date || new Date().toISOString().split("T")[0],
     });
 
-    navigate(`/traveller-details?${params.toString()}`, {
+    const targetUrl = `/traveller-details?${params.toString()}`;
+
+    // ── Auth guard ─────────────────────────────────────────────
+    const isAuth =
+      authService.isAuthenticated() ||
+      Boolean(authService.getLoggedInUser()) ||
+      Boolean(localStorage.getItem("aibus_auth_tokens")) ||
+      Boolean(localStorage.getItem("loggedInUser"));
+
+    if (!isAuth) {
+      navigate(`/login?returnTo=${encodeURIComponent(targetUrl)}`);
+      return;
+    }
+    // ────────────────────────────────────────────────────────────
+
+    navigate(targetUrl, {
       state: {
         bus: selectedBus,
         selectedSeats,
@@ -360,8 +397,24 @@ function SeatSelection() {
     }
   };
 
+  const totalBaseFare = selectedSeats.reduce((sum, s) => {
+    if (typeof s === "object") {
+      const base = s.base_fare ?? (s.price && s.service_tax ? s.price - s.service_tax : null) ?? selectedBus?.BaseFare ?? s.price ?? 105;
+      return sum + Number(base);
+    }
+    return sum + Number(selectedBus?.BaseFare || selectedBus?.price || 105);
+  }, 0);
+
+  const totalTax = selectedSeats.reduce((sum, s) => {
+    if (typeof s === "object") {
+      const tax = s.service_tax ?? (s.price && s.base_fare ? s.price - s.base_fare : null) ?? selectedBus?.ServiceTax ?? 0;
+      return sum + Number(tax);
+    }
+    return sum + Number(selectedBus?.ServiceTax || 0);
+  }, 0);
+
   const totalAmount = selectedSeats.reduce(
-    (sum, s) => sum + (typeof s === "object" ? s.price || selectedBus?.price || 205 : selectedBus?.price || 205),
+    (sum, s) => sum + (typeof s === "object" ? Number(s.total_fare || s.price || selectedBus?.TotalFare || selectedBus?.price || 107) : Number(selectedBus?.TotalFare || selectedBus?.price || 107)),
     0
   );
 
@@ -640,11 +693,15 @@ function SeatSelection() {
               <div className="summary-price-breakdown">
                 <div className="price-row">
                   <span>Base Fare ({selectedSeats.length || 0} Seats)</span>
-                  <span>₹{selectedSeats.length > 0 ? totalAmount : 0}</span>
+                  <span>₹{selectedSeats.length > 0 ? (totalTax > 0 ? totalBaseFare : totalAmount) : 0}</span>
                 </div>
                 <div className="price-row">
                   <span>Taxes & GST</span>
-                  <span className="tax-free-tag">Included</span>
+                  {totalTax > 0 ? (
+                    <span className="tax-val">₹{totalTax}</span>
+                  ) : (
+                    <span className="tax-free-tag">Included</span>
+                  )}
                 </div>
                 <div className="price-row total-row">
                   <div>

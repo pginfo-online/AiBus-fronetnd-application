@@ -150,14 +150,28 @@ export const paymentService = {
       },
     };
 
-    const rzp = new window.Razorpay(options);
-    rzp.on("payment.failed", (response) => {
-      if (onPaymentFailure) {
-        onPaymentFailure(response);
-      }
-    });
-    rzp.open();
-    return rzp;
+    try {
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", (response) => {
+        if (onPaymentFailure) {
+          onPaymentFailure(response);
+        }
+      });
+      rzp.open();
+      return rzp;
+    } catch (openErr) {
+      console.warn("Direct checkout open failed with custom options, falling back to standard options:", openErr);
+      delete options.config;
+      delete options.upi;
+      const fallbackRzp = new window.Razorpay(options);
+      fallbackRzp.on("payment.failed", (response) => {
+        if (onPaymentFailure) {
+          onPaymentFailure(response);
+        }
+      });
+      fallbackRzp.open();
+      return fallbackRzp;
+    }
   },
 
   /**

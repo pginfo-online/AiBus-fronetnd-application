@@ -7,8 +7,9 @@
   position: relative;
 }
 
-.location-input:focus-within {
-  z-index: 50;
+.location-input:focus-within,
+.location-input.is-open {
+  z-index: 100;
 }
 
 .location-input label {
@@ -81,6 +82,7 @@
   z-index: 9999;
   max-height: 260px;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 8px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -91,10 +93,30 @@
   animation: dropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.city-suggestions.drop-up {
+  top: auto !important;
+  bottom: calc(100% + 8px) !important;
+  box-shadow:
+    0 -20px 40px -8px rgba(15, 23, 42, 0.18),
+    0 -4px 12px rgba(15, 23, 42, 0.08) !important;
+  animation: dropdownFadeInUp 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
 @keyframes dropdownFadeIn {
   from {
     opacity: 0;
     transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdownFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
   }
   to {
     opacity: 1;

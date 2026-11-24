@@ -30,42 +30,67 @@ function calculateDuration(depTime, arrTime) {
   }
 }
 
+function extractCleanTime(val, fallback = "08:00") {
+  if (!val) return fallback;
+  const str = String(val).trim();
+  if (str.includes(" ")) {
+    const parts = str.split(" ");
+    if (parts[1] && parts[1].includes(":")) return parts[1].slice(0, 5);
+  }
+  if (str.includes("T")) {
+    const timePart = str.split("T")[1];
+    if (timePart && timePart.includes(":")) return timePart.slice(0, 5);
+  }
+  if (str.length >= 5 && str.includes(":")) {
+    const match = str.match(/\b\d{1,2}:\d{2}\b/);
+    if (match) return match[0];
+    return str.slice(0, 5);
+  }
+  return fallback;
+}
+
 function mapBackendBooking(b) {
-  const depTime = b.pickupTime
-    ? b.pickupTime.toString().slice(11, 16)
-    : b.departureTime
-      ? b.departureTime.toString().slice(0, 5)
-      : "08:00";
+  const depTime = extractCleanTime(b.pickupTime || b.departureTime || b.bus?.departureTime, "13:00");
+  const arrTime = extractCleanTime(b.dropoffTime || b.arrivalTime || b.bus?.arrivalTime, "22:00");
 
-  const arrTime = b.dropoffTime
-    ? b.dropoffTime.toString().slice(11, 16)
-    : b.arrivalTime
-      ? b.arrivalTime.toString().slice(0, 5)
-      : "14:00";
+  const seatsList = (
+    b.selectedSeats ||
+    (Array.isArray(b.seats) && b.seats.map((s) => (typeof s === "object" ? s.seatNo || s.seat_no : s))) ||
+    (Array.isArray(b.passengers) && b.passengers.map((p) => p.seatNo || p.seat)) ||
+    []
+  ).filter(Boolean);
 
-  const passengers = (b.passengers || []).map((p) => ({
-    seat: p.seatNo || p.seatNumber || "A1",
-    name: p.name || "Passenger",
-    age: p.age || 25,
+  const passengers = (b.passengers || []).map((p, idx) => ({
+    seat: p.seatNo || p.seatNumber || p.seat || seatsList[idx] || "—",
+    name: p.name || `Passenger ${idx + 1}`,
+    age: p.age || 28,
     gender: p.gender === "F" || p.gender === "Female" ? "Female" : "Male",
     mobile: p.mobile || b.contactPhone || "",
-    fare: Number(p.fare || 0),
+    fare: Number(p.fare || (b.seats && (typeof b.seats[idx] === "object" ? b.seats[idx]?.fareTotal : 0)) || 0),
   }));
 
   const primaryPassenger = passengers[0] || {};
-  const seatsList = b.selectedSeats || (b.seats && b.seats.map((s) => s.seatNo)) || passengers.map((p) => p.seat);
 
   return {
     id: b.id || b.bookingReference,
     bookingId: b.id || b.bookingReference,
-    bookingReference: b.bookingReference || b.bookingNumber || b.id,
-    bookingNumber: b.bookingNumber || b.bookingReference || b.id,
-    pnr: b.providerPnrNo || b.pnrNumber || b.pnr || b.ticket?.pnrNumber || b.bookingReference,
+    bookingReference: b.bookingNumber || b.bookingReference || b.id,
+    bookingNumber: b.bookingNumber || b.bookingReference || (b.id && !b.id.includes("-") ? b.id : `AIB-${String(b.id || "").slice(0, 8).toUpperCase()}`),
+    pnr: b.providerPnrNo || b.pnrNumber || b.pnr || b.ticket?.pnrNumber || b.bookingNumber || b.bookingReference,
     ticketNumber: b.providerTicketNo || b.ticketNumber || b.ticketNo || b.ticket?.ticketNumber || b.bookingReference,
     userMobile: b.contactPhone || b.user?.mobile || primaryPassenger.mobile || "",
     contactEmail: b.contactEmail || b.user?.email || "",
     contactPhone: b.contactPhone || primaryPassenger.mobile || "",
     contactName: b.contactName || primaryPassenger.name || "Passenger",
+    fromCityName: b.fromCityName || b.source || "Bengaluru",
+    toCityName: b.toCityName || b.destination || "Chennai",
+    journeyDate: b.journeyDate || "",
+    operatorName: b.operatorName || b.busName || "AIBus Travels",
+    busType: formatBusType(b.busType),
+    pickupLocation: b.pickupLocation || "Main Boarding Point",
+    dropoffLocation: b.dropoffLocation || "City Dropoff Point",
+    pickupTime: depTime,
+    dropoffTime: arrTime,
     bus: {
       id: b.busId || b.scheduleId || 1,
       operator: b.operatorName || b.busName || "AIBus Travels",
@@ -81,6 +106,7 @@ function mapBackendBooking(b) {
       dropoffLocation: b.dropoffLocation || "City Dropoff Point",
     },
     travellers: passengers,
+    passengers: passengers,
     traveller: {
       name: b.contactName || primaryPassenger.name || "Passenger",
       age: primaryPassenger.age || "",
@@ -90,6 +116,8 @@ function mapBackendBooking(b) {
     totalAmount: Number(b.totalFare || b.totalAmount || 0),
     baseFare: Number(b.baseFare || 0),
     serviceTax: Number(b.serviceTax || 0),
+    discountAmount: Number(b.discountAmount || 0),
+    walletAmount: Number(b.walletAmount || 0),
     status:
       b.status === "CONFIRMED" || b.bookingStatus === "CONFIRMED"
         ? "Confirmed"
@@ -485,22 +513,35 @@ export const bookingService = {
   // ----------------------------------------------------
   getMyBookings: async () => {
     let remoteBookings = [];
+    let hasAccessToken = false;
     try {
-      const response = await api.get("/api/v1/bookings/my-bookings");
-      const raw = response.data?.data;
-      const list = Array.isArray(raw)
-        ? raw
-        : Array.isArray(raw?.items)
-          ? raw.items
-          : Array.isArray(raw?.bookings)
-            ? raw.bookings
-            : Array.isArray(raw?.data)
-              ? raw.data
-              : [];
+      const authData = localStorage.getItem("aibus_auth_tokens");
+      if (authData) {
+        const parsed = JSON.parse(authData);
+        hasAccessToken = Boolean(parsed?.accessToken);
+      }
+    } catch {
+      hasAccessToken = false;
+    }
 
-      remoteBookings = list.map(mapBackendBooking);
-    } catch (err) {
-      console.warn("Failed to fetch remote /my-bookings:", err.message);
+    if (hasAccessToken) {
+      try {
+        const response = await api.get("/api/v1/bookings/my-bookings");
+        const raw = response.data?.data;
+        const list = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw?.items)
+            ? raw.items
+            : Array.isArray(raw?.bookings)
+              ? raw.bookings
+              : Array.isArray(raw?.data)
+                ? raw.data
+                : [];
+
+        remoteBookings = list.map(mapBackendBooking);
+      } catch (err) {
+        console.warn("Failed to fetch remote /my-bookings:", err.message);
+      }
     }
 
     // Retrieve locally saved device / guest bookings
@@ -675,6 +716,23 @@ export const bookingService = {
     }
   },
 
+  // ----------------------------------------------------
+  // 8️⃣ Mantis GET /ota/balance -> Backend GET /api/v1/cancellations/agent-balance
+  // ----------------------------------------------------
+  getAgentBalance: async () => {
+    try {
+      const response = await api.get("/api/v1/cancellations/agent-balance");
+      return response.data?.data || response.data;
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        err.message;
+      console.error("[AgentBalance Error]", errorMsg);
+      throw new Error(errorMsg || "Failed to retrieve provider balance");
+    }
+  },
+
   getTicketByNumber: async (ticketNumber) => {
     try {
       const response = await api.get(`/api/v1/tickets/number/${ticketNumber}`);
@@ -692,6 +750,31 @@ export const bookingService = {
     } catch (err) {
       console.warn("Failed to get ticket by bookingId:", err.message);
       return null;
+    }
+  },
+
+  downloadTicketPdf: async (bookingId, ticketNo) => {
+    try {
+      const response = await api.get(`/api/v1/tickets/booking/${bookingId}/pdf`, {
+        responseType: "blob",
+      });
+      if (response.data && response.data.size > 0) {
+        const blob = new Blob([response.data], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        const cleanNo = String(ticketNo || bookingId || "Ticket").replace(/[^a-zA-Z0-9-]/g, "");
+        link.setAttribute("download", `AiBus-Ticket-${cleanNo}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => window.URL.revokeObjectURL(url), 2000);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.warn("[downloadTicketPdf] Failed to fetch server PDF:", err.message);
+      return false;
     }
   },
 

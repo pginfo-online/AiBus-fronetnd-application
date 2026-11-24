@@ -28,7 +28,9 @@ export const authService = {
 
   isAuthenticated: () => {
     const tokens = authService.getTokens();
-    return Boolean(tokens?.accessToken);
+    if (tokens?.accessToken) return true;
+    const user = authService.getLoggedInUser();
+    return Boolean(user?.id || user?.phone || user?.email);
   },
 
   /**

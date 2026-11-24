@@ -322,6 +322,14 @@ function ApiChartDeckLayout({ chartData, selectedSeats, onSeatClick, isSingleDec
             const fareArray = chartData.SeatsStatus?.Fares?.[seq_no];
             const price = fareArray ? fareArray[0] : 11;
 
+            const foundLayoutItem = Array.isArray(chartData.Layout)
+              ? chartData.Layout.find((s) => s.seat_no === String(display) || s.seq_no === seq_no)
+              : null;
+
+            const totalFare = Number(foundLayoutItem?.total_fare || (fareArray ? fareArray[0] : null) || price);
+            const baseFare = Number(foundLayoutItem?.base_fare || (fareArray && fareArray.length > 1 ? fareArray[1] : null) || totalFare);
+            const serviceTax = Number(foundLayoutItem?.service_tax ?? Math.max(0, totalFare - baseFare));
+
             const isSleeper = height >= 2 || width >= 2 || seat_type === 2;
             const isWindow = col === 0 || col === maxCols;
             const isAisle = !isWindow && col !== 2;
@@ -331,7 +339,10 @@ function ApiChartDeckLayout({ chartData, selectedSeats, onSeatClick, isSingleDec
               display: String(display),
               seatNo: String(display),
               seq_no,
-              price: Number(price),
+              price: totalFare,
+              total_fare: totalFare,
+              base_fare: baseFare,
+              service_tax: serviceTax,
               statusVal,
               seat_type,
               isSleeper,

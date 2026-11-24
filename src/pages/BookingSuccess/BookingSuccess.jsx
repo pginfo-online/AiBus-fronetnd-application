@@ -356,13 +356,8 @@ function BookingSuccess() {
   };
 
   const handlePrintTicket = () => {
-    const originalTitle = document.title;
-    const bId = booking?.bookingReference || booking?.bookingId || "Ticket";
-    document.title = `AiBus_Ticket_${bId}`;
-    window.print();
-    setTimeout(() => {
-      document.title = originalTitle;
-    }, 1200);
+    const bRef = booking?.bookingReference || booking?.bookingId || bookingRef || "1";
+    navigate(`/booking-details?bookingId=${bRef}&autoDownload=true`);
   };
 
   if (loading) {

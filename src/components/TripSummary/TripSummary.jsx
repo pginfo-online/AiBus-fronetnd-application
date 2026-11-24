@@ -10,6 +10,7 @@ import {
   Bus,
 } from "lucide-react";
 import BusDetailsModal from "../BusDetailsModal/BusDetailsModal";
+import { resolveCityDisplayName } from "../../utils/cities";
 import "./TripSummary.css";
 
 function formatTripDate(dateStr) {
@@ -36,8 +37,8 @@ function TripSummary({ bus, from, to, date }) {
 
   if (!bus) return null;
 
-  const displayFrom = from || bus.from || "Bangalore";
-  const displayTo = to || bus.to || "Madras";
+  const displayFrom = resolveCityDisplayName(bus.from, from, bus.fromCityId);
+  const displayTo = resolveCityDisplayName(bus.to, to, bus.toCityId);
   const displayDate = formatTripDate(date || bus.date);
   const operatorName = bus.operator || "GDS Demo Express";
   const initials =

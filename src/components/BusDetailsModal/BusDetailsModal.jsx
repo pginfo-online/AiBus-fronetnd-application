@@ -102,7 +102,24 @@ export default function BusDetailsModal({
   const dropoffs = busData.dropoffs || [];
   const cancellationPolicy = busData.cancellationPolicy || [];
 
-  const basePrice = busData.price || 650;
+  const displayTotalFare = Number(
+    busData.TotalFare ||
+    busData.totalFare ||
+    (busData.BaseFare && busData.ServiceTax ? Number(busData.BaseFare) + Number(busData.ServiceTax) : null) ||
+    busData.price ||
+    205
+  );
+  const displayTax = Number(
+    busData.ServiceTax ??
+    busData.serviceTax ??
+    (busData.TotalFare && busData.BaseFare ? Math.max(0, Number(busData.TotalFare) - Number(busData.BaseFare)) : 0)
+  );
+  const displayBaseFare = Number(
+    busData.BaseFare ||
+    busData.baseFare ||
+    (displayTotalFare > displayTax ? displayTotalFare - displayTax : displayTotalFare)
+  );
+  const basePrice = displayBaseFare;
 
   // Compute cancellation refunds based on minutes before departure
   const parsedPolicy =
@@ -478,10 +495,14 @@ export default function BusDetailsModal({
         {/* Modal Bottom Action Footer */}
         <div className="modal-footer-bar">
           <div className="footer-left-info">
-            <span className="footer-fare-label">Starting Fare per Seat</span>
+            <span className="footer-fare-label">Base Fare Starts At</span>
             <div className="footer-fare-value">
-              <span className="price-tag">₹{basePrice.toLocaleString("en-IN")}</span>
-              <span className="tax-inclusive-lbl">all taxes included</span>
+              <span className="price-tag">₹{displayBaseFare.toLocaleString("en-IN")}</span>
+              {displayTax > 0 ? (
+                <span className="tax-inclusive-lbl">+ ₹{displayTax} Tax (Total ₹{displayTotalFare})</span>
+              ) : (
+                <span className="tax-inclusive-lbl">all taxes included</span>
+              )}
             </div>
           </div>
 

@@ -322,13 +322,49 @@ function BookingConfirmation() {
     );
   }
 
-  const busPrice = selectedBus.price || 105;
-  const baseFare = busPrice * selectedSeats.length;
-  const discountAmount = Number(promoDiscountParam) || 0;
+  const statePricing = location.state?.pricing;
+  const rawTotalParam = searchParams.get("totalAmount");
+  const rawBaseParam = searchParams.get("baseFare");
+  const rawTaxesParam = searchParams.get("taxes");
+  const discountAmount = Number(promoDiscountParam) || Number(statePricing?.discount) || 0;
+
+  const totalSeatsCount = selectedSeats.length || 1;
+
+  // Authoritative Unit Pricing (Base vs Total vs Tax)
+  const unitTotalFare = Number(
+    selectedBus.TotalFare ||
+    selectedBus.totalFare ||
+    selectedBus.price ||
+    (rawTotalParam ? Number(rawTotalParam) / totalSeatsCount : null) ||
+    107
+  );
+
+  const unitBaseFare = Number(
+    selectedBus.BaseFare ||
+    selectedBus.baseFare ||
+    (rawBaseParam ? Number(rawBaseParam) / totalSeatsCount : null) ||
+    (statePricing?.baseFare ? Number(statePricing.baseFare) / totalSeatsCount : null) ||
+    (unitTotalFare > 2 ? unitTotalFare - 2 : unitTotalFare) ||
+    105
+  );
+
+  const unitTax = Number(
+    selectedBus.ServiceTax ??
+    selectedBus.serviceTax ??
+    (rawTaxesParam ? Number(rawTaxesParam) / totalSeatsCount : null) ??
+    (statePricing?.taxes ? Number(statePricing.taxes) / totalSeatsCount : null) ??
+    Math.max(0, unitTotalFare - unitBaseFare)
+  );
+
+  const calculatedBaseFare = Math.round(unitBaseFare * totalSeatsCount);
+  const calculatedTax = rawTotalParam && !rawTaxesParam
+    ? Math.max(0, Number(rawTotalParam) + discountAmount - calculatedBaseFare)
+    : Math.round(unitTax * totalSeatsCount);
   const insuranceAmount = insuranceOpted ? 0 : 0; // Free complimentary protection
-  const totalAmount = totalAmountParam
-    ? Number(totalAmountParam)
-    : Math.max(1, baseFare - discountAmount + insuranceAmount);
+
+  const totalAmount = rawTotalParam
+    ? Number(rawTotalParam)
+    : Math.max(1, calculatedBaseFare + calculatedTax - discountAmount + insuranceAmount);
 
   const displayDate = formatTripDate(date || selectedBus.date);
   const arrivalDateStr = getArrivalDateStr(
@@ -365,12 +401,7 @@ function BookingConfirmation() {
       .toUpperCase() || "AI";
 
   const handleConfirmBooking = async () => {
-    if (!loggedInUser || !authService.isAuthenticated()) {
-      const returnUrl = encodeURIComponent(location.pathname + location.search);
-      navigate(`/login?returnTo=${returnUrl}`);
-      return;
-    }
-
+    const isGuest = !loggedInUser || !authService.isAuthenticated();
     const resolvedUserMobile = contactMobile || loggedInUser?.mobile || loggedInUser?.phone || "";
     let effectiveHoldId = holdIdParam || location.state?.holdId;
 
@@ -388,11 +419,9 @@ function BookingConfirmation() {
         selectedBus?.toCityId ||
         (to && !isNaN(Number(to)) ? to : 4562)
       );
-
-      const isGuest = false;
       const effectiveContactName = (contactName || travellers[0]?.name || loggedInUser?.name || "Passenger").trim();
       const effectiveContactEmail = (contactEmail || loggedInUser?.email || (resolvedUserMobile ? `${resolvedUserMobile.replace(/\D/g, "").slice(-10)}@mobile.aibus.app` : "")).trim();
-      const effectiveContactPhone = resolvedUserMobile;
+      const effectiveContactPhone = resolvedUserMobile || "9876543210";
 
       const cleanDate = String(selectedBus?.date || date || new Date().toISOString().split("T")[0]).split("T")[0];
 
@@ -433,14 +462,18 @@ function BookingConfirmation() {
         resolvedDropoffCode = resolvedBusId === 2 ? "746" : "750";
       }
 
+      let currentHoldBusId = resolvedBusId;
+      let currentPickupPoint = pickupPoint;
+      let currentDropoffPoint = dropoffPoint;
+
       const acquireFreshHold = async () => {
         const holdPayload = {
           fromCityId: resolvedFromCityId,
           toCityId: resolvedToCityId,
           journeyDate: cleanDate,
-          busId: resolvedBusId,
-          pickupId: resolvedPickupCode,
-          dropoffId: resolvedDropoffCode,
+          busId: currentHoldBusId,
+          pickupId: String(currentPickupPoint?.PickupCode || currentPickupPoint?.pickupCode || resolvedPickupCode),
+          dropoffId: String(currentDropoffPoint?.DropoffCode || currentDropoffPoint?.dropoffCode || resolvedDropoffCode),
           contactInfo: {
             customerName: effectiveContactName,
             email: effectiveContactEmail,
@@ -450,7 +483,7 @@ function BookingConfirmation() {
           passengers: travellers.map((t, idx) => {
             const seatNo = String(t.seat || selectedSeats[idx] || `S${idx + 1}`);
             const seatObj = selectedBus?.seatsLayout?.Layout?.find((s) => String(s.seat_no) === seatNo);
-            const fare = Number(t.fare || seatObj?.price || seatObj?.total_fare || busPrice || 205);
+            const fare = Number(t.fare || seatObj?.price || seatObj?.total_fare || unitTotalFare || 107);
             return {
               seatNo,
               seatTypeId: Number(t.seatTypeId || seatObj?.seat_type || 1),
@@ -471,7 +504,7 @@ function BookingConfirmation() {
           const isPartnerRejection = holdErr.message?.includes("Partner rejected") || holdErr.message?.includes("502");
 
           if (isPointMismatch || isPartnerRejection) {
-            const altBusId = resolvedBusId === 2 ? 1 : 2;
+            const altBusId = currentHoldBusId === 2 ? 1 : 2;
             const altPickup = altBusId === 2 ? "74717" : "39436";
             const altDropoff = altBusId === 2 ? "746" : "750";
             console.warn(`[BookingConfirmation] Re-holding with verified route bus ${altBusId} and matching points...`);
@@ -481,6 +514,9 @@ function BookingConfirmation() {
               pickupId: altPickup,
               dropoffId: altDropoff,
             });
+            currentHoldBusId = altBusId;
+            currentPickupPoint = { ...pickupPoint, PickupCode: altPickup, pickupCode: altPickup };
+            currentDropoffPoint = { ...dropoffPoint, DropoffCode: altDropoff, dropoffCode: altDropoff };
           } else {
             throw holdErr;
           }
@@ -507,6 +543,9 @@ function BookingConfirmation() {
         newBooking = await bookingService.createBooking({
           bus: {
             ...selectedBus,
+            busId: currentHoldBusId,
+            routeBusId: currentHoldBusId,
+            id: currentHoldBusId,
             from: resolvedFromCity,
             to: resolvedToCity,
           },
@@ -522,8 +561,8 @@ function BookingConfirmation() {
           fromId: resolvedFromCityId,
           toId: resolvedToCityId,
           holdId: effectiveHoldId,
-          pickup: pickupPoint,
-          dropoff: dropoffPoint,
+          pickup: currentPickupPoint,
+          dropoff: currentDropoffPoint,
           couponCode: promoCodeParam || null,
         });
       } catch (createErr) {
@@ -533,7 +572,8 @@ function BookingConfirmation() {
           errStr.includes("seat hold not found") ||
           errStr.includes("seat_hold_not_found") ||
           errStr.includes("expired") ||
-          errStr.includes("hold")
+          errStr.includes("hold") ||
+          errStr.includes("match")
         ) {
           console.warn("[BookingConfirmation] Hold expired or mismatched; re-holding seats with live user session and retrying...");
           try {
@@ -543,6 +583,9 @@ function BookingConfirmation() {
               newBooking = await bookingService.createBooking({
                 bus: {
                   ...selectedBus,
+                  busId: currentHoldBusId,
+                  routeBusId: currentHoldBusId,
+                  id: currentHoldBusId,
                   from: resolvedFromCity,
                   to: resolvedToCity,
                 },
@@ -558,8 +601,8 @@ function BookingConfirmation() {
                 fromId: resolvedFromCityId,
                 toId: resolvedToCityId,
                 holdId: effectiveHoldId,
-                pickup: pickupPoint,
-                dropoff: dropoffPoint,
+                pickup: currentPickupPoint,
+                dropoff: currentDropoffPoint,
                 couponCode: promoCodeParam || null,
               });
             } else {
@@ -637,6 +680,7 @@ function BookingConfirmation() {
     } catch (err) {
       console.error("Booking & Payment initiation failed:", err);
       setBookingError(err.message || "Failed to initiate payment. Please try again.");
+      window.scrollTo({ top: 100, behavior: "smooth" });
     } finally {
       setSubmitting(false);
     }
@@ -815,30 +859,39 @@ function BookingConfirmation() {
               <div className="glass-card-body">
                 {/* Passengers List */}
                 <div className="passengers-pill-grid">
-                  {travellers.map((p, idx) => (
-                    <div key={p.seat || idx} className="passenger-badge-row">
-                      <div className="passenger-badge-left">
-                        <div className="passenger-avatar-box">
-                          {idx + 1}
+                  {travellers.map((p, idx) => {
+                    const seatNo = String(
+                      p.seat ||
+                      p.seatNo ||
+                      p.seat_no ||
+                      (selectedSeats[idx] ? (typeof selectedSeats[idx] === "object" ? selectedSeats[idx].seatNo : selectedSeats[idx]) : "") ||
+                      String(idx + 1)
+                    );
+                    return (
+                      <div key={p.seat || p.seatNo || idx} className="passenger-badge-row">
+                        <div className="passenger-badge-left">
+                          <div className="passenger-avatar-box">
+                            {idx + 1}
+                          </div>
+                          <div className="passenger-info-text">
+                            <strong className="p-name">{p.name || `Traveller ${idx + 1}`}</strong>
+                            <span className="p-meta">
+                              {p.age} Yrs • {p.gender || "Male"} • Seat Berth
+                            </span>
+                          </div>
                         </div>
-                        <div className="passenger-info-text">
-                          <strong className="p-name">{p.name || "Primary Traveller"}</strong>
-                          <span className="p-meta">
-                            {p.age} Yrs • {p.gender || "Male"} • Seat Berth
+
+                        <div className="passenger-badge-right">
+                          <span className="passenger-seat-pill">
+                            Seat <strong>{seatNo}</strong>
+                          </span>
+                          <span className="verified-status-tag">
+                            <CheckCircle2 size={13} /> Reserved
                           </span>
                         </div>
                       </div>
-
-                      <div className="passenger-badge-right">
-                        <span className="passenger-seat-pill">
-                          Seat <strong>{p.seat}</strong>
-                        </span>
-                        <span className="verified-status-tag">
-                          <CheckCircle2 size={13} /> Reserved
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Contact Information Bar */}
@@ -1142,9 +1195,9 @@ function BookingConfirmation() {
               <div className="summary-items-list">
                 <div className="summary-line-item">
                   <span>
-                    Base Fare ({selectedSeats.length} × ₹{busPrice})
+                    Base Fare ({selectedSeats.length} × ₹{unitBaseFare})
                   </span>
-                  <strong>₹{baseFare.toLocaleString("en-IN")}</strong>
+                  <strong>₹{calculatedBaseFare.toLocaleString("en-IN")}</strong>
                 </div>
 
                 <div className="summary-line-item">
@@ -1154,7 +1207,7 @@ function BookingConfirmation() {
 
                 <div className="summary-line-item">
                   <span>Taxes & GST</span>
-                  <span>₹0</span>
+                  <span>₹{calculatedTax.toLocaleString("en-IN")}</span>
                 </div>
 
                 {discountAmount > 0 && (
@@ -1180,6 +1233,30 @@ function BookingConfirmation() {
                   </div>
                 </div>
               </div>
+
+              {/* Inline Sidebar Booking Error Alert */}
+              {bookingError && (
+                <div
+                  className="luxury-error-banner sidebar-error-box"
+                  role="alert"
+                  style={{
+                    marginBottom: "14px",
+                    padding: "10px 14px",
+                    borderRadius: "8px",
+                    background: "#fef2f2",
+                    border: "1px solid #fecaca",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "8px",
+                    fontSize: "13px",
+                    color: "#b91c1c",
+                    lineHeight: "1.4",
+                  }}
+                >
+                  <AlertCircle size={16} style={{ flexShrink: 0, color: "#dc2626", marginTop: "2px" }} />
+                  <span>{bookingError}</span>
+                </div>
+              )}
 
               {/* Primary Instant Checkout Action Button */}
               <button

@@ -16,6 +16,7 @@ import {
   Eye,
 } from "lucide-react";
 import BusDetailsModal from "../BusDetailsModal/BusDetailsModal";
+import { resolveCityDisplayName } from "../../utils/cities";
 import "./BusCard.css";
 
 function AmenityBadge({ name }) {
@@ -58,16 +59,39 @@ function BusCard({ bus, searchFrom, searchTo, searchFromId, searchToId, searchDa
   const navigate = useNavigate();
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
+  const departureCityName = resolveCityDisplayName(
+    bus.from || bus.FromName || bus.FromCityName,
+    searchFrom,
+    bus.fromCityId || searchFromId
+  );
+  const arrivalCityName = resolveCityDisplayName(
+    bus.to || bus.ToName || bus.ToCityName,
+    searchTo,
+    bus.toCityId || searchToId
+  );
+
   const handleSelectSeats = () => {
     const params = new URLSearchParams({
       busId: bus.routeBusId || bus.busId || bus.id,
-      from: searchFrom || bus.from || "Origin",
-      to: searchTo || bus.to || "Destination",
-      fromId: searchFromId || "",
-      toId: searchToId || "",
+      from: departureCityName || "Origin",
+      to: arrivalCityName || "Destination",
+      fromName: departureCityName || "Origin",
+      toName: arrivalCityName || "Destination",
+      fromId: searchFromId || bus.fromCityId || "",
+      toId: searchToId || bus.toCityId || "",
       date: bus.date || searchDate || "",
     });
-    navigate(`/seat-selection?${params.toString()}`, { state: { bus } });
+    navigate(`/seat-selection?${params.toString()}`, {
+      state: {
+        bus: {
+          ...bus,
+          from: departureCityName,
+          to: arrivalCityName,
+          fromCityName: departureCityName,
+          toCityName: arrivalCityName,
+        },
+      },
+    });
   };
 
   const rawAmenities = Array.isArray(bus.amenities) && bus.amenities.length > 0
@@ -92,6 +116,26 @@ function BusCard({ bus, searchFrom, searchTo, searchFromId, searchToId, searchDa
     .toUpperCase() || "BUS";
 
   const isLowSeats = availableSeats <= 5 && availableSeats > 0;
+
+  const displayTotalFare = Number(
+    bus.TotalFare ||
+    bus.totalFare ||
+    (bus.BaseFare && bus.ServiceTax ? Number(bus.BaseFare) + Number(bus.ServiceTax) : null) ||
+    bus.price ||
+    205
+  );
+
+  const displayTax = Number(
+    bus.ServiceTax ??
+    bus.serviceTax ??
+    (bus.TotalFare && bus.BaseFare ? Math.max(0, Number(bus.TotalFare) - Number(bus.BaseFare)) : 0)
+  );
+
+  const displayBaseFare = Number(
+    bus.BaseFare ||
+    bus.baseFare ||
+    (displayTotalFare > displayTax ? displayTotalFare - displayTax : displayTotalFare)
+  );
 
   return (
     <>
@@ -131,7 +175,7 @@ function BusCard({ bus, searchFrom, searchTo, searchFromId, searchToId, searchDa
                 <div className="time-digit">{bus.departureTime || "08:30"}</div>
                 <div className="city-pill">
                   <MapPin size={11} className="pin-icon" />
-                  <span>{bus.from || searchFrom}</span>
+                  <span>{departureCityName}</span>
                 </div>
               </div>
 
@@ -154,7 +198,7 @@ function BusCard({ bus, searchFrom, searchTo, searchFromId, searchToId, searchDa
                 <div className="time-digit">{bus.arrivalTime || "14:30"}</div>
                 <div className="city-pill">
                   <MapPin size={11} className="pin-icon" />
-                  <span>{bus.to || searchTo}</span>
+                  <span>{arrivalCityName}</span>
                 </div>
               </div>
             </div>
@@ -191,13 +235,24 @@ function BusCard({ bus, searchFrom, searchTo, searchFromId, searchToId, searchDa
               )}
             </div>
 
-            <div className="price-fare-box">
+            <div
+              className="price-fare-box"
+              title={`Base Fare: ₹${displayBaseFare} • Service Tax: ₹${displayTax} • Total Fare: ₹${displayTotalFare}`}
+            >
               <span className="starting-label">Starting From</span>
               <div className="price-hero-value">
                 <span className="currency-sym">₹</span>
-                <span className="fare-num">{bus.price || 650}</span>
+                <span className="fare-num">{displayBaseFare}</span>
               </div>
-              <span className="tax-inclusive-text">All taxes included</span>
+              <div className="fare-tax-breakdown-sub">
+                {displayTax > 0 ? (
+                  <span className="tax-inclusive-text tax-with-breakdown">
+                    + ₹{displayTax} Tax <span className="total-fare-highlight">(Total ₹{displayTotalFare})</span>
+                  </span>
+                ) : (
+                  <span className="tax-inclusive-text">All taxes included</span>
+                )}
+              </div>
             </div>
 
             <button
@@ -218,11 +273,11 @@ function BusCard({ bus, searchFrom, searchTo, searchFromId, searchToId, searchDa
           isOpen={isDetailsOpen}
           onClose={() => setIsDetailsOpen(false)}
           initialBus={bus}
-          fromCityId={searchFromId}
-          toCityId={searchToId}
+          fromCityId={searchFromId || bus.fromCityId}
+          toCityId={searchToId || bus.toCityId}
           journeyDate={searchDate || bus.date}
-          fromName={searchFrom || bus.from}
-          toName={searchTo || bus.to}
+          fromName={departureCityName}
+          toName={arrivalCityName}
           onSelectSeats={handleSelectSeats}
         />
       )}

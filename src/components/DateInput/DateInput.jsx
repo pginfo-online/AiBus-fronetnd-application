@@ -3,6 +3,36 @@ import "./DateInput.css";
 
 function DateInput({ value, onChange }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropUp, setDropUp] = useState(false);
+  const wrapperRef = useRef(null);
+
+  const checkCalendarPosition = () => {
+    if (!wrapperRef.current) return;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const neededHeight = 350;
+
+    const shouldDropUp = spaceBelow < neededHeight && spaceAbove > spaceBelow;
+    setDropUp(shouldDropUp);
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    checkCalendarPosition();
+
+    const handleScrollOrResize = () => {
+      checkCalendarPosition();
+    };
+
+    window.addEventListener("scroll", handleScrollOrResize, true);
+    window.addEventListener("resize", handleScrollOrResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize, true);
+      window.removeEventListener("resize", handleScrollOrResize);
+    };
+  }, [isOpen]);
 
   const getLocalDate = () => {
     const d = new Date();
@@ -34,8 +64,6 @@ function DateInput({ value, onChange }) {
     }
     return new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
   });
-
-  const wrapperRef = useRef(null);
 
   // Close calendar when clicking outside
   useEffect(() => {
@@ -70,6 +98,9 @@ function DateInput({ value, onChange }) {
   };
 
   const toggleCalendar = () => {
+    if (!isOpen) {
+      checkCalendarPosition();
+    }
     setIsOpen((prev) => !prev);
   };
 
@@ -171,7 +202,8 @@ function DateInput({ value, onChange }) {
           {/* Custom Dropdown Calendar */}
           {isOpen && (
             <div
-              className="custom-calendar-dropdown"
+              className={`custom-calendar-dropdown ${dropUp ? "drop-up" : ""}`}
+              style={dropUp ? { top: "auto", bottom: "calc(100% + 8px)" } : {}}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Calendar Header */}

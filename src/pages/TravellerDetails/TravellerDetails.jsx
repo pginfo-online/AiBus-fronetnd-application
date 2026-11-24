@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import {
   User,
@@ -66,7 +66,7 @@ function cleanMobileNumber(raw) {
 }
 
 function TravellerDetails() {
-  const loggedInUser = authService.getLoggedInUser();
+  const loggedInUser = useMemo(() => authService.getLoggedInUser(), []);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -87,9 +87,22 @@ function TravellerDetails() {
   const [resolvedToCity, setResolvedToCity] = useState(toParam);
   const [showCancellationModal, setShowCancellationModal] = useState(false);
 
-  const selectedSeats = seatsParam
-    ? seatsParam.split(",").map((s) => s.trim()).filter(Boolean)
-    : ["4B"];
+  const selectedSeats = useMemo(() => {
+    return seatsParam
+      ? seatsParam.split(",").map((s) => s.trim()).filter(Boolean)
+      : ["4B"];
+  }, [seatsParam]);
+
+  const resolvedFromCityId = Number(
+    fromIdParam ||
+    selectedBus?.fromCityId ||
+    (fromParam && !isNaN(Number(fromParam)) ? fromParam : 4292)
+  );
+  const resolvedToCityId = Number(
+    toIdParam ||
+    selectedBus?.toCityId ||
+    (toParam && !isNaN(Number(toParam)) ? toParam : 4562)
+  );
 
   // 1. Resolve City Names and Load Bus Data from Live API / Cache
   useEffect(() => {
@@ -224,7 +237,9 @@ function TravellerDetails() {
     };
   }, [busId, fromParam, toParam, fromIdParam, toIdParam, dateParam, location.state]);
 
-  const stateSeats = location.state?.selectedSeats || [];
+  const stateSeats = useMemo(() => {
+    return Array.isArray(location.state?.selectedSeats) ? location.state.selectedSeats : [];
+  }, [location.state?.selectedSeats]);
 
   // 2. Generate Passenger Form entries based on selected seats
   const [travellers, setTravellers] = useState(() =>
@@ -236,12 +251,16 @@ function TravellerDetails() {
             (String(s.id) === String(seat) || String(s.display) === String(seat) || String(s.seatNo) === String(seat))
         ) || (typeof seat === "object" ? seat : null);
       const seatNoStr = typeof seat === "object" ? seat.display || seat.seatNo || seat.id : String(seat);
-      const seatFare = seatObj?.price || (typeof seat === "object" ? seat.price : null) || selectedBus?.price || 15;
+      const seatTotalFare = Number(seatObj?.total_fare || seatObj?.price || (typeof seat === "object" ? seat.price : null) || selectedBus?.TotalFare || selectedBus?.price || 107);
+      const seatBaseFare = Number(seatObj?.base_fare || (seatObj?.price && seatObj?.service_tax ? seatObj.price - seatObj.service_tax : null) || selectedBus?.BaseFare || (seatTotalFare > 2 ? seatTotalFare - 2 : seatTotalFare) || 105);
+      const seatTax = Number(seatObj?.service_tax ?? selectedBus?.ServiceTax ?? Math.max(0, seatTotalFare - seatBaseFare));
       const seatTypeId = seatObj?.seat_type || (typeof seat === "object" ? seat.seat_type : null) || 1;
 
       return {
         seat: seatNoStr,
-        fare: seatFare,
+        fare: seatTotalFare,
+        baseFare: seatBaseFare,
+        serviceTax: seatTax,
         seatTypeId,
         name: index === 0 && loggedInUser?.name ? loggedInUser.name : "",
         age: index === 0 && loggedInUser?.age ? String(loggedInUser.age) : "",
@@ -252,8 +271,19 @@ function TravellerDetails() {
 
   // Sync travellers array if seats change
   useEffect(() => {
+    const seatsList = seatsParam
+      ? seatsParam.split(",").map((s) => s.trim()).filter(Boolean)
+      : ["4B"];
+
     setTravellers((prev) => {
-      return selectedSeats.map((seat, idx) => {
+      const isIdentical =
+        prev.length === seatsList.length &&
+        prev.every((p, i) => String(p.seat) === String(seatsList[i]));
+      if (isIdentical && prev.length > 0) {
+        return prev;
+      }
+
+      return seatsList.map((seat, idx) => {
         const existing = prev.find((p) => String(p.seat) === String(seat)) || prev[idx];
         const seatObj =
           stateSeats.find(
@@ -261,12 +291,16 @@ function TravellerDetails() {
               typeof s === "object" &&
               (String(s.id) === String(seat) || String(s.display) === String(seat) || String(s.seatNo) === String(seat))
           ) || (typeof seat === "object" ? seat : null);
-        const seatFare = seatObj?.price || existing?.fare || (typeof seat === "object" ? seat.price : null) || selectedBus?.price || 15;
+        const seatTotalFare = Number(seatObj?.total_fare || seatObj?.price || existing?.fare || (typeof seat === "object" ? seat.price : null) || selectedBus?.TotalFare || selectedBus?.price || 107);
+        const seatBaseFare = Number(seatObj?.base_fare || (seatObj?.price && seatObj?.service_tax ? seatObj.price - seatObj.service_tax : null) || existing?.baseFare || selectedBus?.BaseFare || (seatTotalFare > 2 ? seatTotalFare - 2 : seatTotalFare) || 105);
+        const seatTax = Number(seatObj?.service_tax ?? existing?.serviceTax ?? selectedBus?.ServiceTax ?? Math.max(0, seatTotalFare - seatBaseFare));
         const seatTypeId = seatObj?.seat_type || existing?.seatTypeId || (typeof seat === "object" ? seat.seat_type : null) || 1;
 
         return {
           seat: typeof seat === "object" ? seat.display || seat.seatNo || seat.id : String(seat),
-          fare: seatFare,
+          fare: seatTotalFare,
+          baseFare: seatBaseFare,
+          serviceTax: seatTax,
           seatTypeId,
           name: existing?.name || (idx === 0 && loggedInUser?.name ? loggedInUser.name : ""),
           age: existing?.age || (idx === 0 && loggedInUser?.age ? String(loggedInUser.age) : ""),
@@ -354,7 +388,7 @@ function TravellerDetails() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [busId, fromParam, toParam, dateParam, resolvedFromCity, resolvedToCity, navigate, selectedSeats]);
+  }, [busId, fromParam, toParam, dateParam, resolvedFromCity, resolvedToCity, navigate, seatsParam]);
 
   const formatTimer = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -453,50 +487,63 @@ function TravellerDetails() {
   };
 
   const handleContinue = async () => {
-    // 0. Ensure user is authenticated before booking
-    if (!authService.isAuthenticated()) {
-      sessionStorage.setItem(
-        "aibus_pending_traveller_details",
-        JSON.stringify({
-          travellers,
-          contactMobile,
-          contactEmail,
-          sendWhatsApp,
-        })
-      );
-      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-      navigate(`/login?returnTo=${returnUrl}`);
-      return;
-    }
+    // Preserve traveller details in session storage for guest and authenticated sessions
+    sessionStorage.setItem(
+      "aibus_pending_traveller_details",
+      JSON.stringify({
+        travellers,
+        contactMobile,
+        contactEmail,
+        sendWhatsApp,
+      })
+    );
+
+    const triggerValidationError = (msg, targetId) => {
+      setFormError(msg);
+      setSubmitting(false);
+      if (targetId) {
+        setTimeout(() => {
+          const el = document.getElementById(targetId);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.focus();
+          } else {
+            window.scrollTo({ top: 120, behavior: "smooth" });
+          }
+        }, 50);
+      } else {
+        window.scrollTo({ top: 120, behavior: "smooth" });
+      }
+    };
 
     // Validate passengers
     for (let i = 0; i < travellers.length; i++) {
       const p = travellers[i];
       if (!p.name?.trim()) {
-        setFormError(`Please enter Full Name for Passenger ${i + 1} (Seat ${p.seat}).`);
+        triggerValidationError(`Please enter Full Name for Passenger ${i + 1} (Seat ${p.seat}).`, `name-${i}`);
         return;
       }
       if (!isValidName(p.name)) {
-        setFormError(`Passenger ${i + 1} name must contain only alphabets (min 2 characters).`);
+        triggerValidationError(`Passenger ${i + 1} name must contain only alphabets (min 2 characters).`, `name-${i}`);
         return;
       }
       if (!p.age?.toString().trim()) {
-        setFormError(`Please enter Age for Passenger ${i + 1} (Seat ${p.seat}).`);
+        triggerValidationError(`Please enter Age for Passenger ${i + 1} (Seat ${p.seat}).`, `age-${i}`);
         return;
       }
       if (!isValidAge(p.age)) {
-        setFormError(`Please enter a valid age (1-120) for Passenger ${i + 1}.`);
+        triggerValidationError(`Please enter a valid age (1-120) for Passenger ${i + 1}.`, `age-${i}`);
         return;
       }
     }
 
     if (!contactMobile?.trim() || !isValidMobile(contactMobile)) {
-      setFormError("Please enter a valid 10-digit Indian mobile number (starts with 6-9).");
+      triggerValidationError("Please enter a valid 10-digit Indian mobile number (starts with 6-9).", "contact-phone");
       return;
     }
 
     if (contactEmail && !isValidEmail(contactEmail)) {
-      setFormError("Please enter a valid email address for e-ticket delivery.");
+      triggerValidationError("Please enter a valid email address for e-ticket delivery.", "contact-email");
       return;
     }
 
@@ -571,6 +618,9 @@ function TravellerDetails() {
       const effectiveContactName = (travellers[0]?.name || loggedInUser?.name || "Traveller").trim();
 
       let holdId = null;
+      let effectiveHoldBusId = resolvedBusId;
+      let effectiveHoldPickup = pickupCode;
+      let effectiveHoldDropoff = dropoffCode;
       try {
         const holdPayload = {
           fromCityId: resolvedFromCityId,
@@ -618,28 +668,49 @@ function TravellerDetails() {
               pickupId: altPickup,
               dropoffId: altDropoff,
             });
+            effectiveHoldBusId = altBusId;
+            effectiveHoldPickup = altPickup;
+            effectiveHoldDropoff = altDropoff;
           } else {
             throw firstErr;
           }
         }
         holdId = holdRes?.id || holdRes?.holdId || holdRes?.providerHoldId;
       } catch (holdErr) {
-        console.error("[TravellerDetails] Seat hold failed:", holdErr.message);
-        setFormError(
-          `Seat reservation failed: ${holdErr.message || "Partner rejected seat hold"}. Please re-select seats or pick another bus.`
+        console.warn(
+          "[TravellerDetails] Provider hold failed, will auto-acquire during confirmation:",
+          holdErr.message
         );
-        setSubmitting(false);
-        return;
+        holdId = null;
       }
 
       // Calculate final pricing
-      const baseFare = (selectedBus?.price || 205) * selectedSeats.length;
+      const totalSeatsCount = selectedSeats.length || 1;
+      const unitTotalFare = Number(
+        selectedBus?.TotalFare ||
+        selectedBus?.totalFare ||
+        selectedBus?.price ||
+        107
+      );
+      const unitBaseFare = Number(
+        selectedBus?.BaseFare ||
+        selectedBus?.baseFare ||
+        (unitTotalFare > 2 ? unitTotalFare - 2 : unitTotalFare) ||
+        105
+      );
+      const unitTax = Number(
+        selectedBus?.ServiceTax ??
+        selectedBus?.serviceTax ??
+        Math.max(0, unitTotalFare - unitBaseFare)
+      );
+
+      const calculatedBaseFare = Math.round(unitBaseFare * totalSeatsCount);
+      const calculatedTax = Math.round(unitTax * totalSeatsCount);
       const discount = appliedPromo?.discount || 0;
-      const taxes = 0; // Tax included or minimal
-      const finalTotal = Math.max(1, baseFare + taxes - discount);
+      const finalTotal = Math.max(1, calculatedBaseFare + calculatedTax - discount);
 
       const params = new URLSearchParams({
-        busId: String(selectedBus?.busId || selectedBus?.id || busId),
+        busId: String(effectiveHoldBusId),
         seats: selectedSeats.join(","),
         travellersData: JSON.stringify(travellers),
         contactName: effectiveContactName,
@@ -652,25 +723,32 @@ function TravellerDetails() {
         from: resolvedFromCity,
         to: resolvedToCity,
         date: selectedBus?.date || dateParam,
+        baseFare: String(calculatedBaseFare),
+        taxes: String(calculatedTax),
         totalAmount: String(finalTotal),
         ...(appliedPromo && { discount: String(discount), promoCode: appliedPromo.code }),
       });
 
       const finalPickupObj =
-        selectedPickup ||
-        boardingPoints.find((p) => String(p.PickupCode || p.pickupCode) === String(pickupCode)) ||
+        (effectiveHoldPickup !== pickupCode ? null : selectedPickup) ||
+        boardingPoints.find((p) => String(p.PickupCode || p.pickupCode) === String(effectiveHoldPickup)) ||
         boardingPoints[0] ||
-        { PickupCode: "74717", PickupName: "Madiwala", PickupTime: "12:16" };
+        { PickupCode: effectiveHoldPickup, PickupName: effectiveHoldPickup === "74717" ? "Madiwala" : "Majestic / Kalasipalyam", PickupTime: effectiveHoldPickup === "74717" ? "12:16" : "11:45" };
 
       const finalDropoffObj =
-        selectedDropoff ||
-        droppingPoints.find((d) => String(d.DropoffCode || d.dropoffCode) === String(dropoffCode)) ||
+        (effectiveHoldDropoff !== dropoffCode ? null : selectedDropoff) ||
+        droppingPoints.find((d) => String(d.DropoffCode || d.dropoffCode) === String(effectiveHoldDropoff)) ||
         droppingPoints[0] ||
-        { DropoffCode: "746", DropoffName: "Koyambedu", DropoffTime: "00:21" };
+        { DropoffCode: effectiveHoldDropoff, DropoffName: effectiveHoldDropoff === "746" ? "Koyambedu" : "Central Station", DropoffTime: effectiveHoldDropoff === "746" ? "00:21" : "00:05" };
 
       navigate(`/booking-confirmation?${params.toString()}`, {
         state: {
-          bus: selectedBus,
+          bus: {
+            ...selectedBus,
+            busId: effectiveHoldBusId,
+            routeBusId: effectiveHoldBusId,
+            id: effectiveHoldBusId,
+          },
           travellers,
           contact: {
             name: effectiveContactName,
@@ -679,7 +757,15 @@ function TravellerDetails() {
             sendWhatsApp,
           },
           holdId,
-          pricing: { baseFare, discount, taxes, total: finalTotal },
+          pricing: {
+            baseFare: calculatedBaseFare,
+            discount,
+            taxes: calculatedTax,
+            total: finalTotal,
+            unitBaseFare,
+            unitTax,
+            unitTotalFare,
+          },
           pickup: finalPickupObj,
           dropoff: finalDropoffObj,
         },
@@ -687,6 +773,7 @@ function TravellerDetails() {
     } catch (err) {
       console.error("Hold seats error:", err);
       setFormError(err.message || "Could not reserve seats at provider. Please try another seat.");
+      window.scrollTo({ top: 120, behavior: "smooth" });
     } finally {
       setSubmitting(false);
     }
@@ -727,11 +814,29 @@ function TravellerDetails() {
     );
   }
 
-  const busPrice = selectedBus?.price || 205;
-  const baseFare = busPrice * selectedSeats.length;
+  const totalSeatsCount = selectedSeats.length || 1;
+  const unitTotalFare = Number(
+    selectedBus?.TotalFare ||
+    selectedBus?.totalFare ||
+    selectedBus?.price ||
+    107
+  );
+  const unitBaseFare = Number(
+    selectedBus?.BaseFare ||
+    selectedBus?.baseFare ||
+    (unitTotalFare > 2 ? unitTotalFare - 2 : unitTotalFare) ||
+    105
+  );
+  const unitTax = Number(
+    selectedBus?.ServiceTax ??
+    selectedBus?.serviceTax ??
+    Math.max(0, unitTotalFare - unitBaseFare)
+  );
+
+  const calculatedBaseFare = Math.round(unitBaseFare * totalSeatsCount);
+  const calculatedTax = Math.round(unitTax * totalSeatsCount);
   const discountAmount = appliedPromo?.discount || 0;
-  const serviceTax = 0;
-  const totalFare = Math.max(1, baseFare + serviceTax - discountAmount);
+  const totalFare = Math.max(1, calculatedBaseFare + calculatedTax - discountAmount);
 
   const pickupsList = selectedBus?.pickups || selectedBus?.BoardingPoints || [];
   const dropoffsList = selectedBus?.dropoffs || selectedBus?.DroppingPoints || [];
@@ -910,7 +1015,6 @@ function TravellerDetails() {
                             {[
                               { label: "Male", emoji: "👨" },
                               { label: "Female", emoji: "👩" },
-                              { label: "Other", emoji: "🧑" },
                             ].map((g) => {
                               const isSelected = passenger.gender === g.label;
                               return (
@@ -1252,8 +1356,12 @@ function TravellerDetails() {
               {/* Price Breakdown */}
               <div className="summary-price-breakdown">
                 <div className="price-row">
-                  <span>Base Fare ({selectedSeats.length} × ₹{busPrice})</span>
-                  <span>₹{baseFare.toLocaleString("en-IN")}</span>
+                  <span>Base Fare ({selectedSeats.length} × ₹{unitBaseFare})</span>
+                  <span>₹{calculatedBaseFare.toLocaleString("en-IN")}</span>
+                </div>
+                <div className="price-row">
+                  <span>Taxes & GST</span>
+                  <span>₹{calculatedTax.toLocaleString("en-IN")}</span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="price-row discount-row">
@@ -1268,6 +1376,30 @@ function TravellerDetails() {
                   </strong>
                 </div>
               </div>
+
+              {/* Inline Sidebar Form Error Alert */}
+              {formError && (
+                <div
+                  className="modern-error-banner sidebar-error-box"
+                  role="alert"
+                  style={{
+                    marginBottom: "14px",
+                    padding: "10px 14px",
+                    borderRadius: "8px",
+                    background: "#fef2f2",
+                    border: "1px solid #fecaca",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "8px",
+                    fontSize: "13px",
+                    color: "#b91c1c",
+                    lineHeight: "1.4",
+                  }}
+                >
+                  <AlertCircle size={16} style={{ flexShrink: 0, color: "#dc2626", marginTop: "2px" }} />
+                  <span>{formError}</span>
+                </div>
+              )}
 
               {/* PRIMARY ACTION CTA BUTTON */}
               <button

@@ -28,6 +28,27 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
   const [remoteCities, setRemoteCities] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const debounceRef = useRef(null);
+  const [dropUp, setDropUp] = useState(false);
+  const [maxDropdownHeight, setMaxDropdownHeight] = useState(260);
+
+  const checkDropdownPosition = () => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    // When space below is tight (< 320px) and there's more room above, flip upwards
+    const shouldDropUp = spaceBelow < 320 && spaceAbove > spaceBelow;
+    setDropUp(shouldDropUp);
+
+    if (shouldDropUp) {
+      const safeMax = Math.max(140, Math.min(270, spaceAbove - 24));
+      setMaxDropdownHeight(safeMax);
+    } else {
+      const safeMax = Math.max(140, Math.min(270, spaceBelow - 24));
+      setMaxDropdownHeight(safeMax);
+    }
+  };
 
   useEffect(() => {
     if (value?.name) {
@@ -156,9 +177,28 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!showSuggestions) return;
+
+    checkDropdownPosition();
+
+    const handleScrollOrResize = () => {
+      checkDropdownPosition();
+    };
+
+    window.addEventListener("scroll", handleScrollOrResize, true);
+    window.addEventListener("resize", handleScrollOrResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize, true);
+      window.removeEventListener("resize", handleScrollOrResize);
+    };
+  }, [showSuggestions]);
+
   const handleChange = (event) => {
     const val = event.target.value;
     setSearchTerm(val);
+    checkDropdownPosition();
     setShowSuggestions(true);
 
     const valClean = val.toLowerCase().trim().replace(/,/g, " ");
@@ -177,6 +217,11 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
     }
   };
 
+  const handleOpenSuggestions = () => {
+    checkDropdownPosition();
+    setShowSuggestions(true);
+  };
+
   const handleCitySelect = (city) => {
     if (isCityDisabled(city)) return;
     const { cleanCity, cleanState } = formatCityDisplay(city.name, city.state);
@@ -187,7 +232,7 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
   };
 
   return (
-    <div className="location-input" ref={containerRef}>
+    <div className={`location-input ${showSuggestions ? "is-open" : ""}`} ref={containerRef}>
       <label>{label}</label>
 
       <div className="location-input-wrapper">
@@ -208,12 +253,25 @@ function LocationInput({ label, placeholder, value, onChange, disabledCityId = "
           placeholder={placeholder}
           autoComplete="off"
           onChange={handleChange}
-          onFocus={() => setShowSuggestions(true)}
-          onClick={() => setShowSuggestions(true)}
+          onFocus={handleOpenSuggestions}
+          onClick={handleOpenSuggestions}
         />
 
         {showSuggestions && (
-          <div className="city-suggestions">
+          <div
+            className={`city-suggestions ${dropUp ? "drop-up" : ""}`}
+            style={
+              dropUp
+                ? {
+                    top: "auto",
+                    bottom: "calc(100% + 8px)",
+                    maxHeight: `${maxDropdownHeight}px`,
+                  }
+                : {
+                    maxHeight: `${maxDropdownHeight}px`,
+                  }
+            }
+          >
             {filteredCities.length > 0 ? (
               filteredCities.map((city, idx) => {
                 const disabled = isCityDisabled(city);

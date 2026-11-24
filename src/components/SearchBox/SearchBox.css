@@ -186,7 +186,7 @@
   max-width: 1200px;
   background: #ffffff;
   border-radius: 24px;
-  padding: 24px 28px 26px;
+  padding: 20px 28px;
   box-shadow: 0 20px 48px -10px rgba(24, 30, 42, 0.09), 0 4px 16px rgba(0, 0, 0, 0.03);
   border: 1px solid rgba(226, 232, 240, 0.85);
   box-sizing: border-box;
@@ -240,6 +240,11 @@
 .hero-input-field {
   flex: 1;
   min-width: 0;
+  position: relative;
+}
+
+.hero-input-field:focus-within {
+  z-index: 60;
 }
 
 .hero-input-field.from-field,
@@ -248,7 +253,7 @@
 }
 
 .hero-input-field.date-field {
-  flex: 1.05;
+  flex: 1.4;
 }
 
 .hero-input-field.passenger-field {

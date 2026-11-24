@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
@@ -15,6 +15,7 @@ import BookingDetails from "./pages/BookingDetails/BookingDetails";
 import PaymentResult from "./pages/PaymentResult/PaymentResult";
 import CancellationPolicy from "./pages/CancellationPolicy/CancellationPolicy";
 import Offers from "./pages/Offers/Offers";
+import authService from "./services/authService";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -34,6 +35,22 @@ function NavigationLayout({ children }) {
   );
 }
 
+/** Redirects unauthenticated users to /login?returnTo=<current path+search> */
+function ProtectedRoute({ children }) {
+  const location = useLocation();
+  const isAuth =
+    authService.isAuthenticated() ||
+    Boolean(authService.getLoggedInUser()) ||
+    Boolean(localStorage.getItem("aibus_auth_tokens")) ||
+    Boolean(localStorage.getItem("loggedInUser"));
+
+  if (!isAuth) {
+    const returnTo = encodeURIComponent(location.pathname + location.search);
+    return <Navigate to={`/login?returnTo=${returnTo}`} replace />;
+  }
+  return children;
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -43,15 +60,17 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/seat-selection" element={<SeatSelection />} />
-          <Route path="/traveller-details" element={<TravellerDetails />} />
-          <Route path="/booking-confirmation" element={<BookingConfirmation />} />
-          <Route path="/payment-result" element={<PaymentResult />} />
-          <Route path="/booking-success" element={<BookingSuccess />} />
-          <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/booking-details" element={<BookingDetails />} />
           <Route path="/cancellation-policy" element={<CancellationPolicy />} />
           <Route path="/offers" element={<Offers />} />
+
+          {/* ── Protected routes (login required) ── */}
+          <Route path="/traveller-details" element={<ProtectedRoute><TravellerDetails /></ProtectedRoute>} />
+          <Route path="/booking-confirmation" element={<ProtectedRoute><BookingConfirmation /></ProtectedRoute>} />
+          <Route path="/payment-result" element={<ProtectedRoute><PaymentResult /></ProtectedRoute>} />
+          <Route path="/booking-success" element={<ProtectedRoute><BookingSuccess /></ProtectedRoute>} />
+          <Route path="/my-bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
+          <Route path="/booking-details" element={<ProtectedRoute><BookingDetails /></ProtectedRoute>} />
         </Routes>
       </NavigationLayout>
     </BrowserRouter>

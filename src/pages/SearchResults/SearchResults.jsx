@@ -25,6 +25,7 @@ import SortControl from "../../components/SortControl/SortControl";
 import BusList from "../../components/BusList/BusList";
 import busService from "../../services/busService";
 import filterBuses from "../../utils/filterBuses";
+import { resolveCityDisplayName } from "../../utils/cities";
 import "./SearchResults.css";
 
 // Skeleton Loader Component for luxury loading state
@@ -89,14 +90,16 @@ function SearchResults() {
     const raw = searchParams.get("fromName");
     if (raw && isNaN(Number(raw))) return raw;
     const found = citiesList.find((c) => String(c.id || c.CityId) === String(fromId));
-    return found?.name || found?.City || raw || fromId || "Origin";
+    if (found?.name || found?.City) return found.name || found.City;
+    return resolveCityDisplayName(raw, fromId, fromId);
   }, [searchParams, fromId, citiesList]);
 
   const displayToName = useMemo(() => {
     const raw = searchParams.get("toName");
     if (raw && isNaN(Number(raw))) return raw;
     const found = citiesList.find((c) => String(c.id || c.CityId) === String(toId));
-    return found?.name || found?.City || raw || toId || "Destination";
+    if (found?.name || found?.City) return found.name || found.City;
+    return resolveCityDisplayName(raw, toId, toId);
   }, [searchParams, toId, citiesList]);
 
   useEffect(() => {
@@ -110,7 +113,16 @@ function SearchResults() {
     setError("");
 
     busService
-      .searchBuses({ from: fromId, to: toId, date, fromCityId: fromId, toCityId: toId, journeyDate: date })
+      .searchBuses({
+        from: fromId,
+        to: toId,
+        date,
+        fromCityId: fromId,
+        toCityId: toId,
+        journeyDate: date,
+        fromName: displayFromName,
+        toName: displayToName,
+      })
       .then((results) => {
         if (isMounted) {
           setBusesForRoute(results);
