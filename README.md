@@ -16,9 +16,11 @@ npm ci
 cp .env.example .env
 ```
 
-Set `VITE_API_BASE_URL` in `.env` to the AIBus API URL, for example
-`https://aibus.shop/api/v1`. The frontend accepts either this URL or the
-backend's origin (`https://aibus.shop`). Vite exposes variables prefixed with
+By default, local development proxies `/api` requests to the backend at
+`http://localhost:3009`. If your backend listens on a different address, set
+`VITE_PROXY_TARGET` in `.env` to that backend origin. `VITE_API_BASE_URL` is used
+for direct API requests in deployed builds; set it to the deployed API URL (for
+example, `https://aibus.shop/api/v1`). Vite exposes variables prefixed with
 `VITE_` to browser code, so do not put secrets in them.
 
 Start the development server:

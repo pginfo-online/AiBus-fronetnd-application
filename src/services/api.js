@@ -10,7 +10,7 @@ const isLocalDev =
       /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(window.location.hostname) ||
       /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(window.location.hostname)));
 
-const rawBase = (import.meta.env.VITE_API_BASE_URL || "https://aibus.shop")
+const rawBase = (import.meta.env.VITE_API_BASE_URL || "https://localhost:3009")
   .replace(/\/api\/v1\/?$/, "")
   .replace(/\/$/, "");
 
