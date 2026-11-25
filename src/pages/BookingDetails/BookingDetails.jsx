@@ -795,7 +795,7 @@ function BookingDetails() {
               </div>
               <ul className="important-info-list">
                 <li>• Please reach the boarding point by the reporting time</li>
-                <li>• Chat with us <a href="https://aibus.com/chat" target="_blank" rel="noreferrer">https://aibus.com/chat</a></li>
+                <li>• Chat with us <a href="https://aibus.in" target="_blank" rel="noreferrer">https://aibus.in</a></li>
                 <li>• In case Operator is not reachable please reach out to AiBus Customer Support at 040-61656789</li>
               </ul>
             </div>
@@ -829,7 +829,7 @@ function BookingDetails() {
                   </tbody>
                 </table>
                 <div className="cancellation-extra-note">
-                  Additional Cancellation Charge of Rs. 15 per seat is applicable
+                  Additional Cancellation charges wii be per seat is applicable
                 </div>
               </div>
             </div>
@@ -845,7 +845,7 @@ function BookingDetails() {
                 <li>• If a bus/service is canceled, for tickets booked through AiBus, the refund money is transferred back to the passenger's Credit/Debit card or Bank Account used for booking.</li>
                 <li>• Cancellation charges are applicable on Original fare but not on the Discounted Fare.</li>
                 <li>• Any complaints/grievances related to journey should be reported within a week from date of journey.</li>
-                <li>• For detailed AiBus Terms and Conditions, Please Click Here <a href="https://www.aibus.com/terms" target="_blank" rel="noreferrer">https://www.aibus.com/terms</a>.</li>
+                <li>• For detailed AiBus Terms and Conditions, Please Click Here <a href="https://www.aibus.in" target="_blank" rel="noreferrer">https://www.aibus.in</a>.</li>
               </ul>
             </div>
 
